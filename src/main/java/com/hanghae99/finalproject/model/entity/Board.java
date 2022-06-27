@@ -34,4 +34,15 @@ public class Board {
 
     @Column (nullable = false)
     private BoardType boardType;
+
+    @ManyToOne
+    private Users users;
+
+    @ManyToOne
+    private Folder folder;
+
+    @OneToOne
+    private Share share;
+
+
 }

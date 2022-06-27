@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -29,4 +31,16 @@ public class Users {
     @JsonIgnore
     @Column (nullable = false)
     private String password;
+
+    @OneToMany
+    @JoinColumn(name = "shareId")
+    private List<Share> shares;
+
+    @OneToMany
+    @JoinColumn(name = "boardId")
+    private List<Board> boards;
+
+    @OneToMany
+    @JoinColumn(name = "folderId")
+    private List<Folder> folders;
 }

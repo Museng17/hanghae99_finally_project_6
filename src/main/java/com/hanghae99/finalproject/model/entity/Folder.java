@@ -6,6 +6,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -18,4 +20,14 @@ public class Folder {
 
     @Column (nullable = false)
     private String name;
+
+    @ManyToOne
+    private Users users;
+
+    @OneToMany
+    @JoinColumn(name = "boardId")
+    private List<Board> board;
+
+    @OneToOne
+    private Share share;
 }
