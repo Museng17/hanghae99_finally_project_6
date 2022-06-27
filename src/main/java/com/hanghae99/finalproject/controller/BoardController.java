@@ -1,10 +1,13 @@
 package com.hanghae99.finalproject.controller;
 
+import com.hanghae99.finalproject.jwt.JwtTokenProvider;
 import com.hanghae99.finalproject.model.dto.*;
 import com.hanghae99.finalproject.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,6 +39,11 @@ public class BoardController {
     @GetMapping("/test")
     public void test() {
         boardService.test();
+    }
+
+    @GetMapping("/test2")
+    public String test2(HttpServletRequest request) {
+        return request.getAttribute("Authorization").toString();
     }
 
     @ExceptionHandler(Exception.class)

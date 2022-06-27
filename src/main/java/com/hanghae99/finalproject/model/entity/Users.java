@@ -18,10 +18,6 @@ public class Users {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
-
-    @Column (nullable = false, unique = true)
-    private String email;
-
     @Column (nullable = false, unique = true)
     private String username;
 
@@ -36,7 +32,7 @@ public class Users {
     private String password;
 
     public Users(String test) {
-        this.email = test;
+        this.username = test;
         this.nickname = test;
         this.imgPath = test;
         this.password = test;
