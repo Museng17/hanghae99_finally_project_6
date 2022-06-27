@@ -7,7 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Getter
@@ -32,15 +32,10 @@ public class Users {
     @Column (nullable = false)
     private String password;
 
-    @OneToMany
-    @JoinColumn(name = "shareId")
-    private List<Share> shares;
-
-    @OneToMany
-    @JoinColumn(name = "boardId")
-    private List<Board> boards;
-
-    @OneToMany
-    @JoinColumn(name = "folderId")
-    private List<Folder> folders;
+    public Users(String test) {
+        this.email = test;
+        this.nickname = test;
+        this.imgPath = test;
+        this.password = test;
+    }
 }
