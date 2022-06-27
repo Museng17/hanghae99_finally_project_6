@@ -23,6 +23,9 @@ public class Users {
     private String email;
 
     @Column (nullable = false, unique = true)
+    private String username;
+
+    @Column (nullable = false, unique = true)
     private String nickname;
 
     @Column (nullable = true)
