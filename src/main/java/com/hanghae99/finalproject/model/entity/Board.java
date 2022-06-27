@@ -1,5 +1,6 @@
 package com.hanghae99.finalproject.model.entity;
 
+import com.hanghae99.finalproject.util.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,4 +28,10 @@ public class Board {
 
     @Column (nullable = true)
     private String content;
+
+    @Column (nullable = false)
+    private DisclosureStatus status;
+
+    @Column (nullable = false)
+    private BoardType boardType;
 }
