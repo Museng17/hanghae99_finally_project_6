@@ -31,10 +31,17 @@ public class Users {
     @Column (nullable = false)
     private String password;
 
+
     public Users(String test) {
         this.username = test;
         this.nickname = test;
         this.imgPath = test;
         this.password = test;
+    }
+
+    public Users(String username, String nickname, String password) {
+        this.username = username;
+        this.nickname = nickname;
+        this.password = password;
     }
 }

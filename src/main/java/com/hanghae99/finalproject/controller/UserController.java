@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.security.NoSuchAlgorithmException;
+
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -21,5 +23,23 @@ public class UserController {
     @PostMapping("/user/refresh")
     public TokenResponseDto refreshToken(HttpServletRequest request) {
         return userService.createTokens(request.getAttribute("Authorization").toString());
+    }
+
+    @PostMapping("/user/signup")
+    public UserRegisterRespDto registerUser(@RequestBody SignupDto Dto) throws NoSuchAlgorithmException {
+        return userService.registerUser(Dto);
+    }
+
+    @ResponseBody
+    @GetMapping("/user/emailDupCheck/{username}")
+    public Boolean usernameDupCheck(@PathVariable String username) {
+
+        return userService.checkUsernameDuplicate(username);
+    }
+
+    @ResponseBody
+    @GetMapping("/user/nameDupCheck/{nickname}")
+    public Boolean nameDupCheck(@PathVariable String nickname) {
+        return userService.checkNameDuplicate(nickname);
     }
 }

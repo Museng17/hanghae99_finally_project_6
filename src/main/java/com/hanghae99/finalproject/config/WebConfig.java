@@ -19,7 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
         "/user/signup",
         "/user/emailDupCheck/**",
         "/user/nameDupCheck/**",
-        "/user/login",
+        "/user/login"
     };
 
     private final JwtTokenInterceptor jwtTokenInterceptor;
