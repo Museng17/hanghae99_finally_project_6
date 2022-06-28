@@ -20,6 +20,11 @@ public class UserController {
         return userService.login(userRequestDto);
     }
 
+    @PostMapping("/user/social")
+    public TokenResponseDto socialLogin(@RequestHeader("Credential") String credential) {
+        return userService.socialLogin(credential);
+    }
+
     @PostMapping("/user/refresh")
     public TokenResponseDto refreshToken(HttpServletRequest request) {
         return userService.createTokens(request.getAttribute("Authorization").toString());

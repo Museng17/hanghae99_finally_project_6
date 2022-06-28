@@ -1,6 +1,7 @@
 package com.hanghae99.finalproject.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hanghae99.finalproject.model.dto.SocialLoginRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,12 +29,17 @@ public class Users {
     private String imgPath;
 
     @JsonIgnore
-    @Column (nullable = false)
+    @Column (nullable = true)
     private String password;
 
     public Users(String username, String nickname, String password) {
         this.username = username;
         this.nickname = nickname;
         this.password = password;
+    }
+
+    public Users(SocialLoginRequestDto socialLoginRequestDto) {
+        this.username = socialLoginRequestDto.getEmail();
+        this.nickname = socialLoginRequestDto.getName();
     }
 }

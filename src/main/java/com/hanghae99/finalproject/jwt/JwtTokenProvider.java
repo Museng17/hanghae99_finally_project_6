@@ -53,10 +53,15 @@ public class JwtTokenProvider {
     //AccessToken 유효성 검사
     public boolean isValidAccessToken(String token) {
         try {
+            Claims accessClaims = getClaimsFormToken(token);
+            System.out.println("Access expireTime: " + accessClaims.getExpiration());
+            System.out.println("Access email: " + accessClaims.get(CLAIMS_KEY));
             return true;
         } catch (ExpiredJwtException exception) {
+            System.out.println("Token Expired email : " + exception.getClaims().get(CLAIMS_KEY));
             return false;
         } catch (JwtException exception) {
+            System.out.println("Token Tampered");
             return false;
         }
     }

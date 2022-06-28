@@ -2,11 +2,13 @@ package com.hanghae99.finalproject.config;
 
 import com.hanghae99.finalproject.interceptor.JwtTokenInterceptor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.*;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.*;
 import org.springframework.web.servlet.config.annotation.*;
 
@@ -21,8 +23,10 @@ public class WebConfig implements WebMvcConfigurer {
         "/user/signup",
         "/user/emailDupCheck/**",
         "/user/nameDupCheck/**",
-        "/user/login"
+        "/user/login",
+        "/user/social",
     };
+    public final static String SOCIAL_HEADER_KEY = "Credential";
 
     private final JwtTokenInterceptor jwtTokenInterceptor;
 
@@ -52,6 +56,7 @@ public class WebConfig implements WebMvcConfigurer {
         configuration.addAllowedMethod(HttpMethod.DELETE);
         configuration.setAllowCredentials(true);
         configuration.addAllowedHeader(JWT_HEADER_KEY);
+        configuration.addAllowedHeader(SOCIAL_HEADER_KEY);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -60,7 +65,10 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http
+                .csrf().disable()
+                .headers().frameOptions().sameOrigin()
+                    .and()
                 .cors().configurationSource(corsConfigurationSource())
                     .and()
                 .authorizeHttpRequests(auth -> {
@@ -79,5 +87,10 @@ public class WebConfig implements WebMvcConfigurer {
         registry
                 .addInterceptor(jwtTokenInterceptor) //로그인이 필요한 서비스 요청시 Interceptor가 그 요청을 가로챔
                 .excludePathPatterns(JWT_INTERCEPTOR_URI);
+    }
+
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        return builder.build();
     }
 }
