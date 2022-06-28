@@ -14,7 +14,7 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    @PostMapping("/board")
+    @GetMapping("/board")
     private FolderAndBoardResponseDto findMyFolderAndBoardList(HttpServletRequest request) {
         return boardService.findMyFolderAndBoardList(request);
     }
