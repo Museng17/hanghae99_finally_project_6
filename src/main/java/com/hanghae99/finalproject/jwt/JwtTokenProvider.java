@@ -16,10 +16,7 @@ public class JwtTokenProvider {
     private String SECRET_KEY = "sec";
     public final static String CLAIMS_KEY = "username";
 
-    private static final int SEC = 1;
-    private static final int MINUTE = 60 * SEC;
-    private static final int HOUR = 60 * MINUTE;
-    private static final int DAY = 24 * HOUR;
+    private static final Long TokenValidTime  = 1000L * 60;  //1분
 
     @PostConstruct
     protected void init() {
@@ -33,7 +30,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setClaims(claims) // 정보 저장
                 .setIssuedAt(now) // 토큰 발행 시간 정보
-                .setExpiration(new Date(now.getTime() + MINUTE * 30)) // 30분
+                .setExpiration(new Date(now.getTime() + TokenValidTime * 30)) // 30분
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY) // 사용할 암호화 알고리즘과
                 .compact();
     }
@@ -45,7 +42,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setClaims(claims) // 정보 저장
                 .setIssuedAt(now) // 토큰 발행 시간 정보
-                .setExpiration(new Date(now.getTime() + MINUTE * 60)) // 60분
+                .setExpiration(new Date(now.getTime() + TokenValidTime * 60)) // 60분
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY) // 사용할 암호화 알고리즘과
                 .compact();
     }
@@ -53,10 +50,16 @@ public class JwtTokenProvider {
     //AccessToken 유효성 검사
     public boolean isValidAccessToken(String token) {
         try {
+            Claims accessClaims = getClaimsFormToken(token);
+            System.out.println("Access expireTime: " + accessClaims.getExpiration());
+            System.out.println("Access email: " + accessClaims.get(CLAIMS_KEY));
+            System.out.println("Access email: " + accessClaims.getExpiration());
             return true;
         } catch (ExpiredJwtException exception) {
+            System.out.println("Token Expired email : " + exception.getClaims().get(CLAIMS_KEY));
             return false;
         } catch (JwtException exception) {
+            System.out.println("Token Tampered");
             return false;
         }
     }

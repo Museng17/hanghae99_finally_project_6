@@ -4,7 +4,9 @@ import com.hanghae99.finalproject.jwt.JwtTokenProvider;
 import com.hanghae99.finalproject.model.dto.*;
 import com.hanghae99.finalproject.model.entity.Users;
 import com.hanghae99.finalproject.model.repository.UserRepository;
+import com.hanghae99.finalproject.util.restTemplates.SocialLoginRestTemplate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final SocialLoginRestTemplate socialLoginRestTemplate;
 
     @Transactional(readOnly = true)
     public TokenResponseDto login(UserRequestDto userRequestDto) {
@@ -88,7 +91,7 @@ public class UserService {
         }
 
         // 패스워드 암호화
-        String password = bCryptPasswordEncoder.encode(Dto.getPw());
+        String password = bCryptPasswordEncoder.encode(Dto.getPassword());
 
         Users user = new Users(username, nickname, password);
         System.out.println(Dto.getUsername());
@@ -102,5 +105,20 @@ public class UserService {
     public Users findUser(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("찾는 회원이 없습니다."));
+    }
+
+    public TokenResponseDto socialLogin(String credential) {
+        ResponseEntity<SocialLoginRequestDto> response = socialLoginRestTemplate.googleLogin(credential);
+        int statusCode = response.getStatusCode().value();
+
+        if (statusCode != 200) {
+            throw new RuntimeException("statusCode = " + statusCode);
+        }
+        SocialLoginRequestDto socialLoginRequestDto = response.getBody();
+
+        Users user = userRepository.findByUsername(socialLoginRequestDto.getEmail())
+                .orElseGet(() -> userRepository.save(new Users(socialLoginRequestDto)));
+
+        return createTokens(user.getUsername());
     }
 }
