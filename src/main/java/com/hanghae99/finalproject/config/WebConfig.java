@@ -10,6 +10,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.*;
 import org.springframework.web.servlet.config.annotation.*;
 
+import static com.hanghae99.finalproject.interceptor.JwtTokenInterceptor.JWT_HEADER_KEY;
+
 @RequiredArgsConstructor
 @Configuration
 @EnableWebMvc
@@ -49,6 +51,7 @@ public class WebConfig implements WebMvcConfigurer {
         configuration.addAllowedMethod(HttpMethod.OPTIONS);
         configuration.addAllowedMethod(HttpMethod.DELETE);
         configuration.setAllowCredentials(true);
+        configuration.addAllowedHeader(JWT_HEADER_KEY);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

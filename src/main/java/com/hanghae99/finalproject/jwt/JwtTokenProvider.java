@@ -6,22 +6,20 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.xml.bind.DatatypeConverter;
-import java.util.Base64;
-import java.util.Date;
+
+import java.util.*;
 
 @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
 
     private String SECRET_KEY = "sec";
+    public final static String CLAIMS_KEY = "username";
 
     private static final int SEC = 1;
     private static final int MINUTE = 60 * SEC;
     private static final int HOUR = 60 * MINUTE;
     private static final int DAY = 24 * HOUR;
-    private static final int JWT_TOKEN_VALID_SEC = 3 * DAY;
-    private static final int JWT_TOKEN_VALID_MILLI_SEC = JWT_TOKEN_VALID_SEC * 1000;
-
 
     @PostConstruct
     protected void init() {
@@ -30,28 +28,27 @@ public class JwtTokenProvider {
 
     public String createAccessToken(String username) {
         Claims claims = Jwts.claims();//.setSubject(userPk); // JWT payload 에 저장되는 정보단위
-        claims.put("email", username);
+        claims.put(CLAIMS_KEY, username);
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims) // 정보 저장
                 .setIssuedAt(now) // 토큰 발행 시간 정보
-                .setExpiration(new Date(now.getTime() + MINUTE * 30)) // set Expire Time
+                .setExpiration(new Date(now.getTime() + MINUTE * 30)) // 30분
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY) // 사용할 암호화 알고리즘과
                 .compact();
     }
 
     public String createRefreshToken(String username) {
         Claims claims = Jwts.claims();//.setSubject(userPk); // JWT payload 에 저장되는 정보단위
-        claims.put("email", username);
+        claims.put(CLAIMS_KEY, username);
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims) // 정보 저장
                 .setIssuedAt(now) // 토큰 발행 시간 정보
-                .setExpiration(new Date(now.getTime() + MINUTE * 60)) // set Expire Time
+                .setExpiration(new Date(now.getTime() + MINUTE * 60)) // 60분
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY) // 사용할 암호화 알고리즘과
                 .compact();
     }
-
 
     //AccessToken 유효성 검사
     public boolean isValidAccessToken(String token) {

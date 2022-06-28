@@ -4,17 +4,17 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import static com.hanghae99.finalproject.jwt.JwtTokenProvider.CLAIMS_KEY;
 
 @RequiredArgsConstructor
 @Component
 public class UserInfoInJwt {
 
-
     private final JwtTokenProvider jwtTokenProvider;
 
-    public String getEmail_InJWT(String authorization){
+    public String getEmail_InJWT(String authorization) {
         String accessToken = authorization.substring(7);
         Claims accessClaims = jwtTokenProvider.getClaimsFormToken(accessToken);
-        return (String) accessClaims.get("email");
+        return (String) accessClaims.get(CLAIMS_KEY);
     }
 }
