@@ -7,30 +7,28 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
 
 @Service
 @RequiredArgsConstructor
 public class BoardService {
 
     private final BoardRepository boardRepository;
-
-    //test //토큰으로 교체
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final FolderRepository folderRepository;
 
     @Transactional(readOnly = true)
-    public FolderAndBoardResponseDto findMyFolderAndBoardList(Long id) {
+    public FolderAndBoardResponseDto findMyFolderAndBoardList(HttpServletRequest request) {
+        Users user = userFindByToken(request);
         return new FolderAndBoardResponseDto(
-                boardRepository.findByUsersIdAndFolderIdIsNull(id),
-                folderRepository.findByUsersId(id)
+                boardRepository.findByUsersIdAndFolderIdIsNull(user.getId()),
+                folderRepository.findByUsersId(user.getId())
         );
     }
 
     @Transactional
-    public Long boardSave(BoardRequestDto boardRequestDto) {
-        Users user = userRepository.findById(1L).orElseGet(() -> userRepository.save(new Users("test"))); //토큰으로 교체
-
+    public Long boardSave(BoardRequestDto boardRequestDto, HttpServletRequest request) {
+        Users user = userFindByToken(request);
         return boardRepository.save(
                 new Board(
                         boardRequestDto,
@@ -40,12 +38,16 @@ public class BoardService {
     }
 
     @Transactional
-    public void boardUpdate(Long id, BoardRequestDto boardRequestDto) {
-        boardFindById(id)
-                .update(boardRequestDto);
+    public void boardUpdate(Long id, BoardRequestDto boardRequestDto, HttpServletRequest request) {
+        Board board = boardFindById(id);
+        userAndWriterMatches(board.getUsers().getId(), userFindByToken(request).getId());
+        board.update(boardRequestDto);
     }
 
-    public void boardDelete(Long id) {
+    @Transactional
+    public void boardDelete(Long id, HttpServletRequest request) {
+        Board board = boardFindById(id);
+        userAndWriterMatches(board.getUsers().getId(), userFindByToken(request).getId());
         boardRepository.deleteById(id);
     }
 
@@ -54,19 +56,13 @@ public class BoardService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 글을 찾지 못했습니다."));
     }
 
-    @Transactional
-    public void test() {
-        Users user = userRepository.findById(1L).orElseGet(() -> userRepository.save(new Users("test"))); //토큰으로 교체
+    private void userAndWriterMatches(Long boardUserId, Long userId) {
+        if (boardUserId != userId) {
+            throw new RuntimeException("글쓴이가 아닙니다.");
+        }
+    }
 
-        Optional<Board> board = boardRepository.findById(1L);
-
-        Folder test = folderRepository.save(
-                new Folder(
-                        board,
-                        user
-                )
-        );
-
-        board.get().addFolderId(test);
+    public Users userFindByToken(HttpServletRequest request) {
+        return userService.findUser(request.getAttribute("Authorization").toString());
     }
 }

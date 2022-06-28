@@ -1,6 +1,5 @@
 package com.hanghae99.finalproject.controller;
 
-import com.hanghae99.finalproject.jwt.JwtTokenProvider;
 import com.hanghae99.finalproject.model.dto.*;
 import com.hanghae99.finalproject.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -15,35 +14,28 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    @PostMapping("/board/{id}")
-    private FolderAndBoardResponseDto findMyFolderAndBoardList(@PathVariable Long id) {
-        return boardService.findMyFolderAndBoardList(id);
+    @PostMapping("/board")
+    private FolderAndBoardResponseDto findMyFolderAndBoardList(HttpServletRequest request) {
+        return boardService.findMyFolderAndBoardList(request);
     }
 
     @PostMapping("/board")
-    public Long boardSave(@RequestBody BoardRequestDto boardRequestDto) {
-        return boardService.boardSave(boardRequestDto);
+    public Long boardSave(@RequestBody BoardRequestDto boardRequestDto,
+                          HttpServletRequest request) {
+        return boardService.boardSave(boardRequestDto, request);
     }
 
     @PutMapping("/board/{id}")
     public void boardUpdate(@PathVariable Long id,
-                            @RequestBody BoardRequestDto boardRequestDto) {
-        boardService.boardUpdate(id, boardRequestDto);
+                            @RequestBody BoardRequestDto boardRequestDto,
+                            HttpServletRequest request) {
+        boardService.boardUpdate(id, boardRequestDto, request);
     }
 
     @DeleteMapping("/board/{id}")
-    public void boardDelete(@PathVariable Long id) {
-        boardService.boardDelete(id);
-    }
-
-    @GetMapping("/test")
-    public void test() {
-        boardService.test();
-    }
-
-    @GetMapping("/test2")
-    public String test2(HttpServletRequest request) {
-        return request.getAttribute("Authorization").toString();
+    public void boardDelete(@PathVariable Long id,
+                            HttpServletRequest request) {
+        boardService.boardDelete(id, request);
     }
 
     @ExceptionHandler(Exception.class)

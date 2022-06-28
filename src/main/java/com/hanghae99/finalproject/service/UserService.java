@@ -1,7 +1,6 @@
 package com.hanghae99.finalproject.service;
 
 import com.hanghae99.finalproject.jwt.JwtTokenProvider;
-import com.hanghae99.finalproject.jwt.encoder.SHA256;
 import com.hanghae99.finalproject.model.dto.*;
 import com.hanghae99.finalproject.model.entity.Users;
 import com.hanghae99.finalproject.model.repository.UserRepository;
@@ -98,5 +97,10 @@ public class UserService {
 
         UserRegisterRespDto responseDto = new UserRegisterRespDto(result, err_msg);
         return responseDto;
+    }
+
+    public Users findUser(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("찾는 회원이 없습니다."));
     }
 }
