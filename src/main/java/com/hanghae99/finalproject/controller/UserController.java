@@ -42,4 +42,6 @@ public class UserController {
     public Boolean nameDupCheck(@PathVariable String nickname) {
         return userService.checkNameDuplicate(nickname);
     }
+
+
 }
