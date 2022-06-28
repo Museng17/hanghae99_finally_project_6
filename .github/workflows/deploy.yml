@@ -40,7 +40,7 @@ jobs:
         run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://hanghae99-final/$GITHUB_SHA.zip
 
       - name: Code Deploy #4
-        run: aws deploy create-deployment --application-name deploy-actions
+        run: aws deploy create-deployment --application-name testapp
           --deployment-config-name CodeDeployDefault.OneAtATime
           --deployment-group-name dev
           --s3-location bucket=hanghae99-final,bundleType=zip,key=$GITHUB_SHA.zip
