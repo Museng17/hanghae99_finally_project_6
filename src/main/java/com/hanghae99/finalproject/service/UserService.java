@@ -91,7 +91,7 @@ public class UserService {
         }
 
         // 패스워드 암호화
-        String password = bCryptPasswordEncoder.encode(Dto.getPw());
+        String password = bCryptPasswordEncoder.encode(Dto.getPassword());
 
         Users user = new Users(username, nickname, password);
         System.out.println(Dto.getUsername());
