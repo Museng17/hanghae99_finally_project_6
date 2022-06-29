@@ -5,7 +5,7 @@ files:
   - source: /
     destination: /home/ubuntu/app # 인스턴스에서 파일이 저장될 위치
 
-permissions:
+permissions: #권한 허용
   - object: /home/ubuntu/app/
     owner: ubuntu
     group: ubuntu
@@ -13,6 +13,7 @@ permissions:
 
 hooks:
   ApplicationStart:
+    # location은 프로젝트의 root 경로를 기준
     - location: deploy.sh
       timeout: 180
       runas: root
