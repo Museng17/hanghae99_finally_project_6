@@ -3,10 +3,10 @@ os: linux
 
 files:
   - source: /
-    destination: /home/app # 인스턴스에서 파일이 저장될 위치
+    destination: /home/ec2-user/app # 인스턴스에서 파일이 저장될 위치
 
 permissions:
-  - object: /home/app/
+  - object: /home/ec2-user/app/
     owner: ubuntu
     group: ubuntu
     mode: 755
