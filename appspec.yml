@@ -3,10 +3,10 @@ os: linux
 
 files:
   - source: /
-    destination: /opt/testapp # 인스턴스에서 파일이 저장될 위치
+    destination: /home/app # 인스턴스에서 파일이 저장될 위치
 
 permissions:
-  - object: /opt/testapp/
+  - object: /home/app/
     owner: ubuntu
     group: ubuntu
     mode: 755
