@@ -26,11 +26,11 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
         String accessToken = authorization.substring(7);
 
         if (authorization == null) {
-            throw new RuntimeException("유효하지 않은 않은 토큰입니다.");
+            throw new RuntimeException("헤더에 토큰을 담지 안았습니다.");
         }
 
         if (!authorization.startsWith(BEARER)) {
-            throw new RuntimeException("유효하지 않은 않은 토큰입니다.");
+            throw new RuntimeException("Bearer 를 붙혀주세요.");
         }
 
         if (!jwtTokenProvider.isValidAccessToken(accessToken)) {
