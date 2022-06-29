@@ -1,7 +1,7 @@
 REPOSITORY=/home/ubuntu/app
 cd $REPOSITORY
 
-APP_NAME=FinalProject #1
+APP_NAME=finalproject #1
 JAR_NAME=$(ls $REPOSITORY/build/libs/ | grep '.jar' | tail -n 1)
 JAR_PATH=$REPOSITORY/build/libs/$JAR_NAME
 
