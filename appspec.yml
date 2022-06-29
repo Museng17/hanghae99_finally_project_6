@@ -4,24 +4,15 @@ os: linux
 files:
   - source: /
     destination: /home/ubuntu/app # 인스턴스에서 파일이 저장될 위치
-    overwrite: yes
 
 permissions:
-  - object: /
-    pattern: "**"
+  - object: /home/ubuntu/app/
     owner: ubuntu
     group: ubuntu
+    mode: 755
 
 hooks:
   ApplicationStart:
-    - location: scripts/start.sh
+    - location: deploy.sh
       timeout: 180
-      runas: ubuntu
-
-    - location: scripts/health_check.sh
-      timeout: 180
-      runas: ubuntu
-
-    - location: scripts/switch.sh
-      timeout: 180
-      runas: ubuntu
+      runas: root
