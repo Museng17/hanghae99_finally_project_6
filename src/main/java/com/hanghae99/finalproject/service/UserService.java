@@ -117,8 +117,14 @@ public class UserService {
         SocialLoginRequestDto socialLoginRequestDto = response.getBody();
 
         Users user = userRepository.findByUsername(socialLoginRequestDto.getEmail())
-                .orElseGet(() -> userRepository.save(new Users(socialLoginRequestDto)));
-
+                .orElseGet(() ->
+                        userRepository.save(
+                                new Users(
+                                        socialLoginRequestDto,
+                                        userRepository.findAllCount()
+                                )
+                        )
+                );
         return createTokens(user.getUsername());
     }
 }
