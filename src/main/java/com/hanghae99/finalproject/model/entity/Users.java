@@ -1,13 +1,12 @@
 package com.hanghae99.finalproject.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.hanghae99.finalproject.model.dto.SocialLoginRequestDto;
+import lombok.*;
 
 import javax.persistence.*;
 
-import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -15,32 +14,30 @@ import java.util.List;
 @NoArgsConstructor
 public class Users {
 
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
+    @Column(nullable = false, unique = true)
+    private String username;
 
-    @Column (nullable = false, unique = true)
-    private String email;
-
-    @Column (nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String nickname;
 
-    @Column (nullable = true)
+    @Column(nullable = true)
     private String imgPath;
 
     @JsonIgnore
-    @Column (nullable = false)
+    @Column(nullable = true)
     private String password;
 
-    @OneToMany
-    @JoinColumn(name = "shareId")
-    private List<Share> shares;
+    public Users(String username, String nickname, String password) {
+        this.username = username;
+        this.nickname = nickname;
+        this.password = password;
+    }
 
-    @OneToMany
-    @JoinColumn(name = "boardId")
-    private List<Board> boards;
-
-    @OneToMany
-    @JoinColumn(name = "folderId")
-    private List<Folder> folders;
+    public Users(SocialLoginRequestDto socialLoginRequestDto, int allCount) {
+        this.username = socialLoginRequestDto.getEmail();
+        this.nickname = "USER(" + UUID.randomUUID().toString().replaceAll("-", "").substring(5, 9) + allCount + ")";
+    }
 }
