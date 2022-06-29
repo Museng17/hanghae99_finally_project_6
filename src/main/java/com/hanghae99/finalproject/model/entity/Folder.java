@@ -28,18 +28,6 @@ public class Folder {
     @ManyToOne
     private Users users;
 
-    @OneToMany
-    @JoinColumn(name = "boardId")
-    private List<Board> board = new ArrayList<>();
-
     @OneToOne
     private Share share;
-
-
-    public Folder(Optional<Board> byId, Users user) {
-        this.name = "test";
-        this.status = byId.get().getStatus();
-        this.users = user;
-        this.board.add(byId.get());
-    }
 }
