@@ -1,9 +1,7 @@
 package com.hanghae99.finalproject.model.entity;
 
 import com.hanghae99.finalproject.util.DisclosureStatus;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -15,14 +13,14 @@ import java.util.*;
 @NoArgsConstructor
 public class Folder {
 
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
-    @Column (nullable = false)
+    @Column(nullable = false)
     private String name;
 
-    @Column (nullable = false)
+    @Column(nullable = false)
     private DisclosureStatus status;
 
     @ManyToOne
@@ -30,4 +28,20 @@ public class Folder {
 
     @OneToOne
     private Share share;
+
+    @OneToMany
+    @JoinColumn(name = "boardId")
+    private List<Board> boardList = new ArrayList<>();
+
+    public Folder(String test, Users users) {
+        this.name = test;
+        this.status = DisclosureStatus.PUBLIC;
+        this.users = users;
+    }
+
+    public Folder(Long id, String name, DisclosureStatus status) {
+        this.id = id;
+        this.name = name;
+        this.status = status;
+    }
 }

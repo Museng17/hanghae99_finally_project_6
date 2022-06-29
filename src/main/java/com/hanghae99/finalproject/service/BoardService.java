@@ -22,7 +22,7 @@ public class BoardService {
         Users user = userFindByToken(request);
         return new FolderAndBoardResponseDto(
                 boardRepository.findByUsersIdAndFolderIdIsNull(user.getId()),
-                folderRepository.findByUsersId(user.getId())
+                folderRepository.findByUsersIdOnlyFolder(user.getId())
         );
     }
 

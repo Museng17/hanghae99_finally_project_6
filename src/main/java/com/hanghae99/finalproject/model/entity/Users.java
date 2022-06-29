@@ -2,13 +2,11 @@ package com.hanghae99.finalproject.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae99.finalproject.model.dto.SocialLoginRequestDto;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
-import java.util.*;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -16,20 +14,20 @@ import java.util.*;
 @NoArgsConstructor
 public class Users {
 
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
-    @Column (nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String username;
 
-    @Column (nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String nickname;
 
-    @Column (nullable = true)
+    @Column(nullable = true)
     private String imgPath;
 
     @JsonIgnore
-    @Column (nullable = true)
+    @Column(nullable = true)
     private String password;
 
     public Users(String username, String nickname, String password) {
@@ -38,8 +36,8 @@ public class Users {
         this.password = password;
     }
 
-    public Users(SocialLoginRequestDto socialLoginRequestDto) {
+    public Users(SocialLoginRequestDto socialLoginRequestDto, int allCount) {
         this.username = socialLoginRequestDto.getEmail();
-        this.nickname = socialLoginRequestDto.getName();
+        this.nickname = "USER(" + UUID.randomUUID().toString().replaceAll("-", "").substring(5, 9) + allCount + ")";
     }
 }
