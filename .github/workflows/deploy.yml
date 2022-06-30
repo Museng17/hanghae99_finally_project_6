@@ -20,7 +20,7 @@ jobs:
         uses: samin/mysql-action@v1
         with:
           character set server: 'utf8'
-          mysql database: db-moum
+          mysql database: moum-mysql
           mysql user: admin
           mysql password: ${{ secrets.MYSQL_PASSWORD }}
 
