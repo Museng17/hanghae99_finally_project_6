@@ -16,13 +16,29 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Setup MySQL
-        uses: samin/mysql-action@v1
+      # gradle caching
+      - name: Gradle Caching
+        uses: actions/cache@v3
         with:
-          character set server: 'utf8'
-          mysql database: moum-mysql
-          mysql user: admin
-          mysql password: ${{ secrets.MYSQL_PASSWORD }}
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # application.properties 추가정보 입력 시작
+      - name: Create ./src/main/resources/
+        run: |
+          mkdir -p  ./src/main/resources/
+
+      # create application-prod.properties
+      - name: make application.properties
+        run: |
+          cd ./src/main/resources
+          touch ./application-prod.properties
+          echo "${{ secrets.PROPERTIES }}" > ./application.properties
+        shell: bash
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
