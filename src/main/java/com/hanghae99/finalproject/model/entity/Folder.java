@@ -33,7 +33,6 @@ public class Folder {
     private Share share;
 
     @OneToMany
-    @JoinColumn(name = "boardId")
     private List<Board> boardList = new ArrayList<>();
 
     public Folder(Long id, String name, DisclosureStatus status) {
