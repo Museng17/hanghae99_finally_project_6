@@ -1,8 +1,12 @@
 package com.hanghae99.finalproject.jwt;
 
+import com.hanghae99.finalproject.model.entity.Users;
+import com.hanghae99.finalproject.service.UserService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import javax.servlet.http.HttpServletRequest;
 
 import static com.hanghae99.finalproject.jwt.JwtTokenProvider.CLAIMS_KEY;
 
