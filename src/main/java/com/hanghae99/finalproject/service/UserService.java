@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
+import static com.hanghae99.finalproject.interceptor.JwtTokenInterceptor.JWT_HEADER_KEY;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -26,7 +28,6 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final SocialLoginRestTemplate socialLoginRestTemplate;
-    private final UserinfoHttpRequest userinfoHttpRequest;
     private final BoardRepository boardRepository;
     private final FolderRepository folderRepository;
 
@@ -136,11 +137,19 @@ public class UserService {
     }
 
     @Transactional
-    public void UserDelete(Long id, HttpServletRequest request) {
+    public Boolean UserDelete(Long id, HttpServletRequest request) {
         Users user = userFindById(id);
-        userinfoHttpRequest.userAndWriterMatches(user.getId(), userinfoHttpRequest.userFindByToken(request).getId());
+        if(user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()){
 
-        userRepository.deleteById(id);
+            boardRepository.deleteAllByUsers(user);
+            folderRepository.deleteAllByUsers(user);
+            userRepository.deleteById(id);
+
+            return true;
+        } else {
+
+            return false;
+        }
     }
 
     public Users userFindById(Long id) {

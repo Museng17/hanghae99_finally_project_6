@@ -48,9 +48,9 @@ public class UserController {
         return userService.checkNameDuplicate(nickname);
     }
 
-    @DeleteMapping("/user/getout")
-    public void userDelete(@PathVariable Long id, HttpServletRequest request) {
+    @DeleteMapping("/user/getout/{id}")
+    public Boolean userDelete(@PathVariable Long id, HttpServletRequest request) {
 
-        userService.UserDelete(id, request);
+        return userService.UserDelete(id, request);
     }
 }
