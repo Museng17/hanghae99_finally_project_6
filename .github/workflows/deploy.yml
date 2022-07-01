@@ -2,7 +2,7 @@ name: deploy #Reps Action 페이지에 나타나는 이름
 
 on:
   push:
-    branches: [ main ] #이벤트가 발생하는 브랜치
+    branches: [ main, release ] #이벤트가 발생하는 브랜치
 jobs:
   build:
     runs-on: ubuntu-latest #실행 환경 지정
