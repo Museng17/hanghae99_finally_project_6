@@ -3,7 +3,10 @@ package com.hanghae99.finalproject.service;
 import com.hanghae99.finalproject.jwt.JwtTokenProvider;
 import com.hanghae99.finalproject.model.dto.*;
 import com.hanghae99.finalproject.model.entity.Users;
+import com.hanghae99.finalproject.model.repository.BoardRepository;
+import com.hanghae99.finalproject.model.repository.FolderRepository;
 import com.hanghae99.finalproject.model.repository.UserRepository;
+import com.hanghae99.finalproject.util.UserinfoHttpRequest;
 import com.hanghae99.finalproject.util.restTemplates.SocialLoginRestTemplate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
@@ -22,6 +26,9 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final SocialLoginRestTemplate socialLoginRestTemplate;
+    private final UserinfoHttpRequest userinfoHttpRequest;
+    private final BoardRepository boardRepository;
+    private final FolderRepository folderRepository;
 
     @Transactional(readOnly = true)
     public TokenResponseDto login(UserRequestDto userRequestDto) {
@@ -126,5 +133,18 @@ public class UserService {
                         )
                 );
         return createTokens(user.getUsername());
+    }
+
+    @Transactional
+    public void UserDelete(Long id, HttpServletRequest request) {
+        Users user = userFindById(id);
+        userinfoHttpRequest.userAndWriterMatches(user.getId(), userinfoHttpRequest.userFindByToken(request).getId());
+
+        userRepository.deleteById(id);
+    }
+
+    public Users userFindById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
     }
 }
