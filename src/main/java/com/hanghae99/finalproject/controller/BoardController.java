@@ -43,4 +43,10 @@ public class BoardController {
     public ErrorMassageResponseDto exceptionHandler(Exception e) {
         return new ErrorMassageResponseDto(e.getMessage());
     }
+
+    @PostMapping("/image/og")
+    public OgResponseDto thumbnailLoad(@RequestBody OgRequestDto dto)  {
+
+        return boardService.thumbnailLoad(dto.getUrl());
+    }
 }

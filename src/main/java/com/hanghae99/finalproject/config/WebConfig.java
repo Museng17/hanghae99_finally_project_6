@@ -20,11 +20,12 @@ import static com.hanghae99.finalproject.interceptor.JwtTokenInterceptor.JWT_HEA
 public class WebConfig implements WebMvcConfigurer {
 
     private final String[] JWT_INTERCEPTOR_URI = {
-        "/user/signup",
-        "/user/emailDupCheck/**",
-        "/user/nameDupCheck/**",
-        "/user/login",
-        "/user/social"
+            "/user/signup",
+            "/user/emailDupCheck/**",
+            "/user/nameDupCheck/**",
+            "/user/login",
+            "/user/social",
+            "/image/og/**"
     };
     public final static String SOCIAL_HEADER_KEY = "Credential";
 

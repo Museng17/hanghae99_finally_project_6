@@ -5,6 +5,8 @@ import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;
 import lombok.RequiredArgsConstructor;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,5 +67,21 @@ public class BoardService {
 
     public void boardDeleteByFolderId(Long folderId) {
         boardRepository.deleteByFolderId(folderId);
+    }
+
+    public OgResponseDto thumbnailLoad(String url){
+        OgResponseDto ogResponseDto= new OgResponseDto();
+        try{
+            Document doc = Jsoup.connect(url).get();
+            String title = doc.select("meta[property=og:title]").attr("content");
+            String image= doc.select("meta[property=og:image]").attr("content");
+            String description = doc.select("meta[property=og:description]").attr("content");
+            ogResponseDto= new OgResponseDto(title,image,description);
+        }catch(Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+
+        return ogResponseDto;
+
     }
 }

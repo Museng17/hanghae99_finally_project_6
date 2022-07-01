@@ -29,7 +29,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-
+    implementation 'org.jsoup:jsoup:1.14.3'
     //jwt
     implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
 }
