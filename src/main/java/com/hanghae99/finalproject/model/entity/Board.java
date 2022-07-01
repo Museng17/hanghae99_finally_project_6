@@ -65,4 +65,8 @@ public class Board {
         this.status = boardRequestDto.getStatus();
         this.boardType = boardRequestDto.getBoardType();
     }
+
+    public void addFolderId(Folder folder) {
+        this.folder = folder;
+    }
 }

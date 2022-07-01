@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,19 +47,23 @@ public class FolderService {
                 folder.getUsers().getId(),
                 userinfoHttpRequest.userFindByToken(request).getId());
 
-        folder.boardInFolder(
-                boardService.findAllById(
-                        folderRequestDto.getBoardList().stream()
-                                .map(Board::getId)
-                                .collect(Collectors.toList())
-                )
+        List<Board> boardList = boardService.findAllById(
+                folderRequestDto.getBoardList().stream()
+                        .map(Board::getId)
+                        .collect(Collectors.toList())
         );
+
+        folder.boardInFolder(boardList);
+        for (Board board : boardList) {
+            board.addFolderId(folder);
+        }
     }
 
     @Transactional
     public void folderDelete(Long folderId, HttpServletRequest request) {
         Folder folder = findFolder(folderId, request);
         userinfoHttpRequest.userAndWriterMatches(folder.getUsers().getId(), userinfoHttpRequest.userFindByToken(request).getId());
+        boardService.boardDeleteByFolderId(folderId);
         folderRepository.deleteById(folderId);
     }
 

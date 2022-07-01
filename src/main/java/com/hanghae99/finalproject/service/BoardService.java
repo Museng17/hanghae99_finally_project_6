@@ -1,6 +1,5 @@
 package com.hanghae99.finalproject.service;
 
-import com.hanghae99.finalproject.jwt.UserInfoInJwt;
 import com.hanghae99.finalproject.model.dto.*;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
@@ -62,5 +61,9 @@ public class BoardService {
 
     public List<Board> findAllById(List<Long> longs) {
         return boardRepository.findAllById(longs);
+    }
+
+    public void boardDeleteByFolderId(Long folderId) {
+        boardRepository.deleteByFolderId(folderId);
     }
 }
