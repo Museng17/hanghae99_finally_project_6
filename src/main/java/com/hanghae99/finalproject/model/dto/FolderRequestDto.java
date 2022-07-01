@@ -13,12 +13,11 @@ public class FolderRequestDto {
     private Long id;
     private String name;
     private DisclosureStatus status;
-    private List<Board> board = new ArrayList<>();
+    private List<Board> boardList = new ArrayList<>();
 
     public FolderRequestDto(Folder folder) {
         this.id = folder.getId();
         this.name = folder.getName();
         this.status = folder.getStatus();
-        this.board = folder.getBoard();
     }
 }

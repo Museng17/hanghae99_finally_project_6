@@ -24,7 +24,7 @@ public class WebConfig implements WebMvcConfigurer {
         "/user/emailDupCheck/**",
         "/user/nameDupCheck/**",
         "/user/login",
-        "/user/social",
+        "/user/social"
     };
     public final static String SOCIAL_HEADER_KEY = "Credential";
 

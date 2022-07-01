@@ -7,6 +7,7 @@ import java.util.*;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class FolderAndBoardResponseDto {
     private List<BoardRequestDto> boardList = new ArrayList<>();
     private List<FolderRequestDto> folderList = new ArrayList<>();
