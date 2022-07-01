@@ -1,5 +1,7 @@
 package com.hanghae99.finalproject.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hanghae99.finalproject.model.dto.FolderRequestDto;
 import com.hanghae99.finalproject.util.DisclosureStatus;
 import lombok.*;
 
@@ -23,6 +25,7 @@ public class Folder {
     @Column(nullable = false)
     private DisclosureStatus status;
 
+    @JsonIgnore
     @ManyToOne
     private Users users;
 
@@ -33,15 +36,24 @@ public class Folder {
     @JoinColumn(name = "boardId")
     private List<Board> boardList = new ArrayList<>();
 
-    public Folder(String test, Users users) {
-        this.name = test;
-        this.status = DisclosureStatus.PUBLIC;
-        this.users = users;
-    }
-
     public Folder(Long id, String name, DisclosureStatus status) {
         this.id = id;
         this.name = name;
         this.status = status;
+    }
+
+    public Folder(FolderRequestDto folderRequestDto, Users users) {
+        this.name = folderRequestDto.getName();
+        this.status = folderRequestDto.getStatus();
+        this.users = users;
+    }
+
+    public void boardInFolder(List<Board> boards) {
+        boardList = boards;
+    }
+
+    public void update(FolderRequestDto folderRequestDto) {
+        this.name = folderRequestDto.getName();
+        this.status = folderRequestDto.getStatus();
     }
 }
