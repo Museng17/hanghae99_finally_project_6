@@ -26,7 +26,7 @@ public class WebConfig implements WebMvcConfigurer {
         "/user/login",
         "/user/social"
     };
-    public final static String SOCIAL_HEADER_KEY = "Credential";
+    public final static String SOCIAL_HEADER_KEY = "Code";
 
     private final JwtTokenInterceptor jwtTokenInterceptor;
 

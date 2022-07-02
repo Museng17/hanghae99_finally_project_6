@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.security.NoSuchAlgorithmException;
 
+import static com.hanghae99.finalproject.config.WebConfig.SOCIAL_HEADER_KEY;
+
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -21,8 +23,8 @@ public class UserController {
     }
 
     @PostMapping("/user/social")
-    public TokenResponseDto socialLogin(@RequestHeader("Credential") String credential) {
-        return userService.socialLogin(credential);
+    public TokenResponseDto socialLogin(@RequestHeader(SOCIAL_HEADER_KEY) String code) {
+        return userService.findAccessTokenByCode(code);
     }
 
     @PostMapping("/user/refresh")

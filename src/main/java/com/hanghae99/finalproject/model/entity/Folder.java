@@ -2,7 +2,7 @@ package com.hanghae99.finalproject.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae99.finalproject.model.dto.FolderRequestDto;
-import com.hanghae99.finalproject.util.DisclosureStatus;
+import com.hanghae99.finalproject.util.*;
 import lombok.*;
 
 import javax.persistence.*;
@@ -13,7 +13,7 @@ import java.util.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Folder {
+public class Folder extends TimeStamp {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

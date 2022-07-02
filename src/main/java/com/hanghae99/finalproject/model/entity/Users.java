@@ -2,6 +2,7 @@ package com.hanghae99.finalproject.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae99.finalproject.model.dto.SocialLoginRequestDto;
+import com.hanghae99.finalproject.util.TimeStamp;
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,7 +13,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Users {
+public class Users extends TimeStamp {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
