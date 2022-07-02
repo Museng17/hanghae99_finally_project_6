@@ -3,6 +3,7 @@ package com.hanghae99.finalproject.model.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae99.finalproject.model.dto.BoardRequestDto;
 import com.hanghae99.finalproject.util.*;
+import com.hanghae99.finalproject.util.resultType.BoardType;
 import lombok.*;
 
 import javax.persistence.*;
@@ -11,7 +12,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Board {
+public class Board extends TimeStamp {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

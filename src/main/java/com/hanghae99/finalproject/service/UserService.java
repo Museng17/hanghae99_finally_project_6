@@ -3,18 +3,15 @@ package com.hanghae99.finalproject.service;
 import com.hanghae99.finalproject.jwt.JwtTokenProvider;
 import com.hanghae99.finalproject.model.dto.*;
 import com.hanghae99.finalproject.model.entity.Users;
-import com.hanghae99.finalproject.model.repository.BoardRepository;
-import com.hanghae99.finalproject.model.repository.FolderRepository;
-import com.hanghae99.finalproject.model.repository.UserRepository;
-import com.hanghae99.finalproject.util.UserinfoHttpRequest;
+import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.restTemplates.SocialLoginRestTemplate;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
@@ -115,14 +112,10 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("찾는 회원이 없습니다."));
     }
 
-    public TokenResponseDto socialLogin(String credential) {
-        ResponseEntity<SocialLoginRequestDto> response = socialLoginRestTemplate.googleLogin(credential);
-        int statusCode = response.getStatusCode().value();
-
-        if (statusCode != 200) {
-            throw new RuntimeException("statusCode = " + statusCode);
-        }
-        SocialLoginRequestDto socialLoginRequestDto = response.getBody();
+    @Transactional
+    public TokenResponseDto findAccessTokenByCode(String code) {
+        SocialLoginRequestDto response = socialLoginRestTemplate.findAccessTokenByCode(code);
+        SocialLoginRequestDto socialLoginRequestDto = googleUserInfoByAccessToken(response.getAccess_token());
 
         Users user = userRepository.findByUsername(socialLoginRequestDto.getEmail())
                 .orElseGet(() ->
@@ -139,7 +132,7 @@ public class UserService {
     @Transactional
     public Boolean UserDelete(Long id, HttpServletRequest request) {
         Users user = userFindById(id);
-        if(user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()){
+        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
 
             boardRepository.deleteAllByUsers(user);
             folderRepository.deleteAllByUsers(user);
@@ -155,5 +148,9 @@ public class UserService {
     public Users userFindById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
+    }
+
+    public SocialLoginRequestDto googleUserInfoByAccessToken(String accessToken) {
+        return socialLoginRestTemplate.googleUserInfoByAccessToken(accessToken);
     }
 }
