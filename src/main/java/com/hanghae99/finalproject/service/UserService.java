@@ -155,8 +155,14 @@ public class UserService {
         jwtTokenProvider.validToken(refreshToken);
         Claims decodeToken = userInfoInJwt.getRefreshToken(refreshToken);
 
-        if (!(decodeToken.get(REFRESH_TOKEN)).equals(REFRESH_TOKEN)) {
-            throw new RuntimeException(refreshToken + "는 " + REFRESH_TOKEN + "이 아닙니다.");
+        String decodeRefresh = (String) decodeToken.get(REFRESH_TOKEN);
+
+        if ((Optional.ofNullable(decodeRefresh).isPresent())) {
+            if (!decodeRefresh.equals(REFRESH_TOKEN)) {
+                throw new RuntimeException(refreshToken + "는 " + REFRESH_TOKEN + "이 아닙니다.");
+            }
+        } else {
+            throw new RuntimeException(REFRESH_TOKEN + "이 아닙니다.");
         }
 
         return createTokens(findUser((String) decodeToken.get(CLAIMS_KEY)).getUsername());

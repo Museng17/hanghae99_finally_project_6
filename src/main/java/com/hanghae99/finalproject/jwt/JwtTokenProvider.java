@@ -41,12 +41,11 @@ public class JwtTokenProvider {
     public String createRefreshToken(String username) {
         Claims usernameClaims = Jwts.claims();
         Claims refreshClaims = Jwts.claims();
+        usernameClaims.put(REFRESH_TOKEN, REFRESH_TOKEN);
         usernameClaims.put(CLAIMS_KEY, username);
-        refreshClaims.put(REFRESH_TOKEN, REFRESH_TOKEN);
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(usernameClaims)
-                .setClaims(refreshClaims)
                 .setIssuedAt(now) // 토큰 발행 시간 정보
                 .setExpiration(new Date(now.getTime() + TokenValidTime * 60)) // 60분
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY) // 사용할 암호화 알고리즘과
