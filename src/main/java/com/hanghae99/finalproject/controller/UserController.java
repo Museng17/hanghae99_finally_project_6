@@ -79,5 +79,5 @@ public class UserController {
     public ErrorMassageResponseDto exceptionHandler(Exception e) {
         return new ErrorMassageResponseDto(e.getMessage());
     }
-\
+    
 }
