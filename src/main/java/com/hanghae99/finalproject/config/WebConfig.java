@@ -13,6 +13,7 @@ import org.springframework.web.cors.*;
 import org.springframework.web.servlet.config.annotation.*;
 
 import static com.hanghae99.finalproject.interceptor.JwtTokenInterceptor.JWT_HEADER_KEY;
+import static com.hanghae99.finalproject.jwt.JwtTokenProvider.REFRESH_TOKEN;
 
 @RequiredArgsConstructor
 @Configuration
@@ -25,7 +26,8 @@ public class WebConfig implements WebMvcConfigurer {
             "/user/nameDupCheck/**",
             "/user/login",
             "/user/social",
-            "/image/og/**"
+            "/image/og/**",
+            "/user/refresh"
     };
     public final static String SOCIAL_HEADER_KEY = "Code";
 
@@ -58,6 +60,7 @@ public class WebConfig implements WebMvcConfigurer {
         configuration.setAllowCredentials(true);
         configuration.addAllowedHeader(JWT_HEADER_KEY);
         configuration.addAllowedHeader(SOCIAL_HEADER_KEY);
+        configuration.addAllowedHeader(REFRESH_TOKEN);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -69,9 +72,9 @@ public class WebConfig implements WebMvcConfigurer {
         http
                 .csrf().disable()
                 .headers().frameOptions().sameOrigin()
-                    .and()
+                .and()
                 .cors().configurationSource(corsConfigurationSource())
-                    .and()
+                .and()
                 .authorizeHttpRequests(auth -> {
                             try {
                                 auth.anyRequest().permitAll();

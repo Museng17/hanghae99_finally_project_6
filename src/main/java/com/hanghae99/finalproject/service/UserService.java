@@ -1,10 +1,11 @@
 package com.hanghae99.finalproject.service;
 
-import com.hanghae99.finalproject.jwt.JwtTokenProvider;
+import com.hanghae99.finalproject.jwt.*;
 import com.hanghae99.finalproject.model.dto.*;
 import com.hanghae99.finalproject.model.entity.Users;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.restTemplates.SocialLoginRestTemplate;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
 import static com.hanghae99.finalproject.interceptor.JwtTokenInterceptor.JWT_HEADER_KEY;
+import static com.hanghae99.finalproject.jwt.JwtTokenProvider.*;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,7 @@ public class UserService {
     private final SocialLoginRestTemplate socialLoginRestTemplate;
     private final BoardRepository boardRepository;
     private final FolderRepository folderRepository;
+    private final UserInfoInJwt userInfoInJwt;
 
     @Transactional(readOnly = true)
     public TokenResponseDto login(UserRequestDto userRequestDto) {
@@ -37,13 +40,6 @@ public class UserService {
             throw new RuntimeException("비밀번호가 틀렸습니다.");
         }
         return createTokens(user.getUsername());
-    }
-
-    public TokenResponseDto createTokens(String username) {
-        return new TokenResponseDto(
-                jwtTokenProvider.createAccessToken(username),
-                jwtTokenProvider.createRefreshToken(username)
-        );
     }
 
     public Boolean checkUsernameDuplicate(String username) {
@@ -152,5 +148,30 @@ public class UserService {
 
     public SocialLoginRequestDto googleUserInfoByAccessToken(String accessToken) {
         return socialLoginRestTemplate.googleUserInfoByAccessToken(accessToken);
+    }
+
+    @Transactional(readOnly = true)
+    public TokenResponseDto refreshToken(String refreshToken) {
+        jwtTokenProvider.validToken(refreshToken);
+        Claims decodeToken = userInfoInJwt.getRefreshToken(refreshToken);
+
+        String decodeRefresh = (String) decodeToken.get(REFRESH_TOKEN);
+
+        if ((Optional.ofNullable(decodeRefresh).isPresent())) {
+            if (!decodeRefresh.equals(REFRESH_TOKEN)) {
+                throw new RuntimeException(refreshToken + "는 " + REFRESH_TOKEN + "이 아닙니다.");
+            }
+        } else {
+            throw new RuntimeException(REFRESH_TOKEN + "이 아닙니다.");
+        }
+
+        return createTokens(findUser((String) decodeToken.get(CLAIMS_KEY)).getUsername());
+    }
+
+    public TokenResponseDto createTokens(String username) {
+        return new TokenResponseDto(
+                jwtTokenProvider.createAccessToken(username),
+                jwtTokenProvider.createRefreshToken(username)
+        );
     }
 }

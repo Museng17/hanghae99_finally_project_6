@@ -9,12 +9,15 @@ import javax.xml.bind.DatatypeConverter;
 
 import java.util.*;
 
+import static com.hanghae99.finalproject.interceptor.JwtTokenInterceptor.BEARER;
+
 @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
 
     private String SECRET_KEY = "sec";
     public final static String CLAIMS_KEY = "username";
+    public final static String REFRESH_TOKEN = "RefreshToken";
 
     private static final Long TokenValidTime  = 1000L * 60;  //1분
 
@@ -36,11 +39,13 @@ public class JwtTokenProvider {
     }
 
     public String createRefreshToken(String username) {
-        Claims claims = Jwts.claims();//.setSubject(userPk); // JWT payload 에 저장되는 정보단위
-        claims.put(CLAIMS_KEY, username);
+        Claims usernameClaims = Jwts.claims();
+        Claims refreshClaims = Jwts.claims();
+        usernameClaims.put(REFRESH_TOKEN, REFRESH_TOKEN);
+        usernameClaims.put(CLAIMS_KEY, username);
         Date now = new Date();
         return Jwts.builder()
-                .setClaims(claims) // 정보 저장
+                .setClaims(usernameClaims)
                 .setIssuedAt(now) // 토큰 발행 시간 정보
                 .setExpiration(new Date(now.getTime() + TokenValidTime * 60)) // 60분
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY) // 사용할 암호화 알고리즘과
@@ -65,5 +70,20 @@ public class JwtTokenProvider {
                 .setSigningKey(DatatypeConverter.parseBase64Binary(SECRET_KEY))
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public boolean validToken(String authorization){
+
+        String accessToken = authorization.substring(7);
+
+        if (!authorization.startsWith(BEARER)) {
+            throw new RuntimeException("Bearer 를 붙혀주세요.");
+        }
+
+        if (!isValidAccessToken(accessToken)) {
+            throw new RuntimeException("유효하지 않은 않은 토큰입니다.");
+        }
+
+        return true;
     }
 }
