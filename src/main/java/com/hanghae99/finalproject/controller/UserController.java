@@ -58,9 +58,26 @@ public class UserController {
         return userService.UserDelete(id, request);
     }
 
-    @ExceptionHandler(RuntimeException.class)
+    @PutMapping("/user/update/{id}")
+    public Boolean userUpdate(@PathVariable Long id,
+                              @RequestBody UserRequestDto userRequestDto,
+                              HttpServletRequest request) {
+
+        return userService.updateUserInfo(id, userRequestDto, request);
+    }
+
+    @PutMapping("/user/pw/update/{id}")
+    public Boolean userPwUpdate(@PathVariable Long id,
+                                @RequestBody UserRequestDto userRequestDto,
+                                HttpServletRequest request) {
+
+        return userService.updateUserPw(id, userRequestDto, request);
+    }
+
+    @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorMassageResponseDto exceptionHandler(Exception e) {
         return new ErrorMassageResponseDto(e.getMessage());
     }
+\
 }
