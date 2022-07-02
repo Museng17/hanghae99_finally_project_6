@@ -47,7 +47,8 @@ public class Users {
         this.imgPath = userRequestDto.getImgPath();
     }
 
-    public void updatePw(UserRequestDto userRequestDto) {
-        this.password = userRequestDto.getPassword();
+    public void updatePw(String newPassword) {
+
+        this.password = newPassword;
     }
 }

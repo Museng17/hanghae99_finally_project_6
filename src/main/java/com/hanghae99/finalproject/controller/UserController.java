@@ -59,7 +59,16 @@ public class UserController {
     public Boolean userUpdate(@PathVariable Long id,
                               @RequestBody UserRequestDto userRequestDto,
                               HttpServletRequest request) {
+
         return userService.updateUserInfo(id, userRequestDto, request);
+    }
+
+    @PutMapping("/user/pw/update/{id}")
+    public Boolean userPwUpdate(@PathVariable Long id,
+                                @RequestBody UserRequestDto userRequestDto,
+                                HttpServletRequest request) {
+
+        return userService.updateUserPw(id, userRequestDto, request);
     }
 
     @ExceptionHandler(Exception.class)

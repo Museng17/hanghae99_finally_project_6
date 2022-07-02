@@ -173,4 +173,21 @@ public class UserService {
             return false;
         }
     }
+
+    @Transactional
+    public Boolean updateUserPw(Long id, UserRequestDto userRequestDto, HttpServletRequest request) {
+        Users user = userFindById(id);
+        if (!bCryptPasswordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {
+            throw new RuntimeException("비밀번호가 틀렸습니다.");
+        }
+
+        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()){
+            user.updatePw(bCryptPasswordEncoder.encode(userRequestDto.getNewPassword()));
+
+            return true;
+        } else {
+
+            return false;
+        }
+    }
 }

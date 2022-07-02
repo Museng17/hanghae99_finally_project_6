@@ -11,4 +11,5 @@ public class UserRequestDto {
     private String nickname;
     private String imgPath;
     private String password;
+    private String newPassword;
 }
