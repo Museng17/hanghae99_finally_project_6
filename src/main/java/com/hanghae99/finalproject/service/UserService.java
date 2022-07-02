@@ -160,6 +160,10 @@ public class UserService {
     @Transactional
     public Boolean updateUserInfo(Long id, UserRequestDto userRequestDto, HttpServletRequest request) {
         Users user = userFindById(id);
+        if (!checkNameDuplicate(userRequestDto.getNickname())) {
+            throw new RuntimeException("닉네임이 중복되었습니다.");
+        }
+
         if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()){
             user.update(userRequestDto);
 
