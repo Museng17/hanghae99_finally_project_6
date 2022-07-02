@@ -1,14 +1,10 @@
 package com.hanghae99.finalproject.jwt;
 
-import com.hanghae99.finalproject.model.entity.Users;
-import com.hanghae99.finalproject.service.UserService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
-
-import static com.hanghae99.finalproject.jwt.JwtTokenProvider.CLAIMS_KEY;
+import static com.hanghae99.finalproject.jwt.JwtTokenProvider.*;
 
 @RequiredArgsConstructor
 @Component
@@ -20,5 +16,10 @@ public class UserInfoInJwt {
         String accessToken = authorization.substring(7);
         Claims accessClaims = jwtTokenProvider.getClaimsFormToken(accessToken);
         return (String) accessClaims.get(CLAIMS_KEY);
+    }
+
+    public Claims getRefreshToken(String authorization) {
+        String accessToken = authorization.substring(7);
+        return jwtTokenProvider.getClaimsFormToken(accessToken);
     }
 }

@@ -3,6 +3,7 @@ package com.hanghae99.finalproject.controller;
 import com.hanghae99.finalproject.model.dto.*;
 import com.hanghae99.finalproject.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.NoSuchAlgorithmException;
 
 import static com.hanghae99.finalproject.config.WebConfig.SOCIAL_HEADER_KEY;
+import static com.hanghae99.finalproject.jwt.JwtTokenProvider.REFRESH_TOKEN;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,8 +30,8 @@ public class UserController {
     }
 
     @PostMapping("/user/refresh")
-    public TokenResponseDto refreshToken(HttpServletRequest request) {
-        return userService.createTokens(request.getAttribute("Authorization").toString());
+    public TokenResponseDto refreshToken(@RequestHeader(REFRESH_TOKEN) String refresh) {
+        return userService.refreshToken(refresh);
     }
 
     @PostMapping("/user/signup")
@@ -54,6 +56,12 @@ public class UserController {
     public Boolean userDelete(@PathVariable Long id, HttpServletRequest request) {
 
         return userService.UserDelete(id, request);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorMassageResponseDto exceptionHandler(Exception e) {
+        return new ErrorMassageResponseDto(e.getMessage());
     }
 
 }
