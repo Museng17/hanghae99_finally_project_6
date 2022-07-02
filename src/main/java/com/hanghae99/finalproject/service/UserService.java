@@ -156,4 +156,17 @@ public class UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
     }
+
+    @Transactional
+    public Boolean updateUserInfo(Long id, UserRequestDto userRequestDto, HttpServletRequest request) {
+        Users user = userFindById(id);
+        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()){
+            user.update(userRequestDto);
+
+            return true;
+        } else {
+
+            return false;
+        }
+    }
 }

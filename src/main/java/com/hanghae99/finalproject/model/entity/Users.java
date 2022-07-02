@@ -2,6 +2,7 @@ package com.hanghae99.finalproject.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae99.finalproject.model.dto.SocialLoginRequestDto;
+import com.hanghae99.finalproject.model.dto.UserRequestDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -39,5 +40,14 @@ public class Users {
     public Users(SocialLoginRequestDto socialLoginRequestDto, int allCount) {
         this.username = socialLoginRequestDto.getEmail();
         this.nickname = "USER(" + UUID.randomUUID().toString().replaceAll("-", "").substring(5, 9) + allCount + ")";
+    }
+
+    public void update(UserRequestDto userRequestDto) {
+        this.nickname = userRequestDto.getNickname();
+        this.imgPath = userRequestDto.getImgPath();
+    }
+
+    public void updatePw(UserRequestDto userRequestDto) {
+        this.password = userRequestDto.getPassword();
     }
 }

@@ -3,6 +3,7 @@ package com.hanghae99.finalproject.controller;
 import com.hanghae99.finalproject.model.dto.*;
 import com.hanghae99.finalproject.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,6 +53,19 @@ public class UserController {
     public Boolean userDelete(@PathVariable Long id, HttpServletRequest request) {
 
         return userService.UserDelete(id, request);
+    }
+
+    @PutMapping("/user/update/{id}")
+    public void userUpdate(@PathVariable Long id,
+                              @RequestBody UserRequestDto userRequestDto,
+                              HttpServletRequest request) {
+        userService.updateUserInfo(id, userRequestDto, request);
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorMassageResponseDto exceptionHandler(Exception e) {
+        return new ErrorMassageResponseDto(e.getMessage());
     }
 
 }

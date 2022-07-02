@@ -1,5 +1,6 @@
 package com.hanghae99.finalproject.model.dto;
 
+import com.hanghae99.finalproject.model.entity.Users;
 import lombok.*;
 
 @Getter
