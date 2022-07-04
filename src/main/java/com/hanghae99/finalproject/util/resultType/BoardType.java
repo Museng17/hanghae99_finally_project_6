@@ -1,4 +1,4 @@
-package com.hanghae99.finalproject.util;
+package com.hanghae99.finalproject.util.resultType;
 
 public enum BoardType {
     MEMO("memo"),

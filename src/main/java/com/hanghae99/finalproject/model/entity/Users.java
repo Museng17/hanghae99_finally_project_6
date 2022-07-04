@@ -2,17 +2,20 @@ package com.hanghae99.finalproject.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae99.finalproject.model.dto.SocialLoginRequestDto;
-import lombok.*;
+import com.hanghae99.finalproject.model.dto.UserRequestDto;
+import com.hanghae99.finalproject.util.TimeStamp;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-
 import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class Users {
+public class Users extends TimeStamp {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -39,5 +42,15 @@ public class Users {
     public Users(SocialLoginRequestDto socialLoginRequestDto, int allCount) {
         this.username = socialLoginRequestDto.getEmail();
         this.nickname = "USER(" + UUID.randomUUID().toString().replaceAll("-", "").substring(5, 9) + allCount + ")";
+    }
+
+    public void update(UserRequestDto userRequestDto) {
+        this.nickname = userRequestDto.getNickname();
+        this.imgPath = userRequestDto.getImgPath();
+    }
+
+    public void updatePw(String newPassword) {
+
+        this.password = newPassword;
     }
 }

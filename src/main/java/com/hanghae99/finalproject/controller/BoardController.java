@@ -38,6 +38,12 @@ public class BoardController {
         boardService.boardDelete(id, request);
     }
 
+    @PostMapping("/image/og")
+    public OgResponseDto thumbnailLoad(@RequestBody OgRequestDto dto)  {
+
+        return boardService.thumbnailLoad(dto.getUrl());
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorMassageResponseDto exceptionHandler(Exception e) {

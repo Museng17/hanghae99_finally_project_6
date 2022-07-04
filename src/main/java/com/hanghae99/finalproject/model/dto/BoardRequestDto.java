@@ -2,6 +2,7 @@ package com.hanghae99.finalproject.model.dto;
 
 import com.hanghae99.finalproject.model.entity.Board;
 import com.hanghae99.finalproject.util.*;
+import com.hanghae99.finalproject.util.resultType.BoardType;
 import lombok.*;
 
 @Getter
