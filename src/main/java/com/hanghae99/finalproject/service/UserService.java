@@ -1,11 +1,8 @@
 package com.hanghae99.finalproject.service;
 
 import com.hanghae99.finalproject.jwt.*;
-import com.hanghae99.finalproject.model.dto.*;
-import com.hanghae99.finalproject.model.dto.requestDto.SocialLoginRequestDto;
-import com.hanghae99.finalproject.model.dto.requestDto.UserRequestDto;
-import com.hanghae99.finalproject.model.dto.responseDto.TokenResponseDto;
-import com.hanghae99.finalproject.model.dto.responseDto.UserRegisterRespDto;
+import com.hanghae99.finalproject.model.dto.requestDto.*;
+import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.Users;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.restTemplates.SocialLoginRestTemplate;
@@ -186,7 +183,7 @@ public class UserService {
             throw new RuntimeException("닉네임이 중복되었습니다.");
         }
 
-        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()){
+        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
             user.update(userRequestDto);
 
             return true;
@@ -203,7 +200,7 @@ public class UserService {
             throw new RuntimeException("비밀번호가 틀렸습니다.");
         }
 
-        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()){
+        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
             user.updatePw(bCryptPasswordEncoder.encode(userRequestDto.getNewPassword()));
 
             return true;
@@ -211,5 +208,10 @@ public class UserService {
 
             return false;
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Users findUserProfile(HttpServletRequest request) {
+        return findUser(request.getAttribute(JWT_HEADER_KEY).toString());
     }
 }
