@@ -2,6 +2,10 @@ package com.hanghae99.finalproject.service;
 
 import com.hanghae99.finalproject.jwt.*;
 import com.hanghae99.finalproject.model.dto.*;
+import com.hanghae99.finalproject.model.dto.requestDto.SocialLoginRequestDto;
+import com.hanghae99.finalproject.model.dto.requestDto.UserRequestDto;
+import com.hanghae99.finalproject.model.dto.responseDto.TokenResponseDto;
+import com.hanghae99.finalproject.model.dto.responseDto.UserRegisterRespDto;
 import com.hanghae99.finalproject.model.entity.Users;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.restTemplates.SocialLoginRestTemplate;
@@ -68,7 +72,7 @@ public class UserService {
         return true;
     }
 
-    public UserRegisterRespDto registerUser(SignupDto Dto) throws NoSuchAlgorithmException {
+    public UserRegisterRespDto registerUser(UserRequestDto Dto) throws NoSuchAlgorithmException {
         Boolean result = true;
         String err_msg = "회원가입 성공";
         String username = Dto.getUsername();

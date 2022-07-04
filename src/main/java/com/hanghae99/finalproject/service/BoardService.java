@@ -1,6 +1,8 @@
 package com.hanghae99.finalproject.service;
 
-import com.hanghae99.finalproject.model.dto.*;
+import com.hanghae99.finalproject.model.dto.requestDto.BoardRequestDto;
+import com.hanghae99.finalproject.model.dto.responseDto.FolderAndBoardResponseDto;
+import com.hanghae99.finalproject.model.dto.responseDto.OgResponseDto;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;

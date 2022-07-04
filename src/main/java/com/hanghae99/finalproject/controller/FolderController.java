@@ -1,6 +1,6 @@
 package com.hanghae99.finalproject.controller;
 
-import com.hanghae99.finalproject.model.dto.FolderRequestDto;
+import com.hanghae99.finalproject.model.dto.requestDto.FolderRequestDto;
 import com.hanghae99.finalproject.model.entity.Folder;
 import com.hanghae99.finalproject.service.FolderService;
 import lombok.RequiredArgsConstructor;

@@ -1,8 +1,8 @@
 package com.hanghae99.finalproject.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.hanghae99.finalproject.model.dto.SocialLoginRequestDto;
-import com.hanghae99.finalproject.model.dto.UserRequestDto;
+import com.hanghae99.finalproject.model.dto.requestDto.SocialLoginRequestDto;
+import com.hanghae99.finalproject.model.dto.requestDto.UserRequestDto;
 import com.hanghae99.finalproject.util.TimeStamp;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

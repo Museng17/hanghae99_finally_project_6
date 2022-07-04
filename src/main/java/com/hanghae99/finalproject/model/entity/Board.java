@@ -1,7 +1,7 @@
 package com.hanghae99.finalproject.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.hanghae99.finalproject.model.dto.BoardRequestDto;
+import com.hanghae99.finalproject.model.dto.requestDto.BoardRequestDto;
 import com.hanghae99.finalproject.util.*;
 import com.hanghae99.finalproject.util.resultType.BoardType;
 import lombok.*;

@@ -1,5 +1,7 @@
-package com.hanghae99.finalproject.model.dto;
+package com.hanghae99.finalproject.model.dto.responseDto;
 
+import com.hanghae99.finalproject.model.dto.requestDto.FolderRequestDto;
+import com.hanghae99.finalproject.model.dto.requestDto.BoardRequestDto;
 import com.hanghae99.finalproject.model.entity.*;
 import lombok.*;
 

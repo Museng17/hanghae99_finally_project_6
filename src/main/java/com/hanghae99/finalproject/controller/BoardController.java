@@ -1,6 +1,10 @@
 package com.hanghae99.finalproject.controller;
 
-import com.hanghae99.finalproject.model.dto.*;
+import com.hanghae99.finalproject.model.dto.requestDto.BoardRequestDto;
+import com.hanghae99.finalproject.model.dto.requestDto.OgRequestDto;
+import com.hanghae99.finalproject.model.dto.responseDto.ErrorMassageResponseDto;
+import com.hanghae99.finalproject.model.dto.responseDto.FolderAndBoardResponseDto;
+import com.hanghae99.finalproject.model.dto.responseDto.OgResponseDto;
 import com.hanghae99.finalproject.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

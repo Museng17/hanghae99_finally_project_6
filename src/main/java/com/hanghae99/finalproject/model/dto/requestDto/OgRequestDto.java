@@ -1,4 +1,4 @@
-package com.hanghae99.finalproject.model.dto;
+package com.hanghae99.finalproject.model.dto.requestDto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

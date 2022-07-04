@@ -1,6 +1,10 @@
 package com.hanghae99.finalproject.controller;
 
 import com.hanghae99.finalproject.model.dto.*;
+import com.hanghae99.finalproject.model.dto.requestDto.UserRequestDto;
+import com.hanghae99.finalproject.model.dto.responseDto.ErrorMassageResponseDto;
+import com.hanghae99.finalproject.model.dto.responseDto.TokenResponseDto;
+import com.hanghae99.finalproject.model.dto.responseDto.UserRegisterRespDto;
 import com.hanghae99.finalproject.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,7 +39,7 @@ public class UserController {
     }
 
     @PostMapping("/user/signup")
-    public UserRegisterRespDto registerUser(@RequestBody SignupDto Dto) throws NoSuchAlgorithmException {
+    public UserRegisterRespDto registerUser(@RequestBody UserRequestDto Dto) throws NoSuchAlgorithmException {
         return userService.registerUser(Dto);
     }
 
