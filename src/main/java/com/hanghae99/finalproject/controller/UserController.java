@@ -1,10 +1,8 @@
 package com.hanghae99.finalproject.controller;
 
-import com.hanghae99.finalproject.model.dto.*;
 import com.hanghae99.finalproject.model.dto.requestDto.UserRequestDto;
-import com.hanghae99.finalproject.model.dto.responseDto.ErrorMassageResponseDto;
-import com.hanghae99.finalproject.model.dto.responseDto.TokenResponseDto;
-import com.hanghae99.finalproject.model.dto.responseDto.UserRegisterRespDto;
+import com.hanghae99.finalproject.model.dto.responseDto.*;
+import com.hanghae99.finalproject.model.entity.Users;
 import com.hanghae99.finalproject.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -78,10 +76,14 @@ public class UserController {
         return userService.updateUserPw(id, userRequestDto, request);
     }
 
+    @GetMapping("/user/profile")
+    public Users findUserProfile(HttpServletRequest request) {
+        return userService.findUserProfile(request);
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorMassageResponseDto exceptionHandler(Exception e) {
         return new ErrorMassageResponseDto(e.getMessage());
     }
-    
 }
