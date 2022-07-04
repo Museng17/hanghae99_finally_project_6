@@ -50,6 +50,7 @@ public class Users extends TimeStamp {
     public void update(UserRequestDto userRequestDto) {
         this.nickname = userRequestDto.getNickname();
         this.imgPath = userRequestDto.getImgPath();
+        this.information = userRequestDto.getInformation();
     }
 
     public void updatePw(String newPassword) {
