@@ -29,6 +29,9 @@ public class Users extends TimeStamp {
     @Column(nullable = true)
     private String imgPath;
 
+    @Column(nullable = true)
+    private String information;
+
     @JsonIgnore
     @Column(nullable = true)
     private String password;
