@@ -1,9 +1,11 @@
 package com.hanghae99.finalproject.controller;
 
-import com.hanghae99.finalproject.model.dto.requestDto.FolderRequestDto;
+import com.hanghae99.finalproject.model.dto.requestDto.*;
+import com.hanghae99.finalproject.model.dto.responseDto.ErrorMassageResponseDto;
 import com.hanghae99.finalproject.model.entity.Folder;
 import com.hanghae99.finalproject.service.FolderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,5 +45,17 @@ public class FolderController {
                              @RequestBody FolderRequestDto folderRequestDto,
                              HttpServletRequest request) {
         folderService.folderUpdate(folderId, request, folderRequestDto);
+    }
+
+    @PutMapping("/folder")
+    public void crateBoardInFolder(@RequestBody BoardRequestDto boardRequestDto,
+                                   HttpServletRequest request) {
+        folderService.crateBoardInFolder(boardRequestDto, request);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorMassageResponseDto exceptionHandler(Exception e) {
+        return new ErrorMassageResponseDto(e.getMessage());
     }
 }

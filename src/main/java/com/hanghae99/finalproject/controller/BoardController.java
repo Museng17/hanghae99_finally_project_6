@@ -26,7 +26,7 @@ public class BoardController {
     @PostMapping("/board")
     public Long boardSave(@RequestBody BoardRequestDto boardRequestDto,
                           HttpServletRequest request) {
-        return boardService.boardSave(boardRequestDto, request);
+        return boardService.boardSave(boardRequestDto, request).getId();
     }
 
     @PutMapping("/board/{id}")

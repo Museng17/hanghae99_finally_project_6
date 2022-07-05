@@ -34,27 +34,37 @@ public class BoardService {
     }
 
     @Transactional
-    public Long boardSave(BoardRequestDto boardRequestDto, HttpServletRequest request) {
+    public Board boardSave(BoardRequestDto boardRequestDto, HttpServletRequest request) {
         Users user = userinfoHttpRequest.userFindByToken(request);
         return boardRepository.save(
                 new Board(
                         boardRequestDto,
                         user
                 )
-        ).getId();
+        );
     }
 
     @Transactional
     public void boardUpdate(Long id, BoardRequestDto boardRequestDto, HttpServletRequest request) {
         Board board = boardFindById(id);
-        userinfoHttpRequest.userAndWriterMatches(board.getUsers().getId(), userinfoHttpRequest.userFindByToken(request).getId());
+
+        userinfoHttpRequest.userAndWriterMatches(
+                board.getUsers().getId(),
+                userinfoHttpRequest.userFindByToken(request).getId()
+        );
+
         board.update(boardRequestDto);
     }
 
     @Transactional
     public void boardDelete(Long id, HttpServletRequest request) {
         Board board = boardFindById(id);
-        userinfoHttpRequest.userAndWriterMatches(board.getUsers().getId(), userinfoHttpRequest.userFindByToken(request).getId());
+
+        userinfoHttpRequest.userAndWriterMatches(
+                board.getUsers().getId(),
+                userinfoHttpRequest.userFindByToken(request).getId()
+        );
+
         boardRepository.deleteById(id);
     }
 
