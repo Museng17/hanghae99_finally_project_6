@@ -1,8 +1,8 @@
 package com.hanghae99.finalproject.model.dto.requestDto;
 
 import com.hanghae99.finalproject.model.entity.Board;
-import com.hanghae99.finalproject.util.*;
-import com.hanghae99.finalproject.util.resultType.BoardType;
+import com.hanghae99.finalproject.util.DisclosureStatus;
+import com.hanghae99.finalproject.util.resultType.*;
 import lombok.*;
 
 @Getter
@@ -17,7 +17,7 @@ public class BoardRequestDto {
     private DisclosureStatus status;
     private BoardType boardType;
     private Long folderId;
-
+    private CategoryType category;
 
     public BoardRequestDto(Board board) {
         this.id = board.getId();
@@ -27,5 +27,6 @@ public class BoardRequestDto {
         this.content = board.getContent();
         this.status = board.getStatus();
         this.boardType = board.getBoardType();
+        this.category = board.getCategory();
     }
 }

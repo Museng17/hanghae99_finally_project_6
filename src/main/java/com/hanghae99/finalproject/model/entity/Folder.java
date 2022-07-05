@@ -3,6 +3,7 @@ package com.hanghae99.finalproject.model.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae99.finalproject.model.dto.requestDto.FolderRequestDto;
 import com.hanghae99.finalproject.util.*;
+import com.hanghae99.finalproject.util.resultType.CategoryType;
 import lombok.*;
 
 import javax.persistence.*;
@@ -25,6 +26,9 @@ public class Folder extends TimeStamp {
     @Column(nullable = false)
     private DisclosureStatus status;
 
+    @Column(nullable = true)
+    private CategoryType category;
+
     @JsonIgnore
     @ManyToOne
     private Users users;
@@ -45,11 +49,13 @@ public class Folder extends TimeStamp {
     public Folder(FolderRequestDto folderRequestDto, Users users) {
         this.name = folderRequestDto.getName();
         this.status = folderRequestDto.getStatus();
+        this.category = folderRequestDto.getCategory();
         this.users = users;
     }
 
     public void update(FolderRequestDto folderRequestDto) {
         this.name = folderRequestDto.getName();
         this.status = folderRequestDto.getStatus();
+        this.category = folderRequestDto.getCategory();
     }
 }
