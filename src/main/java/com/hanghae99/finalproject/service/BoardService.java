@@ -1,11 +1,13 @@
 package com.hanghae99.finalproject.service;
 
 import com.hanghae99.finalproject.model.dto.requestDto.BoardRequestDto;
+import com.hanghae99.finalproject.model.dto.requestDto.FolderRequestDto;
 import com.hanghae99.finalproject.model.dto.responseDto.FolderAndBoardResponseDto;
 import com.hanghae99.finalproject.model.dto.responseDto.OgResponseDto;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;
+import com.hanghae99.finalproject.util.resultType.BoardType;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -79,6 +81,12 @@ public class BoardService {
 
     public void boardDeleteByFolderId(Long folderId) {
         boardRepository.deleteByFolderId(folderId);
+    }
+
+    public void statusUpdateByFolderId(Long id, FolderRequestDto folderRequestDto) {
+        Board board = boardRepository.findByFolderId(id)
+                .orElseThrow(() ->new IllegalArgumentException("해당 폴더를 찾지 못했습니다."));
+        board.updateStatus(folderRequestDto);
     }
 
     public OgResponseDto thumbnailLoad(String url){
