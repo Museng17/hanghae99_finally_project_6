@@ -3,6 +3,7 @@ package com.hanghae99.finalproject.service;
 import com.hanghae99.finalproject.model.dto.requestDto.FolderRequestDto;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.FolderRepository;
+import com.hanghae99.finalproject.model.repository.ShareRepository;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,8 @@ public class FolderService {
     private final FolderRepository folderRepository;
     private final UserinfoHttpRequest userinfoHttpRequest;
     private final BoardService boardService;
+
+    private final ShareRepository shareRepository;
 
     @Transactional
     public void folderSave(FolderRequestDto folderRequestDto, HttpServletRequest request) {
@@ -72,5 +75,12 @@ public class FolderService {
         Folder folder = findFolder(folderId, request);
         userinfoHttpRequest.userAndWriterMatches(folder.getUsers().getId(), userinfoHttpRequest.userFindByToken(request).getId());
         folder.update(folderRequestDto);
+    }
+    @Transactional
+    public void shareFolder(Long folderId, HttpServletRequest request){
+        Users users = userinfoHttpRequest.userFindByToken(request);
+        Folder folder = findFolder(folderId,request);
+        Share share = new Share(folder,users);
+        shareRepository.save(share);
     }
 }

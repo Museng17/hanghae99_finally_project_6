@@ -27,4 +27,9 @@ public class Share extends TimeStamp {
     @OneToOne
     private Board board;
 
+    public  Share(Folder folder,Users users){
+        this.folder = folder;
+        this.users = users;
+    }
+
 }
