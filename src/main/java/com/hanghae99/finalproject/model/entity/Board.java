@@ -70,4 +70,8 @@ public class Board extends TimeStamp {
     public void addFolderId(Folder folder) {
         this.folder = folder;
     }
+
+    public void removeFolderId() {
+        this.folder = null;
+    }
 }

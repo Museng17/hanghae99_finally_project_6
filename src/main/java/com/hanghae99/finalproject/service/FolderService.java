@@ -47,17 +47,28 @@ public class FolderService {
                 request
         );
 
+        List<Board> removeBoardList = boardService.findAllById(
+                folder.getBoardList().stream()
+                        .map(Board::getId)
+                        .collect(Collectors.toList())
+        );
+
+        for (Board board : removeBoardList) {
+            board.removeFolderId();
+        }
+
         userinfoHttpRequest.userAndWriterMatches(
                 folder.getUsers().getId(),
-                userinfoHttpRequest.userFindByToken(request).getId());
+                userinfoHttpRequest.userFindByToken(request).getId()
+        );
 
-        List<Board> boardList = boardService.findAllById(
+        List<Board> addBoardList = boardService.findAllById(
                 folderRequestDto.getBoardList().stream()
                         .map(Board::getId)
                         .collect(Collectors.toList())
         );
 
-        for (Board board : boardList) {
+        for (Board board : addBoardList) {
             board.addFolderId(folder);
         }
     }
