@@ -79,8 +79,13 @@ public class FolderService {
     @Transactional
     public void shareFolder(Long folderId, HttpServletRequest request){
         Users users = userinfoHttpRequest.userFindByToken(request);
-        Folder folder = findFolder(folderId,request);
+        Folder folder = findShareFolder(folderId,request);
         Share share = new Share(folder,users);
         shareRepository.save(share);
     }
+    public Folder findShareFolder(Long folderId, HttpServletRequest request){
+        return folderRepository.findByIdAndUsersIdNot(folderId,userinfoHttpRequest.userFindByToken(request).getId()).orElseThrow(()
+                -> new RuntimeException("원하는 폴더를 찾지 못했습니다."));
+    }
+
 }
