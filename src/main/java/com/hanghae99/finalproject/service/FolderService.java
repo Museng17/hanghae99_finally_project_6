@@ -1,6 +1,6 @@
 package com.hanghae99.finalproject.service;
 
-import com.hanghae99.finalproject.model.dto.requestDto.FolderRequestDto;
+import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.FolderRepository;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;
@@ -42,7 +42,11 @@ public class FolderService {
 
     @Transactional
     public void boardInFolder(Long folderId, FolderRequestDto folderRequestDto, HttpServletRequest request) {
-        Folder folder = findFolder(folderId, request);
+        Folder folder = findFolder(
+                folderId,
+                request
+        );
+
         userinfoHttpRequest.userAndWriterMatches(
                 folder.getUsers().getId(),
                 userinfoHttpRequest.userFindByToken(request).getId());
@@ -53,7 +57,6 @@ public class FolderService {
                         .collect(Collectors.toList())
         );
 
-        folder.boardInFolder(boardList);
         for (Board board : boardList) {
             board.addFolderId(folder);
         }
@@ -62,15 +65,43 @@ public class FolderService {
     @Transactional
     public void folderDelete(Long folderId, HttpServletRequest request) {
         Folder folder = findFolder(folderId, request);
-        userinfoHttpRequest.userAndWriterMatches(folder.getUsers().getId(), userinfoHttpRequest.userFindByToken(request).getId());
+
+        userinfoHttpRequest.userAndWriterMatches(
+                folder.getUsers().getId(),
+                userinfoHttpRequest.userFindByToken(request).getId()
+        );
+
         boardService.boardDeleteByFolderId(folderId);
         folderRepository.deleteById(folderId);
     }
 
     @Transactional
     public void folderUpdate(Long folderId, HttpServletRequest request, FolderRequestDto folderRequestDto) {
-        Folder folder = findFolder(folderId, request);
-        userinfoHttpRequest.userAndWriterMatches(folder.getUsers().getId(), userinfoHttpRequest.userFindByToken(request).getId());
+        Folder folder = findFolder(
+                folderId,
+                request
+        );
+
+        userinfoHttpRequest.userAndWriterMatches(
+                folder.getUsers().getId(),
+                userinfoHttpRequest.userFindByToken(request).getId()
+        );
+
         folder.update(folderRequestDto);
+    }
+
+    @Transactional
+    public void crateBoardInFolder(BoardRequestDto boardRequestDto, HttpServletRequest request) {
+        Board board = boardService.boardSave(
+                boardRequestDto,
+                request
+        );
+
+        Folder folder = findFolder(
+                boardRequestDto.getFolderId(),
+                request
+        );
+
+        board.addFolderId(folder);
     }
 }

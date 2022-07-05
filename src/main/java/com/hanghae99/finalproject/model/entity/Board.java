@@ -55,7 +55,7 @@ public class Board extends TimeStamp {
         this.content = boardRequestDto.getContent();
         this.status = boardRequestDto.getStatus();
         this.boardType = boardRequestDto.getBoardType();
-        this.users = user;  //테스트 유저
+        this.users = user;
     }
 
     public void update(BoardRequestDto boardRequestDto) {

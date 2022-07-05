@@ -33,6 +33,7 @@ public class Folder extends TimeStamp {
     private Share share;
 
     @OneToMany
+    @JoinColumn(name = "folder_id")
     private List<Board> boardList = new ArrayList<>();
 
     public Folder(Long id, String name, DisclosureStatus status) {
@@ -45,10 +46,6 @@ public class Folder extends TimeStamp {
         this.name = folderRequestDto.getName();
         this.status = folderRequestDto.getStatus();
         this.users = users;
-    }
-
-    public void boardInFolder(List<Board> boards) {
-        boardList = boards;
     }
 
     public void update(FolderRequestDto folderRequestDto) {
