@@ -123,7 +123,7 @@ public class UserService {
                                 )
                         )
                 );
-        return createTokens(user.getUsername());
+        return createTokens2(user.getUsername());
     }
 
     @Transactional
@@ -173,6 +173,13 @@ public class UserService {
         return new TokenResponseDto(
                 jwtTokenProvider.createAccessToken(username),
                 jwtTokenProvider.createRefreshToken(username)
+        );
+    }
+
+    public TokenResponseDto createTokens2(String username) {
+        return new TokenResponseDto(
+                jwtTokenProvider.createAccessToken2(username),
+                jwtTokenProvider.createRefreshToken2(username)
         );
     }
     

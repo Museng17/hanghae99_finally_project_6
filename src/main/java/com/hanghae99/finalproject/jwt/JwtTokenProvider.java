@@ -38,6 +38,18 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public String createAccessToken2(String username) {
+        Claims claims = Jwts.claims();//.setSubject(userPk); // JWT payload 에 저장되는 정보단위
+        claims.put(CLAIMS_KEY, username);
+        Date now = new Date();
+        return Jwts.builder()
+                .setClaims(claims) // 정보 저장
+                .setIssuedAt(now) // 토큰 발행 시간 정보
+                .setExpiration(new Date(now.getTime() + TokenValidTime * 1)) // 30분
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY) // 사용할 암호화 알고리즘과
+                .compact();
+    }
+
     public String createRefreshToken(String username) {
         Claims usernameClaims = Jwts.claims();
         Claims refreshClaims = Jwts.claims();
@@ -48,6 +60,20 @@ public class JwtTokenProvider {
                 .setClaims(usernameClaims)
                 .setIssuedAt(now) // 토큰 발행 시간 정보
                 .setExpiration(new Date(now.getTime() + TokenValidTime * 60)) // 60분
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY) // 사용할 암호화 알고리즘과
+                .compact();
+    }
+
+    public String createRefreshToken2(String username) {
+        Claims usernameClaims = Jwts.claims();
+        Claims refreshClaims = Jwts.claims();
+        usernameClaims.put(REFRESH_TOKEN, REFRESH_TOKEN);
+        usernameClaims.put(CLAIMS_KEY, username);
+        Date now = new Date();
+        return Jwts.builder()
+                .setClaims(usernameClaims)
+                .setIssuedAt(now) // 토큰 발행 시간 정보
+                .setExpiration(new Date(now.getTime() + TokenValidTime * 2)) // 60분
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY) // 사용할 암호화 알고리즘과
                 .compact();
     }
