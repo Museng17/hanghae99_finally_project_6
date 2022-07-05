@@ -44,7 +44,7 @@ public class FolderController {
                              HttpServletRequest request) {
         folderService.folderUpdate(folderId, request, folderRequestDto);
     }
-    @PostMapping("/share/forder/{folderId}")
+    @PostMapping("/share/folder/{folderId}")
     public void shareFolder(@PathVariable Long folderId, HttpServletRequest request){
         folderService.shareFolder(folderId,request);
     }
