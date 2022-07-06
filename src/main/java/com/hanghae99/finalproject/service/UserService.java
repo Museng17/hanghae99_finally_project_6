@@ -35,10 +35,10 @@ public class UserService {
     @Transactional(readOnly = true)
     public TokenResponseDto login(UserRequestDto userRequestDto) {
         Users user = userRepository.findByUsername(userRequestDto.getUsername())
-                .orElseThrow(() -> new RuntimeException("회원가입되지 않은 아이디입니다."));
+                .orElseThrow(() -> new RuntimeException("UserService 38에러 회원가입되지 않은 아이디입니다."));
 
         if (!bCryptPasswordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {
-            throw new RuntimeException("비밀번호가 틀렸습니다.");
+            throw new RuntimeException("UserService 41 에러 비밀번호가 틀렸습니다.");
         }
         return createTokens(user.getUsername());
     }
@@ -106,7 +106,7 @@ public class UserService {
 
     public Users findUser(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("찾는 회원이 없습니다."));
+                .orElseThrow(() -> new RuntimeException("UserService 109 에러 찾는 회원이 없습니다."));
     }
 
     @Transactional
@@ -160,10 +160,10 @@ public class UserService {
 
         if ((Optional.ofNullable(decodeRefresh).isPresent())) {
             if (!decodeRefresh.equals(REFRESH_TOKEN)) {
-                throw new RuntimeException(refreshToken + "는 " + REFRESH_TOKEN + "이 아닙니다.");
+                throw new RuntimeException(refreshToken + "는 " + REFRESH_TOKEN + "이 아닙니다.  UserService + 163에러 ");
             }
         } else {
-            throw new RuntimeException(REFRESH_TOKEN + "이 아닙니다.");
+            throw new RuntimeException(REFRESH_TOKEN + "이 아닙니다. UserService 166에러 ");
         }
 
         return createTokens(findUser((String) decodeToken.get(CLAIMS_KEY)).getUsername());

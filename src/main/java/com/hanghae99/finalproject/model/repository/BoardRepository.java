@@ -1,11 +1,9 @@
 package com.hanghae99.finalproject.model.repository;
 
-import com.hanghae99.finalproject.model.entity.Board;
-import com.hanghae99.finalproject.model.entity.Users;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.hanghae99.finalproject.model.entity.*;
+import org.springframework.data.jpa.repository.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> findByUsersIdAndFolderIdIsNull(Long id);
@@ -15,4 +13,9 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     Optional<Board> findByFolderId(Long folderId);
 
     void deleteAllByUsers(Users user);
+
+    @Query("select count(id) from Board where users.id = ?1")
+    Long findBoardCount(Long id);
+
+    List<Board> findByUsers(Users user);
 }

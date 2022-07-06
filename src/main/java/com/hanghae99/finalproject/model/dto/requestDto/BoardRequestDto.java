@@ -18,6 +18,7 @@ public class BoardRequestDto {
     private BoardType boardType;
     private Long folderId;
     private CategoryType category;
+    private Long order;
 
     public BoardRequestDto(Board board) {
         this.id = board.getId();
@@ -28,5 +29,6 @@ public class BoardRequestDto {
         this.status = board.getStatus();
         this.boardType = board.getBoardType();
         this.category = board.getCategory();
+        this.order = board.getOrder();
     }
 }
