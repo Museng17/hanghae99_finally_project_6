@@ -1,10 +1,9 @@
 package com.hanghae99.finalproject.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.hanghae99.finalproject.model.dto.requestDto.BoardRequestDto;
-import com.hanghae99.finalproject.model.dto.requestDto.FolderRequestDto;
+import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.util.*;
-import com.hanghae99.finalproject.util.resultType.BoardType;
+import com.hanghae99.finalproject.util.resultType.*;
 import lombok.*;
 
 import javax.persistence.*;
@@ -37,6 +36,9 @@ public class Board extends TimeStamp {
     @Column(nullable = false)
     private BoardType boardType;
 
+    @Column(nullable = true)
+    private CategoryType category;
+
     @ManyToOne
     @JsonIgnore
     private Users users;
@@ -56,6 +58,7 @@ public class Board extends TimeStamp {
         this.content = boardRequestDto.getContent();
         this.status = boardRequestDto.getStatus();
         this.boardType = boardRequestDto.getBoardType();
+        this.category = boardRequestDto.getCategory();
         this.users = user;
     }
 
@@ -66,6 +69,7 @@ public class Board extends TimeStamp {
         this.content = boardRequestDto.getContent();
         this.status = boardRequestDto.getStatus();
         this.boardType = boardRequestDto.getBoardType();
+        this.category = boardRequestDto.getCategory();
     }
 
     public void addFolderId(Folder folder) {
@@ -77,7 +81,7 @@ public class Board extends TimeStamp {
     }
 
     public void updateStatus(FolderRequestDto folderRequestDto) {
-            this.status = folderRequestDto.getStatus();
-        }
+        this.status = folderRequestDto.getStatus();
+    }
 
 }
