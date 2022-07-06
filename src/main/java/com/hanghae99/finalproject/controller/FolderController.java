@@ -58,7 +58,7 @@ public class FolderController {
                                   HttpServletRequest request) {
         folderService.folderOrderChange(folderAndBoardRequestDto, request);
     }
-
+    
     @GetMapping("/folders")
     public List<Folder> folders() {
         return folderService.folders();

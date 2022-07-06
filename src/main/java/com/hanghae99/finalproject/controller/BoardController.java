@@ -19,10 +19,11 @@ public class BoardController {
         return boardService.findMyFolderAndBoardList(request);
     }
 
-    @PostMapping("/board")
+    @PostMapping("/board/{type}")
     public Long boardSave(@RequestBody BoardRequestDto boardRequestDto,
-                          HttpServletRequest request) {
-        return boardService.boardSave(boardRequestDto, request).getId();
+                          HttpServletRequest request,
+                          @PathVariable String type) {
+        return boardService.boardSave(boardRequestDto, request, type).getId();
     }
 
     @PutMapping("/board/{id}")

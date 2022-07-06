@@ -5,6 +5,7 @@ import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;
+import com.hanghae99.finalproject.util.resultType.BoardType;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,6 +19,8 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class BoardService {
+
+    public final static String DETAIL = "detail";
 
     private final BoardRepository boardRepository;
     private final FolderRepository folderRepository;
@@ -33,7 +36,13 @@ public class BoardService {
     }
 
     @Transactional
-    public Board boardSave(BoardRequestDto boardRequestDto, HttpServletRequest request) {
+    public Board boardSave(BoardRequestDto boardRequestDto, HttpServletRequest request, String type) {
+        if(!type.equals(DETAIL) && boardRequestDto.getBoardType() == BoardType.LINK){
+            boardRequestDto.ogTagToBoardRequestDto(thumbnailLoad(boardRequestDto.getLink()));
+        } else if(!type.equals(DETAIL) && boardRequestDto.getBoardType() == BoardType.MEMO){
+            boardRequestDto.setTitle("무제");
+        }
+
         Users user = userinfoHttpRequest.userFindByToken(request);
         System.out.println(user);
         return boardRepository.save(

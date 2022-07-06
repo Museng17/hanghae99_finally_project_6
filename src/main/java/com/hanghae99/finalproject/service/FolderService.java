@@ -25,6 +25,8 @@ import java.util.*;
 
 import java.util.stream.Collectors;
 
+import static com.hanghae99.finalproject.service.BoardService.DETAIL;
+
 @Service
 @RequiredArgsConstructor
 public class FolderService {
@@ -123,7 +125,8 @@ public class FolderService {
     public void crateBoardInFolder(BoardRequestDto boardRequestDto, HttpServletRequest request) {
         Board board = boardService.boardSave(
                 boardRequestDto,
-                request
+                request,
+                DETAIL
         );
 
         Folder folder = findFolder(

@@ -22,6 +22,9 @@ public class Board extends TimeStamp {
     private String title;
 
     @Column(nullable = true)
+    private String link;
+
+    @Column(nullable = true)
     private String explanation;
 
     @Column(nullable = true)
@@ -56,6 +59,7 @@ public class Board extends TimeStamp {
 
     public Board(Long totalCont, BoardRequestDto boardRequestDto, Users user) {
         this.title = boardRequestDto.getTitle();
+        this.link = boardRequestDto.getLink();
         this.explanation = boardRequestDto.getExplanation();
         this.imgPath = boardRequestDto.getImgPath();
         this.content = boardRequestDto.getContent();
@@ -78,6 +82,7 @@ public class Board extends TimeStamp {
 
     public void update(BoardRequestDto boardRequestDto) {
         this.title = boardRequestDto.getTitle();
+        this.link = boardRequestDto.getLink();
         this.explanation = boardRequestDto.getExplanation();
         this.imgPath = boardRequestDto.getImgPath();
         this.content = boardRequestDto.getContent();
