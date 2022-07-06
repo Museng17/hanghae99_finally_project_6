@@ -39,6 +39,9 @@ public class Board extends TimeStamp {
     @Column(nullable = true)
     private CategoryType category;
 
+    @Column(nullable = false)
+    private Long order;
+
     @ManyToOne
     @JsonIgnore
     private Users users;
@@ -51,7 +54,7 @@ public class Board extends TimeStamp {
     @JsonIgnore
     private Share share;
 
-    public Board(BoardRequestDto boardRequestDto, Users user) {
+    public Board(Long totalCont, BoardRequestDto boardRequestDto, Users user) {
         this.title = boardRequestDto.getTitle();
         this.explanation = boardRequestDto.getExplanation();
         this.imgPath = boardRequestDto.getImgPath();
@@ -59,6 +62,7 @@ public class Board extends TimeStamp {
         this.status = boardRequestDto.getStatus();
         this.boardType = boardRequestDto.getBoardType();
         this.category = boardRequestDto.getCategory();
+        this.order = totalCont + 1;
         this.users = user;
     }
 
@@ -70,6 +74,10 @@ public class Board extends TimeStamp {
         this.status = boardRequestDto.getStatus();
         this.boardType = boardRequestDto.getBoardType();
         this.category = boardRequestDto.getCategory();
+    }
+
+    public void updateOrder(Long order) {
+        this.order = order;
     }
 
     public void addFolderId(Folder folder) {

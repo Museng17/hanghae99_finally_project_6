@@ -15,11 +15,13 @@ public class FolderRequestDto {
     private String name;
     private DisclosureStatus status;
     private CategoryType category;
+    private Long order;
     private List<Board> boardList = new ArrayList<>();
 
     public FolderRequestDto(Folder folder) {
         this.id = folder.getId();
         this.name = folder.getName();
         this.status = folder.getStatus();
+        this.order = folder.getOrder();
     }
 }

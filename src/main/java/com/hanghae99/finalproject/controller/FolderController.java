@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class FolderController {
@@ -51,6 +53,17 @@ public class FolderController {
     public void crateBoardInFolder(@RequestBody BoardRequestDto boardRequestDto,
                                    HttpServletRequest request) {
         folderService.crateBoardInFolder(boardRequestDto, request);
+    }
+
+    @PostMapping("/folders")
+    public void folderOrderChange(@RequestBody FolderAndBoardRequestDto folderAndBoardRequestDto,
+                                  HttpServletRequest request) {
+        folderService.folderOrderChange(folderAndBoardRequestDto, request);
+    }
+
+    @GetMapping("/folders")
+    public List<Folder> folders() {
+        return folderService.folders();
     }
 
     @ExceptionHandler(RuntimeException.class)

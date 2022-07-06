@@ -1,10 +1,7 @@
 package com.hanghae99.finalproject.controller;
 
-import com.hanghae99.finalproject.model.dto.requestDto.BoardRequestDto;
-import com.hanghae99.finalproject.model.dto.requestDto.OgRequestDto;
-import com.hanghae99.finalproject.model.dto.responseDto.ErrorMassageResponseDto;
-import com.hanghae99.finalproject.model.dto.responseDto.FolderAndBoardResponseDto;
-import com.hanghae99.finalproject.model.dto.responseDto.OgResponseDto;
+import com.hanghae99.finalproject.model.dto.requestDto.*;
+import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -43,9 +40,15 @@ public class BoardController {
     }
 
     @PostMapping("/image/og")
-    public OgResponseDto thumbnailLoad(@RequestBody OgRequestDto dto)  {
+    public OgResponseDto thumbnailLoad(@RequestBody OgRequestDto dto) {
 
         return boardService.thumbnailLoad(dto.getUrl());
+    }
+
+    @PostMapping("/boards")
+    public void boardOrderChange(@RequestBody FolderAndBoardRequestDto folderAndBoardRequestDto,
+                                 HttpServletRequest request) {
+        boardService.boardOrderChange(folderAndBoardRequestDto, request);
     }
 
     @ExceptionHandler(Exception.class)
