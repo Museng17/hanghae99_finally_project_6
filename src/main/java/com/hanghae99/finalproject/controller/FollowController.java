@@ -27,7 +27,7 @@ public class FollowController {
         return followService.save(user.getId(), followerId);
     }
 
-    @DeleteMapping("/follow/{followingId}")
+    @DeleteMapping("/unfollow/{followingId}")
     public void unFollowUser(@PathVariable long followingId, HttpServletRequest request) {
         Users user = userinfoHttpRequest.userFindByToken(request);
         Long id = followService.getFollowId(user.getId(), followingId);
