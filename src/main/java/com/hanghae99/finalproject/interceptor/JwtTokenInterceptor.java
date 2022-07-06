@@ -1,9 +1,12 @@
 package com.hanghae99.finalproject.interceptor;
 
 import com.hanghae99.finalproject.jwt.*;
+import com.hanghae99.finalproject.model.dto.responseDto.ErrorMassageResponseDto;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.*;
@@ -28,13 +31,13 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
         String authorization = request.getHeader(JWT_HEADER_KEY);
 
         if (authorization == null) {
-            throw new RuntimeException("헤더에 토큰을 담지 안았습니다.");
+            throw new IllegalArgumentException("헤더에 토큰을 담지 안았습니다.");
         }
 
         Claims decodeToken = userInfoInJwt.getRefreshToken(authorization);
 
         if (Optional.ofNullable((String) decodeToken.get(REFRESH_TOKEN)).isPresent()) {
-            throw new RuntimeException("AccessToken이 아닙니다.");
+            throw new IllegalArgumentException("AccessToken이 아닙니다.");
         }
 
         jwtTokenProvider.validToken(authorization);

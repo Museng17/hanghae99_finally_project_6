@@ -51,12 +51,6 @@ public class BoardController {
         boardService.boardOrderChange(folderAndBoardRequestDto, request);
     }
 
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorMassageResponseDto exceptionHandler(Exception e) {
-        return new ErrorMassageResponseDto(e.getMessage());
-    }
-
     @PostMapping("/myshare/board/{boardId}")
     public void cloneBoard(@PathVariable Long boardId,HttpServletRequest request){
         boardService.cloneBoard(boardId,request);

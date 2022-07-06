@@ -4,6 +4,7 @@ import com.hanghae99.finalproject.model.dto.requestDto.UserRequestDto;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.Users;
 import com.hanghae99.finalproject.service.UserService;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -79,11 +80,5 @@ public class UserController {
     @GetMapping("/user/profile")
     public Users findUserProfile(HttpServletRequest request) {
         return userService.findUserProfile(request);
-    }
-
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorMassageResponseDto exceptionHandler(Exception e) {
-        return new ErrorMassageResponseDto(e.getMessage());
     }
 }

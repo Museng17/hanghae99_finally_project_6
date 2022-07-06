@@ -67,13 +67,6 @@ public class FolderController {
         return folderService.folders();
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorMassageResponseDto exceptionHandler(Exception e) {
-        return new ErrorMassageResponseDto(e.getMessage());
-    }
-
-
     @PostMapping("/share/folder/{folderId}")
     public void shareFolder(@PathVariable Long folderId, HttpServletRequest request) {
         folderService.shareFolder(folderId, request);
