@@ -1,4 +1,6 @@
 name: deploy #Reps Action 페이지에 나타나는 이름
+env:
+  PROJECT_NAME: moum
 
 on:
   push:
@@ -61,13 +63,13 @@ jobs:
           aws-region: ap-northeast-2
 
       - name: Upload to S3 #S3 업로드
-        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://hanghae99-final/$GITHUB_SHA.zip
+        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://hanghae99-final/$PROJECT_NAME/$GITHUB_SHA.zip
 
       - name: Code Deploy #애플리케이션 배포그룹에 배포 생성
         run: aws deploy create-deployment --application-name testapp
           --deployment-config-name CodeDeployDefault.OneAtATime
           --deployment-group-name dev
-          --s3-location bucket=hanghae99-final,bundleType=zip,key=$GITHUB_SHA.zip
+          --s3-location bucket=hanghae99-final,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip
 
         #application-name : CodeDeploy 애플리케이션 name
         #deployment-group-name : CodeDeploy 애플리케이션 배포 그룹 이름
