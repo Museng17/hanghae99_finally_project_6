@@ -47,6 +47,7 @@ public class FolderController {
         folderService.folderUpdate(folderId, request, folderRequestDto);
     }
 
+
     @PutMapping("/folder")
     public void crateBoardInFolder(@RequestBody BoardRequestDto boardRequestDto,
                                    HttpServletRequest request) {
@@ -59,13 +60,16 @@ public class FolderController {
         return new ErrorMassageResponseDto(e.getMessage());
     }
 
+
     @PostMapping("/share/folder/{folderId}")
-    public void shareFolder(@PathVariable Long folderId, HttpServletRequest request){
-        folderService.shareFolder(folderId,request);
+    public void shareFolder(@PathVariable Long folderId, HttpServletRequest request) {
+        folderService.shareFolder(folderId, request);
     }
 
+
     @PostMapping("/myshare/folder/{folderId}")
-    public void cloneFolder(@PathVariable Long folderId,HttpServletRequest request){
-        folderService.cloneFolder(folderId,request);
+    public void cloneFolder(@PathVariable Long folderId, HttpServletRequest request) {
+        folderService.cloneFolder(folderId, request);
+
     }
 }

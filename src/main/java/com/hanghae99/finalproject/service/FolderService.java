@@ -106,6 +106,7 @@ public class FolderService {
         folder.update(folderRequestDto);
     }
 
+
     @Transactional
     public void crateBoardInFolder(BoardRequestDto boardRequestDto, HttpServletRequest request) {
         Board board = boardService.boardSave(
@@ -122,6 +123,7 @@ public class FolderService {
     }
 
 
+
     @Transactional
     public void shareFolder(Long folderId, HttpServletRequest request){
         Users users = userinfoHttpRequest.userFindByToken(request);
@@ -133,6 +135,7 @@ public class FolderService {
         return folderRepository.findByIdAndUsersIdNot(folderId,userinfoHttpRequest.userFindByToken(request).getId()).orElseThrow(()
                 -> new RuntimeException("원하는 폴더를 찾지 못했습니다."));
     }
+
     public void  cloneFolder (Long folderId,HttpServletRequest request){
         Users users = userinfoHttpRequest.userFindByToken(request);
         Folder folder = findShareFolder(folderId,request);
@@ -140,4 +143,5 @@ public class FolderService {
         Folder folder1 = new Folder(folderRequestDto, users);
         folderRepository.save(folder1);
     }
+
 }
