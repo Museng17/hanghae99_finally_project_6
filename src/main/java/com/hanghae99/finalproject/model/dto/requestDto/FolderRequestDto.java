@@ -15,7 +15,7 @@ public class FolderRequestDto {
     private String name;
     private DisclosureStatus status;
     private CategoryType category;
-    private Long order;
+    private Long folderOrder;
     private List<Board> boardList = new ArrayList<>();
 
     public FolderRequestDto(Folder folder) {
@@ -23,6 +23,6 @@ public class FolderRequestDto {
         this.name = folder.getName();
         this.status = folder.getStatus();
         this.category = folder.getCategory();
-        this.order = folder.getOrder();
+        this.folderOrder = folder.getFolderOrder();
     }
 }

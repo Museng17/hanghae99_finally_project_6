@@ -40,7 +40,7 @@ public class UserService {
         if (!bCryptPasswordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {
             throw new RuntimeException("UserService 41 에러 비밀번호가 틀렸습니다.");
         }
-        return createTokens2(user.getUsername());
+        return createTokens(user.getUsername());
     }
 
     public Boolean checkUsernameDuplicate(String username) {
@@ -182,7 +182,7 @@ public class UserService {
                 jwtTokenProvider.createRefreshToken2(username)
         );
     }
-    
+
     @Transactional
     public Boolean updateUserInfo(Long id, UserRequestDto userRequestDto, HttpServletRequest request) {
         Users user = userFindById(id);

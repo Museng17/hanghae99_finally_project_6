@@ -40,7 +40,7 @@ public class Board extends TimeStamp {
     private CategoryType category;
 
     @Column(nullable = false)
-    private Long order;
+    private Long boardOrder;
 
     @ManyToOne
     @JsonIgnore
@@ -62,7 +62,7 @@ public class Board extends TimeStamp {
         this.status = boardRequestDto.getStatus();
         this.boardType = boardRequestDto.getBoardType();
         this.category = boardRequestDto.getCategory();
-        this.order = totalCont + 1;
+        this.boardOrder = totalCont + 1;
         this.users = user;
     }
     public Board(BoardRequestDto boardRequestDto, Users user) {
@@ -87,7 +87,7 @@ public class Board extends TimeStamp {
     }
 
     public void updateOrder(Long order) {
-        this.order = order;
+        this.boardOrder = order;
     }
 
     public void addFolderId(Folder folder) {

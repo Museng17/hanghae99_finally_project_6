@@ -30,7 +30,7 @@ public class Folder extends TimeStamp {
     private CategoryType category;
 
     @Column(nullable = false)
-    private Long order;
+    private Long folderOrder;
 
     @JsonIgnore
     @ManyToOne
@@ -54,7 +54,7 @@ public class Folder extends TimeStamp {
         this.name = folderRequestDto.getName();
         this.status = folderRequestDto.getStatus();
         this.category = folderRequestDto.getCategory();
-        this.order = folderCount + 1;
+        this.folderOrder = folderCount + 1;
         this.users = users;
     }
     public Folder(FolderRequestDto folderRequestDto, Users users) {
@@ -71,6 +71,6 @@ public class Folder extends TimeStamp {
     }
 
     public void updateOrder(Long order) {
-        this.order = order;
+        this.folderOrder = order;
     }
 }

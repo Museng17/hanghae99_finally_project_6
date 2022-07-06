@@ -4,7 +4,6 @@ import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.service.BoardService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,7 +51,7 @@ public class BoardController {
     }
 
     @PostMapping("/myshare/board/{boardId}")
-    public void cloneBoard(@PathVariable Long boardId,HttpServletRequest request){
-        boardService.cloneBoard(boardId,request);
+    public void cloneBoard(@PathVariable Long boardId, HttpServletRequest request) {
+        boardService.cloneBoard(boardId, request);
     }
 }

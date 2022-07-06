@@ -170,10 +170,10 @@ public class FolderService {
         for (FolderRequestDto folderRequestDto : folderAndBoardRequestDto.getFolderList()) {
             for (FolderRequestDto dbFolder : dbFolderList) {
                 if (folderRequestDto.getId() == dbFolder.getId()) {
-                    if (folderRequestDto.getOrder() != dbFolder.getOrder()) {
+                    if (folderRequestDto.getFolderOrder() != dbFolder.getFolderOrder()) {
                         Folder folder = folderRepository.findById(folderRequestDto.getId())
                                 .orElseThrow(() -> new RuntimeException("FolderService, 133 에러 발생 찾는 폴더가 없습니다."));
-                        folder.updateOrder(folderRequestDto.getOrder());
+                        folder.updateOrder(folderRequestDto.getFolderOrder());
                     }
                 }
             }

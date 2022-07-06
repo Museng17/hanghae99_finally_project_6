@@ -35,6 +35,7 @@ public class BoardService {
     @Transactional
     public Board boardSave(BoardRequestDto boardRequestDto, HttpServletRequest request) {
         Users user = userinfoHttpRequest.userFindByToken(request);
+        System.out.println(user);
         return boardRepository.save(
                 new Board(
                         boardRepository.findBoardCount(user.getId()),
@@ -127,9 +128,9 @@ public class BoardService {
         for (BoardRequestDto boardRequestDto : folderAndBoardRequestDto.getBoardList()) {
             for (BoardRequestDto dbDto : dbList) {
                 if (boardRequestDto.getId() == dbDto.getId()) {
-                    if (boardRequestDto.getOrder() != dbDto.getOrder()) {
+                    if (boardRequestDto.getBoardOrder() != dbDto.getBoardOrder()) {
                         Board targetBoard = boardFindById(boardRequestDto.getId());
-                        targetBoard.updateOrder(boardRequestDto.getOrder());
+                        targetBoard.updateOrder(boardRequestDto.getBoardOrder());
                     }
                 }
             }
