@@ -2,6 +2,7 @@ package com.hanghae99.finalproject.service;
 
 import com.hanghae99.finalproject.model.dto.requestDto.BoardRequestDto;
 import com.hanghae99.finalproject.model.dto.requestDto.FolderRequestDto;
+import com.hanghae99.finalproject.model.dto.responseDto.UserRegisterRespDto;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.FolderRepository;
 import com.hanghae99.finalproject.model.repository.ShareRepository;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -128,8 +130,11 @@ public class FolderService {
     public void shareFolder(Long folderId, HttpServletRequest request){
         Users users = userinfoHttpRequest.userFindByToken(request);
         Folder folder = findShareFolder(folderId,request);
-        Share share = new Share(folder,users);
-        shareRepository.save(share);
+        Optional<Share> findShare = shareRepository.findByIdAndUsersId(folderId,users.getId());
+        if(!findShare.isPresent()){
+            Share share = new Share(folder,users);
+            shareRepository.save(share);
+        }
     }
     public Folder findShareFolder(Long folderId, HttpServletRequest request){
         return folderRepository.findByIdAndUsersIdNot(folderId,userinfoHttpRequest.userFindByToken(request).getId()).orElseThrow(()
