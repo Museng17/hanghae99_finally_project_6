@@ -35,10 +35,4 @@ public class FollowController {
 
         return true;
     }
-
-    @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorMassageResponseDto exceptionHandler(Exception e) {
-        return new ErrorMassageResponseDto(e.getMessage());
-    }
 }

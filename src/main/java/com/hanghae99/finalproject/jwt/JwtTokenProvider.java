@@ -80,14 +80,8 @@ public class JwtTokenProvider {
 
     //AccessToken 유효성 검사
     public boolean isValidAccessToken(String token) {
-        try {
             getClaimsFormToken(token);
             return true;
-        } catch (ExpiredJwtException exception) {
-            throw new RuntimeException("만료일 " + exception.getClaims().getExpiration() + " : 만료되었습니다.");
-        } catch (JwtException exception) {
-            throw new RuntimeException("변조된 토큰입니다.");
-        }
     }
 
     //JWT 구문분석 함수
@@ -103,11 +97,11 @@ public class JwtTokenProvider {
         String accessToken = authorization.substring(7);
 
         if (!authorization.startsWith(BEARER)) {
-            throw new RuntimeException("Bearer 를 붙혀주세요.");
+            throw new IllegalArgumentException("Bearer 를 붙혀주세요.");
         }
 
         if (!isValidAccessToken(accessToken)) {
-            throw new RuntimeException("유효하지 않은 않은 토큰입니다.");
+            throw new IllegalArgumentException("유효하지 않은 않은 토큰입니다.");
         }
 
         return true;
