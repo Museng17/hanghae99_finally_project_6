@@ -29,6 +29,9 @@ public class Folder extends TimeStamp {
     @Column(nullable = true)
     private CategoryType category;
 
+    @Column(nullable = false)
+    private Long order;
+
     @JsonIgnore
     @ManyToOne
     private Users users;
@@ -40,12 +43,20 @@ public class Folder extends TimeStamp {
     @JoinColumn(name = "folder_id")
     private List<Board> boardList = new ArrayList<>();
 
-    public Folder(Long id, String name, DisclosureStatus status) {
+    public Folder(Long id, String name, DisclosureStatus status, CategoryType category) {
         this.id = id;
         this.name = name;
         this.status = status;
+        this.category = category;
     }
 
+    public Folder(FolderRequestDto folderRequestDto, Users users, Long folderCount) {
+        this.name = folderRequestDto.getName();
+        this.status = folderRequestDto.getStatus();
+        this.category = folderRequestDto.getCategory();
+        this.order = folderCount + 1;
+        this.users = users;
+    }
     public Folder(FolderRequestDto folderRequestDto, Users users) {
         this.name = folderRequestDto.getName();
         this.status = folderRequestDto.getStatus();
@@ -57,5 +68,9 @@ public class Folder extends TimeStamp {
         this.name = folderRequestDto.getName();
         this.status = folderRequestDto.getStatus();
         this.category = folderRequestDto.getCategory();
+    }
+
+    public void updateOrder(Long order) {
+        this.order = order;
     }
 }

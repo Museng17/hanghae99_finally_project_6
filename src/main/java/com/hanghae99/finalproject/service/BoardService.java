@@ -1,13 +1,10 @@
 package com.hanghae99.finalproject.service;
 
-import com.hanghae99.finalproject.model.dto.requestDto.BoardRequestDto;
-import com.hanghae99.finalproject.model.dto.requestDto.FolderRequestDto;
-import com.hanghae99.finalproject.model.dto.responseDto.FolderAndBoardResponseDto;
-import com.hanghae99.finalproject.model.dto.responseDto.OgResponseDto;
+import com.hanghae99.finalproject.model.dto.requestDto.*;
+import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;
-import com.hanghae99.finalproject.util.resultType.BoardType;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +37,7 @@ public class BoardService {
         Users user = userinfoHttpRequest.userFindByToken(request);
         return boardRepository.save(
                 new Board(
+                        boardRepository.findBoardCount(user.getId()),
                         boardRequestDto,
                         user
                 )
@@ -72,7 +70,7 @@ public class BoardService {
 
     public Board boardFindById(Long id) {
         return boardRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 글을 찾지 못했습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("BoardService 74 에러, 해당 글을 찾지 못했습니다."));
     }
 
     public List<Board> findAllById(List<Long> longs) {
@@ -85,25 +83,26 @@ public class BoardService {
 
     public void statusUpdateByFolderId(Long id, FolderRequestDto folderRequestDto) {
         Board board = boardRepository.findByFolderId(id)
-                .orElseThrow(() ->new IllegalArgumentException("해당 폴더를 찾지 못했습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("BoardService 87 에러 해당 폴더를 찾지 못했습니다."));
         board.updateStatus(folderRequestDto);
     }
 
-    public OgResponseDto thumbnailLoad(String url){
-        OgResponseDto ogResponseDto= new OgResponseDto();
-        try{
+    public OgResponseDto thumbnailLoad(String url) {
+        OgResponseDto ogResponseDto = new OgResponseDto();
+        try {
             Document doc = Jsoup.connect(url).get();
             String title = doc.select("meta[property=og:title]").attr("content");
-            String image= doc.select("meta[property=og:image]").attr("content");
+            String image = doc.select("meta[property=og:image]").attr("content");
             String description = doc.select("meta[property=og:description]").attr("content");
-            ogResponseDto= new OgResponseDto(title,image,description);
-        }catch(Exception e){
+            ogResponseDto = new OgResponseDto(title, image, description);
+        } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
 
         return ogResponseDto;
 
     }
+
 
     public Board findShareBoard(Long boardId, HttpServletRequest request){
         return boardRepository.findByIdAndUsersIdNot(boardId,userinfoHttpRequest.userFindByToken(request).getId()).orElseThrow(()
@@ -116,4 +115,35 @@ public class BoardService {
         Board board1 = new Board(boardRequestDto, users);
         boardRepository.save(board1);
     }
+
+    @Transactional
+    public void boardOrderChange(FolderAndBoardRequestDto folderAndBoardRequestDto, HttpServletRequest request) {
+        List<BoardRequestDto> dbList = toBoardRequestDtoList(
+                boardRepository.findByUsers(
+                        userinfoHttpRequest.userFindByToken(request)
+                )
+        );
+
+        for (BoardRequestDto boardRequestDto : folderAndBoardRequestDto.getBoardList()) {
+            for (BoardRequestDto dbDto : dbList) {
+                if (boardRequestDto.getId() == dbDto.getId()) {
+                    if (boardRequestDto.getOrder() != dbDto.getOrder()) {
+                        Board targetBoard = boardFindById(boardRequestDto.getId());
+                        targetBoard.updateOrder(boardRequestDto.getOrder());
+                    }
+                }
+            }
+        }
+    }
+
+    private List<BoardRequestDto> toBoardRequestDtoList(List<Board> boards) {
+        List<BoardRequestDto> boardRequestDtoList = new ArrayList<>();
+
+        for (Board board : boards) {
+            boardRequestDtoList.add(new BoardRequestDto(board));
+        }
+        return boardRequestDtoList;
+    }
+
+
 }

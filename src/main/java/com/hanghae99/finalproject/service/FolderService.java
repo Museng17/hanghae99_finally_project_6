@@ -1,8 +1,12 @@
 package com.hanghae99.finalproject.service;
 
+
 import com.hanghae99.finalproject.model.dto.requestDto.BoardRequestDto;
 import com.hanghae99.finalproject.model.dto.requestDto.FolderRequestDto;
-import com.hanghae99.finalproject.model.dto.responseDto.UserRegisterRespDto;
+
+
+import com.hanghae99.finalproject.model.dto.requestDto.*;
+
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.FolderRepository;
 import com.hanghae99.finalproject.model.repository.ShareRepository;
@@ -13,8 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 
+
 import java.util.List;
 import java.util.Optional;
+
+import java.util.*;
+
 import java.util.stream.Collectors;
 
 @Service
@@ -29,10 +37,12 @@ public class FolderService {
 
     @Transactional
     public void folderSave(FolderRequestDto folderRequestDto, HttpServletRequest request) {
+        Users user = userinfoHttpRequest.userFindByToken(request);
         folderRepository.save(
                 new Folder(
                         folderRequestDto,
-                        userinfoHttpRequest.userFindByToken(request)
+                        user,
+                        folderRepository.findFolderCount(user.getId())
                 )
         );
     }
@@ -43,7 +53,7 @@ public class FolderService {
                         folderId,
                         userinfoHttpRequest.userFindByToken(request).getId()
                 )
-                .orElseThrow(() -> new RuntimeException("찾는 폴더가 없습니다."));
+                .orElseThrow(() -> new RuntimeException("FolderService 42 에러, 찾는 폴더가 없습니다."));
     }
 
     @Transactional
@@ -104,7 +114,7 @@ public class FolderService {
                 userinfoHttpRequest.userFindByToken(request).getId()
         );
 
-        boardService.statusUpdateByFolderId(folderId,folderRequestDto);
+        boardService.statusUpdateByFolderId(folderId, folderRequestDto);
         folder.update(folderRequestDto);
     }
 
@@ -149,4 +159,38 @@ public class FolderService {
         folderRepository.save(folder1);
     }
 
+
+    @Transactional
+    public void folderOrderChange(FolderAndBoardRequestDto folderAndBoardRequestDto, HttpServletRequest request) {
+        List<FolderRequestDto> dbFolderList = toFolderRequestDtoList(
+                folderRepository.findByUsers(
+                        userinfoHttpRequest.userFindByToken(request))
+        );
+
+        for (FolderRequestDto folderRequestDto : folderAndBoardRequestDto.getFolderList()) {
+            for (FolderRequestDto dbFolder : dbFolderList) {
+                if (folderRequestDto.getId() == dbFolder.getId()) {
+                    if (folderRequestDto.getOrder() != dbFolder.getOrder()) {
+                        Folder folder = folderRepository.findById(folderRequestDto.getId())
+                                .orElseThrow(() -> new RuntimeException("FolderService, 133 에러 발생 찾는 폴더가 없습니다."));
+                        folder.updateOrder(folderRequestDto.getOrder());
+                    }
+                }
+            }
+        }
+    }
+
+    private List<FolderRequestDto> toFolderRequestDtoList(List<Folder> folderList) {
+        List<FolderRequestDto> folderRequestDtoList = new ArrayList<>();
+
+        for (Folder folder : folderList) {
+            folderRequestDtoList.add(new FolderRequestDto(folder));
+        }
+        return folderRequestDtoList;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Folder> folders() {
+        return folderRepository.findAll();
+    }
 }
