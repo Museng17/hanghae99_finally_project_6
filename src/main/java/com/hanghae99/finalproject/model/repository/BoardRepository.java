@@ -15,4 +15,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     Optional<Board> findByFolderId(Long folderId);
 
     void deleteAllByUsers(Users user);
+
+    Optional<Board> findByIdAndUsersIdNot(Long boardId, Long id);
 }

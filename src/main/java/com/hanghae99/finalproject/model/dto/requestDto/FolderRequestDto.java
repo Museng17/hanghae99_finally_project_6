@@ -21,5 +21,6 @@ public class FolderRequestDto {
         this.id = folder.getId();
         this.name = folder.getName();
         this.status = folder.getStatus();
+        this.category = folder.getCategory();
     }
 }

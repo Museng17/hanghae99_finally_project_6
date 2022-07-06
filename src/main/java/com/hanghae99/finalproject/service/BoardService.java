@@ -104,4 +104,16 @@ public class BoardService {
         return ogResponseDto;
 
     }
+
+    public Board findShareBoard(Long boardId, HttpServletRequest request){
+        return boardRepository.findByIdAndUsersIdNot(boardId,userinfoHttpRequest.userFindByToken(request).getId()).orElseThrow(()
+                -> new RuntimeException("원하는 폴더를 찾지 못했습니다."));
+    }
+    public void  cloneBoard (Long boardId,HttpServletRequest request){
+        Users users = userinfoHttpRequest.userFindByToken(request);
+        Board board = findShareBoard(boardId,request);
+        BoardRequestDto boardRequestDto = new BoardRequestDto(board);
+        Board board1 = new Board(boardRequestDto, users);
+        boardRepository.save(board1);
+    }
 }

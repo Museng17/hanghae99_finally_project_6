@@ -13,4 +13,7 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
     Optional<Folder> findByIdAndUsersId(Long folderId, Long userId);
 
     void deleteAllByUsers(Users user);
+
+
+    Optional<Folder> findByIdAndUsersIdNot(Long folderId, Long id);
 }

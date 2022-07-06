@@ -58,4 +58,14 @@ public class FolderController {
     public ErrorMassageResponseDto exceptionHandler(Exception e) {
         return new ErrorMassageResponseDto(e.getMessage());
     }
+
+    @PostMapping("/share/folder/{folderId}")
+    public void shareFolder(@PathVariable Long folderId, HttpServletRequest request){
+        folderService.shareFolder(folderId,request);
+    }
+
+    @PostMapping("/myshare/folder/{folderId}")
+    public void cloneFolder(@PathVariable Long folderId,HttpServletRequest request){
+        folderService.cloneFolder(folderId,request);
+    }
 }

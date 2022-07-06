@@ -4,6 +4,7 @@ import com.hanghae99.finalproject.model.dto.requestDto.BoardRequestDto;
 import com.hanghae99.finalproject.model.dto.requestDto.FolderRequestDto;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.FolderRepository;
+import com.hanghae99.finalproject.model.repository.ShareRepository;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,8 @@ public class FolderService {
     private final FolderRepository folderRepository;
     private final UserinfoHttpRequest userinfoHttpRequest;
     private final BoardService boardService;
+
+    private final ShareRepository shareRepository;
 
     @Transactional
     public void folderSave(FolderRequestDto folderRequestDto, HttpServletRequest request) {
@@ -116,5 +119,25 @@ public class FolderService {
         );
 
         board.addFolderId(folder);
+    }
+
+
+    @Transactional
+    public void shareFolder(Long folderId, HttpServletRequest request){
+        Users users = userinfoHttpRequest.userFindByToken(request);
+        Folder folder = findShareFolder(folderId,request);
+        Share share = new Share(folder,users);
+        shareRepository.save(share);
+    }
+    public Folder findShareFolder(Long folderId, HttpServletRequest request){
+        return folderRepository.findByIdAndUsersIdNot(folderId,userinfoHttpRequest.userFindByToken(request).getId()).orElseThrow(()
+                -> new RuntimeException("원하는 폴더를 찾지 못했습니다."));
+    }
+    public void  cloneFolder (Long folderId,HttpServletRequest request){
+        Users users = userinfoHttpRequest.userFindByToken(request);
+        Folder folder = findShareFolder(folderId,request);
+        FolderRequestDto folderRequestDto = new FolderRequestDto(folder);
+        Folder folder1 = new Folder(folderRequestDto, users);
+        folderRepository.save(folder1);
     }
 }

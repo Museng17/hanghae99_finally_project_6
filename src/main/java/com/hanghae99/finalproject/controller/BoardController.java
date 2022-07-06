@@ -53,4 +53,9 @@ public class BoardController {
     public ErrorMassageResponseDto exceptionHandler(Exception e) {
         return new ErrorMassageResponseDto(e.getMessage());
     }
+
+    @PostMapping("/myshare/board/{boardId}")
+    public void cloneBoard(@PathVariable Long boardId,HttpServletRequest request){
+        boardService.cloneBoard(boardId,request);
+    }
 }
