@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
-
 @Service
 @RequiredArgsConstructor
 public class FollowService {
@@ -25,13 +23,16 @@ public class FollowService {
         Follow follow = followRepository.findFollowByFollowingAndFollower(following, follower);
 
         if (follow != null) return follow.getId();
-        else return -1;
+        else throw new RuntimeException("팔로우 취소 할 대상이 없습니다");
     }
 
     @Transactional
     public Follow save(Long followingId, Long followerId) {
         Users following = userRepository.findFollowingById(followingId);
         Users follower = userRepository.findFollowerById(followerId);
+
+        if (followRepository.findFollowByFollowingAndFollower(following, follower) != null)
+            throw new RuntimeException("이미 팔로우 하였습니다.");
 
         return followRepository.save(Follow.builder()
                 .following(following)

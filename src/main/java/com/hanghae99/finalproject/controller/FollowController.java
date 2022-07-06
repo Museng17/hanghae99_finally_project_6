@@ -1,15 +1,13 @@
 package com.hanghae99.finalproject.controller;
 
-import com.hanghae99.finalproject.model.entity.Follow;
+import com.hanghae99.finalproject.model.dto.responseDto.ErrorMassageResponseDto;
 import com.hanghae99.finalproject.model.entity.Users;
 import com.hanghae99.finalproject.model.repository.FollowRepository;
 import com.hanghae99.finalproject.service.FollowService;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -22,15 +20,25 @@ public class FollowController {
     private final UserinfoHttpRequest userinfoHttpRequest;
 
     @PostMapping("/follow/{followerId}")
-    public Follow followUser(@PathVariable long followerId, HttpServletRequest request) {
+    public boolean followUser(@PathVariable long followerId, HttpServletRequest request) {
         Users user = userinfoHttpRequest.userFindByToken(request);
-        return followService.save(user.getId(), followerId);
+        followService.save(user.getId(), followerId);
+
+        return true;
     }
 
-    @DeleteMapping("/unfollow/{followingId}")
-    public void unFollowUser(@PathVariable long followingId, HttpServletRequest request) {
+    @DeleteMapping("/unfollow/{followerId}")
+    public boolean unFollowUser(@PathVariable long followerId, HttpServletRequest request) {
         Users user = userinfoHttpRequest.userFindByToken(request);
-        Long id = followService.getFollowId(user.getId(), followingId);
+        Long id = followService.getFollowId(user.getId(), followerId);
         followRepository.deleteById(id);
+
+        return true;
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorMassageResponseDto exceptionHandler(Exception e) {
+        return new ErrorMassageResponseDto(e.getMessage());
     }
 }

@@ -1,6 +1,5 @@
 package com.hanghae99.finalproject.model.entity;
 
-import com.hanghae99.finalproject.util.TimeStamp;
 import lombok.*;
 
 import javax.persistence.*;
