@@ -1,9 +1,11 @@
 package com.hanghae99.finalproject.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-// github actions test용 controller
+// test용 controller
 @RestController
+@RequiredArgsConstructor
 public class TestController {
     @GetMapping("/test")
     public String test() {

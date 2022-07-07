@@ -32,6 +32,8 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.14.3'
     //jwt
     implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+    //s3
+    implementation  'org.springframework.cloud:spring-cloud-starter-aws:2.0.1.RELEASE'
 }
 
 tasks.named('test') {

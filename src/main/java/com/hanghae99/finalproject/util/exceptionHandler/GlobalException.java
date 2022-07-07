@@ -22,8 +22,8 @@ public class GlobalException {
 
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorMassageResponseDto RuntimeExceptionHandler(Exception e) {
-        return new ErrorMassageResponseDto(e.getMessage());
+    public Exception RuntimeExceptionHandler(Exception e) {
+        return e;
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
