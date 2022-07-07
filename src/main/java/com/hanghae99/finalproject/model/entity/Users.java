@@ -3,6 +3,7 @@ package com.hanghae99.finalproject.model.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae99.finalproject.model.dto.requestDto.SocialLoginRequestDto;
 import com.hanghae99.finalproject.model.dto.requestDto.UserRequestDto;
+import com.hanghae99.finalproject.model.dto.responseDto.FileUploadResponse;
 import com.hanghae99.finalproject.util.TimeStamp;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,12 +50,14 @@ public class Users extends TimeStamp {
 
     public void update(UserRequestDto userRequestDto) {
         this.nickname = userRequestDto.getNickname();
-        this.imgPath = userRequestDto.getImgPath();
-        this.information = userRequestDto.getInformation();
     }
 
     public void updatePw(String newPassword) {
 
         this.password = newPassword;
+    }
+
+    public void updateImg(String url) {
+        this.imgPath = url;
     }
 }

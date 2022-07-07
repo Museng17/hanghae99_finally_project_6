@@ -3,12 +3,17 @@ package com.hanghae99.finalproject.controller;
 import com.hanghae99.finalproject.model.dto.requestDto.UserRequestDto;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.Users;
+import com.hanghae99.finalproject.service.S3Uploader;
 import com.hanghae99.finalproject.service.UserService;
+import com.hanghae99.finalproject.util.UserinfoHttpRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 import static com.hanghae99.finalproject.config.WebConfig.SOCIAL_HEADER_KEY;
@@ -19,6 +24,8 @@ import static com.hanghae99.finalproject.jwt.JwtTokenProvider.REFRESH_TOKEN;
 public class UserController {
 
     private final UserService userService;
+    private final S3Uploader s3Uploader;
+    private final UserinfoHttpRequest userinfoHttpRequest;
 
     @PostMapping("/user/login")
     public TokenResponseDto login(@RequestBody UserRequestDto userRequestDto) {
@@ -59,12 +66,12 @@ public class UserController {
         return userService.UserDelete(id, request);
     }
 
-    @PutMapping("/user/update/{id}")
+    @PutMapping("/user/updateName/{id}")
     public Boolean userUpdate(@PathVariable Long id,
                               @RequestBody UserRequestDto userRequestDto,
                               HttpServletRequest request) {
 
-        return userService.updateUserInfo(id, userRequestDto, request);
+        return userService.updateUserName(id, userRequestDto, request);
     }
 
     @PutMapping("/user/pw/update/{id}")
@@ -78,5 +85,17 @@ public class UserController {
     @GetMapping("/user/profile")
     public Users findUserProfile(HttpServletRequest request) {
         return userService.findUserProfile(request);
+    }
+
+    @PostMapping("/user/profilePhoto/{id}")
+    public ResponseEntity<?> uploadProfilePhoto(@PathVariable Long id,
+                                                HttpServletRequest request,
+                                                @RequestParam("profilePhoto") MultipartFile multipartFile,
+                                                FileUploadResponse fileUploadResponse) throws IOException {
+
+        Users user = userinfoHttpRequest.userFindByToken(request);
+        FileUploadResponse profile = s3Uploader.upload(user.getId(), multipartFile, "profile");
+        userService.updateUserImg(id, profile.getUrl(), request);
+        return ResponseEntity.ok(profile);
     }
 }
