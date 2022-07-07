@@ -2,6 +2,7 @@ package com.hanghae99.finalproject.controller;
 
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
+import com.hanghae99.finalproject.model.entity.Board;
 import com.hanghae99.finalproject.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -20,9 +21,9 @@ public class BoardController {
     }
 
     @PostMapping("/board")
-    public Long boardSave(@RequestBody BoardRequestDto boardRequestDto,
-                          HttpServletRequest request) {
-        return boardService.boardSave(boardRequestDto, request).getId();
+    public Board boardSave(@RequestBody BoardRequestDto boardRequestDto,
+                           HttpServletRequest request) {
+        return boardService.boardSave(boardRequestDto, request);
     }
 
     @PutMapping("/board/{id}")
