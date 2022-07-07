@@ -33,21 +33,24 @@ public class S3Uploader {
 
     public FileUploadResponse upload(Long userId, MultipartFile multipartFile, String dirName) throws IOException {
 
-        File uploadFile = convert(multipartFile)
-                .orElseThrow(() -> new RuntimeException("MultipartFile -> file convert fail"));
+        File uploadFile = new File(System.getProperty("user.dir") + "/" + multipartFile.getOriginalFilename());
+        if (uploadFile.createNewFile()) { // 바로 위에서 지정한 경로에 File이 생성됨 (경로가 잘못되었다면 생성 불가능)
+            FileOutputStream fos = new FileOutputStream(uploadFile);
+            fos.write(multipartFile.getBytes());
+        }
 
-        return upload(userId, (MultipartFile) uploadFile, dirName);
+        return upload(userId, uploadFile, dirName);
     }
 
     private FileUploadResponse upload(Long userId, File uploadFile, String dirName) {
-        String fileName = dirName + "/" + uploadFile.getName();
-        String uploadImageUrl = putS3(uploadFile, fileName);
+        String imgName = dirName + "/" + UUID.randomUUID().toString() + uploadFile.getName().substring(uploadFile.getName().lastIndexOf("."));
+        String uploadImageUrl = putS3(uploadFile, imgName);
         removeNewFile(uploadFile);
 
         Users user = userRepository.findById(userId).get();
         user.setImgPath(uploadImageUrl);
 
-        return new FileUploadResponse(fileName, uploadImageUrl);
+        return new FileUploadResponse(imgName, uploadImageUrl);
     }
 
     // S3로 업로드
@@ -66,16 +69,4 @@ public class S3Uploader {
         log.info("파일 삭제 실패");
     }
 
-    // 로컬에 파일 업로드 하기
-    private Optional<File> convert(MultipartFile file) throws IOException {
-        File convertFile = new File(System.getProperty("user.dir") + "/" + file.getOriginalFilename());
-        if (convertFile.createNewFile()) { // 바로 위에서 지정한 경로에 File이 생성됨 (경로가 잘못되었다면 생성 불가능)
-            try (FileOutputStream fos = new FileOutputStream(convertFile)) { // FileOutputStream 데이터를 파일에 바이트 스트림으로 저장하기 위함
-                fos.write(file.getBytes());
-            }
-            return Optional.of(convertFile);
-        }
-
-        return Optional.empty();
-    }
 }
