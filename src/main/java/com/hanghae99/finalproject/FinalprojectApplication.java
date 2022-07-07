@@ -20,4 +20,8 @@ public class FinalprojectApplication {
     public void started() {
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
     }
+
+    static {
+        System.setProperty("com.amazonaws.sdk.disableEc2Metadata", "true");
+    }
 }
