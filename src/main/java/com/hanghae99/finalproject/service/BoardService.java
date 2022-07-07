@@ -5,7 +5,7 @@ import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;
-import com.hanghae99.finalproject.util.resultType.BoardType;
+import com.hanghae99.finalproject.util.resultType.*;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -14,13 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class BoardService {
-
-    public final static String DETAIL = "detail";
 
     private final BoardRepository boardRepository;
     private final FolderRepository folderRepository;
@@ -36,15 +35,17 @@ public class BoardService {
     }
 
     @Transactional
-    public Board boardSave(BoardRequestDto boardRequestDto, HttpServletRequest request, String type) {
-        if(!type.equals(DETAIL) && boardRequestDto.getBoardType() == BoardType.LINK){
-            boardRequestDto.ogTagToBoardRequestDto(thumbnailLoad(boardRequestDto.getLink()));
-        } else if(!type.equals(DETAIL) && boardRequestDto.getBoardType() == BoardType.MEMO){
-            boardRequestDto.setTitle("무제");
+    public Board boardSave(BoardRequestDto boardRequestDto, HttpServletRequest request) {
+        if (boardRequestDto.getBoardType() == BoardType.LINK) {
+            boardRequestDto.ogTagToBoardRequestDto(
+                    thumbnailLoad(boardRequestDto.getLink()),
+                    boardRequestDto.getLink()
+            );
+        } else if (boardRequestDto.getBoardType() == BoardType.MEMO) {
+            boardRequestDto.setTitle(new SimpleDateFormat(DateType.YEAR_MONTH_DAY.getPattern()).format(new Date()));
         }
 
         Users user = userinfoHttpRequest.userFindByToken(request);
-        System.out.println(user);
         return boardRepository.save(
                 new Board(
                         boardRepository.findBoardCount(user.getId()),
@@ -113,14 +114,14 @@ public class BoardService {
 
     }
 
-
-    public Board findShareBoard(Long boardId, HttpServletRequest request){
-        return boardRepository.findByIdAndUsersIdNot(boardId,userinfoHttpRequest.userFindByToken(request).getId()).orElseThrow(()
+    public Board findShareBoard(Long boardId, HttpServletRequest request) {
+        return boardRepository.findByIdAndUsersIdNot(boardId, userinfoHttpRequest.userFindByToken(request).getId()).orElseThrow(()
                 -> new RuntimeException("원하는 폴더를 찾지 못했습니다."));
     }
-    public void  cloneBoard (Long boardId,HttpServletRequest request){
+
+    public void cloneBoard(Long boardId, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
-        Board board = findShareBoard(boardId,request);
+        Board board = findShareBoard(boardId, request);
         BoardRequestDto boardRequestDto = new BoardRequestDto(board);
         Board board1 = new Board(boardRequestDto, users);
         boardRepository.save(board1);
@@ -154,6 +155,5 @@ public class BoardService {
         }
         return boardRequestDtoList;
     }
-
 
 }

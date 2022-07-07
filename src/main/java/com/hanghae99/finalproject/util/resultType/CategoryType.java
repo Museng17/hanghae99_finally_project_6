@@ -15,8 +15,8 @@ public enum CategoryType {
     @JsonProperty("음악")
     MUSIC("음악"),
 
-    @JsonProperty("푸드")
-    FOOD("푸드"),
+    @JsonProperty("음식")
+    FOOD("음식"),
 
     @JsonProperty("건강")
     HEALTH("건강"),

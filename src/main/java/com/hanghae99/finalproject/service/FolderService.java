@@ -1,15 +1,8 @@
 package com.hanghae99.finalproject.service;
 
-
-import com.hanghae99.finalproject.model.dto.requestDto.BoardRequestDto;
-import com.hanghae99.finalproject.model.dto.requestDto.FolderRequestDto;
-
-
 import com.hanghae99.finalproject.model.dto.requestDto.*;
-
 import com.hanghae99.finalproject.model.entity.*;
-import com.hanghae99.finalproject.model.repository.FolderRepository;
-import com.hanghae99.finalproject.model.repository.ShareRepository;
+import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,15 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 
-
-import java.util.List;
-import java.util.Optional;
-
 import java.util.*;
-
 import java.util.stream.Collectors;
-
-import static com.hanghae99.finalproject.service.BoardService.DETAIL;
 
 @Service
 @RequiredArgsConstructor
@@ -120,13 +106,11 @@ public class FolderService {
         folder.update(folderRequestDto);
     }
 
-
     @Transactional
     public void crateBoardInFolder(BoardRequestDto boardRequestDto, HttpServletRequest request) {
         Board board = boardService.boardSave(
                 boardRequestDto,
-                request,
-                DETAIL
+                request
         );
 
         Folder folder = findFolder(
@@ -136,8 +120,6 @@ public class FolderService {
 
         board.addFolderId(folder);
     }
-
-
 
     @Transactional
     public void shareFolder(Long folderId, HttpServletRequest request){

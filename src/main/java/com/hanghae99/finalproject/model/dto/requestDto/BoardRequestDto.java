@@ -35,8 +35,12 @@ public class BoardRequestDto {
         this.boardOrder = board.getBoardOrder();
     }
 
-    public void ogTagToBoardRequestDto(OgResponseDto ogResponseDto) {
-        this.title = ogResponseDto.getTitle();
+    public void ogTagToBoardRequestDto(OgResponseDto ogResponseDto, String link) {
+        if (ogResponseDto.getTitle().equals("")) {
+            this.title = link;
+        } else {
+            this.title = ogResponseDto.getTitle();
+        }
         this.explanation = ogResponseDto.getDescription();
         this.imgPath = ogResponseDto.getImage();
     }
