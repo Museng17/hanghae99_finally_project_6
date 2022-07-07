@@ -74,6 +74,14 @@ public class UserController {
         return userService.updateUserName(id, userRequestDto, request);
     }
 
+    @PutMapping("/user/updateInfo/{id}")
+    public Boolean userUpdateInfo(@PathVariable Long id,
+                                  @RequestBody UserRequestDto userRequestDto,
+                                  HttpServletRequest request) {
+
+        return userService.updateUserInfo(id, userRequestDto, request);
+    }
+
     @PutMapping("/user/pw/update/{id}")
     public Boolean userPwUpdate(@PathVariable Long id,
                                 @RequestBody UserRequestDto userRequestDto,
@@ -90,8 +98,7 @@ public class UserController {
     @PostMapping("/user/profilePhoto/{id}")
     public ResponseEntity<?> uploadProfilePhoto(@PathVariable Long id,
                                                 HttpServletRequest request,
-                                                @RequestParam("profilePhoto") MultipartFile multipartFile,
-                                                FileUploadResponse fileUploadResponse) throws IOException {
+                                                @RequestParam("profilePhoto") MultipartFile multipartFile) throws IOException {
 
         Users user = userinfoHttpRequest.userFindByToken(request);
         FileUploadResponse profile = s3Uploader.upload(user.getId(), multipartFile, "profile");
