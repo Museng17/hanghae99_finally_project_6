@@ -3,6 +3,7 @@ package com.hanghae99.finalproject.service;
 import com.hanghae99.finalproject.jwt.*;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
+import com.hanghae99.finalproject.model.entity.Folder;
 import com.hanghae99.finalproject.model.entity.Users;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.restTemplates.SocialLoginRestTemplate;
@@ -99,6 +100,12 @@ public class UserService {
         System.out.println(Dto.getUsername());
         System.out.println(Dto.getNickname());
         userRepository.save(user);
+        Users user1= userRepository.save(user);
+        folderRepository.save(
+                new Folder(
+                        user1
+                )
+        );
 
         UserRegisterRespDto responseDto = new UserRegisterRespDto(result, err_msg);
         return responseDto;

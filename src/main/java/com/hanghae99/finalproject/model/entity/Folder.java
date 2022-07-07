@@ -50,6 +50,12 @@ public class Folder extends TimeStamp {
         this.category = category;
     }
 
+    public Folder( Users users) {
+        this.name = "무제";
+        this.status = DisclosureStatus.PRIVATE ;
+        this.folderOrder = 1L;
+        this.users = users;
+    }
     public Folder(FolderRequestDto folderRequestDto, Users users, Long folderCount) {
         this.name = folderRequestDto.getName();
         this.status = folderRequestDto.getStatus();
