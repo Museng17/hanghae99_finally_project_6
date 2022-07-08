@@ -72,7 +72,7 @@ public class UserService {
     }
 
     public static boolean isEmail(String s){
-        return Pattern.matches("/^([0-9a-zA-Z_\\\\.-]+)@([0-9a-zA-Z_-]+)(\\.[0-9a-zA-Z_-]+){1,2}$/",s);
+        return Pattern.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$",s);
     }
 
     public static boolean isPassword(String s){
