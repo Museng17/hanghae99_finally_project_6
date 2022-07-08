@@ -1,6 +1,7 @@
 package com.hanghae99.finalproject.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.util.*;
 import com.hanghae99.finalproject.util.resultType.*;
@@ -56,6 +57,10 @@ public class Board extends TimeStamp {
     @OneToOne
     @JsonIgnore
     private Share share;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private Users user;
 
     public Board(Long totalCont, BoardRequestDto boardRequestDto, Users user) {
         this.title = boardRequestDto.getTitle();
