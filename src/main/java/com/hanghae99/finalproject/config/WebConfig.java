@@ -40,8 +40,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/upload/**")
-                .addResourceLocations("file:///home/ubuntu/upload/");
+        registry.addResourceHandler("/ubuntu/**")
+                .addResourceLocations("file:///home/ubuntu/");
     }
 
     // CORS 허용 적용

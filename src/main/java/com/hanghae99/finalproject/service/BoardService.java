@@ -11,11 +11,14 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static com.hanghae99.finalproject.util.resultType.FileUpload.BOARD;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +27,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final FolderRepository folderRepository;
     private final UserinfoHttpRequest userinfoHttpRequest;
+    private final S3Uploader s3Uploader;
 
     @Transactional(readOnly = true)
     public FolderAndBoardResponseDto findMyFolderAndBoardList(HttpServletRequest request) {
@@ -156,4 +160,7 @@ public class BoardService {
         return boardRequestDtoList;
     }
 
+    public FileUploadResponse boardImageUpload(MultipartFile imageFile) {
+        return s3Uploader.upload(imageFile, BOARD.getPath());
+    }
 }
