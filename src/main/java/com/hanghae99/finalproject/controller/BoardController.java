@@ -6,6 +6,7 @@ import com.hanghae99.finalproject.model.entity.Board;
 import com.hanghae99.finalproject.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -54,5 +55,10 @@ public class BoardController {
     @PostMapping("/myshare/board/{boardId}")
     public void cloneBoard(@PathVariable Long boardId, HttpServletRequest request) {
         boardService.cloneBoard(boardId, request);
+    }
+
+    @PostMapping("/board/image")
+    public FileUploadResponse boardImageUpload(@RequestParam("boardImage") MultipartFile imageFile) {
+        return boardService.boardImageUpload(imageFile);
     }
 }
