@@ -1,6 +1,7 @@
 package com.hanghae99.finalproject.util.exceptionHandler;
 
 import com.hanghae99.finalproject.model.dto.responseDto.ErrorMassageResponseDto;
+import com.hanghae99.finalproject.util.exceptionHandler.CustumException.NotTokenHeaderException;
 import io.jsonwebtoken.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -22,13 +23,20 @@ public class GlobalException {
 
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Exception RuntimeExceptionHandler(Exception e) {
-        return e;
+    public ErrorMassageResponseDto RuntimeExceptionHandler(RuntimeException e) {
+        return new ErrorMassageResponseDto(e.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorMassageResponseDto IllegalArgumentExceptionHandler(Exception e) {
+    public ErrorMassageResponseDto IllegalArgumentExceptionHandler(IllegalArgumentException e) {
         return new ErrorMassageResponseDto(e.getMessage());
     }
+
+    @ExceptionHandler(NotTokenHeaderException.class)
+    @ResponseStatus(HttpStatus.PAYMENT_REQUIRED)
+    public ErrorMassageResponseDto NotTokenHeaderExceptionHandler(NotTokenHeaderException e) {
+        return new ErrorMassageResponseDto(e.getMessage());
+    }
+
 }
