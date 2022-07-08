@@ -33,6 +33,7 @@ public class UserService {
     private final BoardRepository boardRepository;
     private final FolderRepository folderRepository;
     private final UserInfoInJwt userInfoInJwt;
+    private final FollowRepository followRepository;
 
     @Transactional(readOnly = true)
     public TokenResponseDto login(UserRequestDto userRequestDto) {
@@ -131,6 +132,24 @@ public class UserService {
 
         UserRegisterRespDto responseDto = new UserRegisterRespDto(result, err_msg);
         return responseDto;
+    }
+
+    @Transactional
+    public UserProfileDto getProfile(long id, HttpServletRequest request) {
+        UserProfileDto userProfileDto = new UserProfileDto();
+
+        Users user = userFindById(id);
+        userProfileDto.setId(user.getId());
+        userProfileDto.setNickname(user.getNickname());
+        userProfileDto.setImgPath(user.getImgPath());
+        userProfileDto.setInformation(user.getInformation());
+        userProfileDto.setBoardCnt(user.getBoardList().size());
+        userProfileDto.setFolderCnt(user.getFolderList().size());
+
+        userProfileDto.setFollowerCnt(followRepository.findFollowerCountById(id));
+        userProfileDto.setFollowingCnt(followRepository.findFollowingCountById(id));
+
+        return userProfileDto;
     }
 
     public Users findUser(String username) {

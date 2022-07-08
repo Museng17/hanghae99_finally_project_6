@@ -8,6 +8,7 @@ import com.hanghae99.finalproject.service.UserService;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -90,9 +91,11 @@ public class UserController {
         return userService.updateUserPw(id, userRequestDto, request);
     }
 
-    @GetMapping("/user/profile")
-    public Users findUserProfile(HttpServletRequest request) {
-        return userService.findUserProfile(request);
+    @GetMapping("/user/profile/{id}")
+    public UserProfileDto findUserProfile(Model model, @PathVariable Long id, HttpServletRequest request) {
+
+        model.addAttribute("userProfileDto");
+        return userService.getProfile(id, request);
     }
 
     @PostMapping("/user/profilePhoto/{id}")
