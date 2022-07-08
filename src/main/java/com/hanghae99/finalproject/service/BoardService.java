@@ -9,6 +9,9 @@ import com.hanghae99.finalproject.util.resultType.*;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -162,5 +165,11 @@ public class BoardService {
 
     public FileUploadResponse boardImageUpload(MultipartFile imageFile) {
         return s3Uploader.upload(imageFile, BOARD.getPath());
+    }
+
+    @Transactional
+    public Page<Board> findNewBoard(int page, int size){
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt"));
+        return boardRepository.findAll(pageRequest);
     }
 }

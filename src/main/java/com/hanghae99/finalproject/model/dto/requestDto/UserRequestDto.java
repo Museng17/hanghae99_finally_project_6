@@ -1,10 +1,12 @@
 package com.hanghae99.finalproject.model.dto.requestDto;
 
+import com.hanghae99.finalproject.model.entity.Follow;
 import com.hanghae99.finalproject.model.entity.Users;
 import lombok.*;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class UserRequestDto {
     private Long id;
     private String username;
@@ -13,4 +15,12 @@ public class UserRequestDto {
     private String information;
     private String password;
     private String newPassword;
+
+    public UserRequestDto(Follow follower)
+    {
+        this.id = follower.getFollower().getId();
+        this.nickname = follower.getFollower().getNickname();
+        this.imgPath = follower.getFollower().getImgPath();
+        this.information = follower.getFollower().getInformation();
+    }
 }

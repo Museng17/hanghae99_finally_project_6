@@ -5,6 +5,7 @@ import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.Board;
 import com.hanghae99.finalproject.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -60,5 +61,10 @@ public class BoardController {
     @PostMapping("/board/image")
     public FileUploadResponse boardImageUpload(@RequestParam("boardImage") MultipartFile imageFile) {
         return boardService.boardImageUpload(imageFile);
+    }
+
+    @GetMapping("/newboards/{page}/{size}")
+    public Page<Board> findNewBoards(@PathVariable int page, @PathVariable int size){
+        return boardService.findNewBoard(page, size);
     }
 }

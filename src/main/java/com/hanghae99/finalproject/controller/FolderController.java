@@ -4,6 +4,7 @@ import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.entity.Folder;
 import com.hanghae99.finalproject.service.FolderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -73,5 +74,10 @@ public class FolderController {
     public void cloneFolder(@PathVariable Long folderId, HttpServletRequest request) {
         folderService.cloneFolder(folderId, request);
 
+    }
+
+    @GetMapping("/BestFolders/{page}/{size}")
+    public Page<Folder> findBestFolders(@PathVariable int page, @PathVariable int size){
+        return folderService.findBestFolder(page, size);
     }
 }

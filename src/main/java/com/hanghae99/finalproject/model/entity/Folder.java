@@ -26,6 +26,10 @@ public class Folder extends TimeStamp {
     @Column(nullable = false)
     private DisclosureStatus status;
 
+    @Column(nullable = false)
+    private Long sharedCount = 0L;
+
+
 
 
     @Column(nullable = false)
@@ -65,6 +69,7 @@ public class Folder extends TimeStamp {
         this.name = folderRequestDto.getName();
         this.status = folderRequestDto.getStatus();
         this.users = users;
+        this.sharedCount = folderRequestDto.getSharedCount()+1;
     }
 
     public void update(FolderRequestDto folderRequestDto) {

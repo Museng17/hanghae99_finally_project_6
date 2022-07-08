@@ -3,6 +3,7 @@ package com.hanghae99.finalproject.controller;
 import com.hanghae99.finalproject.model.dto.requestDto.UserRequestDto;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.Users;
+import com.hanghae99.finalproject.service.FollowService;
 import com.hanghae99.finalproject.service.S3Uploader;
 import com.hanghae99.finalproject.service.UserService;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 import static com.hanghae99.finalproject.config.WebConfig.SOCIAL_HEADER_KEY;
 import static com.hanghae99.finalproject.jwt.JwtTokenProvider.REFRESH_TOKEN;
@@ -27,6 +29,8 @@ public class UserController {
     private final UserService userService;
     private final S3Uploader s3Uploader;
     private final UserinfoHttpRequest userinfoHttpRequest;
+
+    private final FollowService followService;
 
     @PostMapping("/user/login")
     public TokenResponseDto login(@RequestBody UserRequestDto userRequestDto) {
@@ -112,5 +116,10 @@ public class UserController {
         FileUploadResponse profile = s3Uploader.upload(user.getId(), multipartFile, "profile");
         userService.updateUserImg(id, profile.getUrl(), request);
         return ResponseEntity.ok(profile);
+    }
+
+    @GetMapping("/followinguser/{page}/{size}")
+    public List<UserRequestDto> findFollowingUser(@PathVariable int page, @PathVariable int size, HttpServletRequest request){
+        return followService.findFollowingUser(page,size,request);
     }
 }

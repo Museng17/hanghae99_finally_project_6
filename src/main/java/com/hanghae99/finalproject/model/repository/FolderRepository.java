@@ -1,6 +1,8 @@
 package com.hanghae99.finalproject.model.repository;
 
 import com.hanghae99.finalproject.model.entity.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
 
 import java.util.*;
@@ -12,6 +14,8 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
     Optional<Folder> findByIdAndUsersId(Long folderId, Long userId);
 
     void deleteAllByUsers(Users user);
+
+    Page<Folder> findAll(Pageable pageable);
 
     Optional<Folder> findByIdAndUsersIdNot(Long folderId, Long id);
 

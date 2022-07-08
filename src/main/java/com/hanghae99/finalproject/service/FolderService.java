@@ -5,6 +5,9 @@ import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -177,5 +180,11 @@ public class FolderService {
     @Transactional(readOnly = true)
     public List<Folder> folders() {
         return folderRepository.findAll();
+    }
+
+    @Transactional
+    public Page<Folder> findBestFolder(int page, int size){
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("sharedCount").descending());
+        return folderRepository.findAll(pageRequest);
     }
 }
