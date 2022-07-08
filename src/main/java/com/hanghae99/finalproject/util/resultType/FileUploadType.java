@@ -4,14 +4,14 @@ import lombok.*;
 
 @Getter
 @NoArgsConstructor
-public enum FileUpload {
+public enum FileUploadType {
     PROFILE("profile/"),
     BOARD("board/"),
     UBUNTU_BASE_PATH("/home/ubuntu");
 
     private String path;
 
-    FileUpload(String path) {
+    FileUploadType(String path) {
         this.path = path;
     }
 }

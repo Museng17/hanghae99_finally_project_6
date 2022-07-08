@@ -3,7 +3,7 @@ package com.hanghae99.finalproject.controller;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.Board;
-import com.hanghae99.finalproject.service.BoardService;
+import com.hanghae99.finalproject.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 public class BoardController {
 
     private final BoardService boardService;
+    private final S3Uploader s3Uploader;
 
     @GetMapping("/board")
     private FolderAndBoardResponseDto findMyFolderAndBoardList(HttpServletRequest request) {

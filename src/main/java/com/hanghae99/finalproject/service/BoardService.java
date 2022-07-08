@@ -1,5 +1,6 @@
 package com.hanghae99.finalproject.service;
 
+import com.amazonaws.services.s3.model.S3Object;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.*;
@@ -21,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.hanghae99.finalproject.util.resultType.FileUpload.BOARD;
+import static com.hanghae99.finalproject.util.resultType.FileUploadType.BOARD;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +49,11 @@ public class BoardService {
                     thumbnailLoad(boardRequestDto.getLink()),
                     boardRequestDto.getLink()
             );
+
+            if (!boardRequestDto.getImgPath().equals("") && boardRequestDto.getImgPath() != null) {
+                boardRequestDto.setImgPath(s3Uploader.upload(BOARD.getPath(), boardRequestDto.getImgPath()).getUrl());
+            }
+
         } else if (boardRequestDto.getBoardType() == BoardType.MEMO) {
             boardRequestDto.setTitle(new SimpleDateFormat(DateType.YEAR_MONTH_DAY.getPattern()).format(new Date()));
         }
@@ -71,6 +77,12 @@ public class BoardService {
                 userinfoHttpRequest.userFindByToken(request).getId()
         );
 
+        if (!board.getImgPath().equals(boardRequestDto.getImgPath())) {
+            S3Object s3Object = s3Uploader.selectImage(BOARD.getPath(), board.getImgPath());
+            if (Optional.ofNullable(s3Object).isPresent()) {
+                s3Uploader.fileDelete(s3Object.getKey());
+            }
+        }
         board.update(boardRequestDto);
     }
 
@@ -114,7 +126,7 @@ public class BoardService {
             String description = doc.select("meta[property=og:description]").attr("content");
             ogResponseDto = new OgResponseDto(title, image, description);
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            ogResponseDto = new OgResponseDto("", "", "");
         }
 
         return ogResponseDto;
