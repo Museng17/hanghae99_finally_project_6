@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static com.hanghae99.finalproject.interceptor.JwtTokenInterceptor.JWT_HEADER_KEY;
 import static com.hanghae99.finalproject.jwt.JwtTokenProvider.*;
@@ -70,11 +71,25 @@ public class UserService {
         return true;
     }
 
+    public static boolean isEmail(String s){
+        return Pattern.matches("/^([0-9a-zA-Z_\\\\.-]+)@([0-9a-zA-Z_-]+)(\\.[0-9a-zA-Z_-]+){1,2}$/",s);
+    }
+
+    public static boolean isPassword(String s){
+        return Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$",s);
+    }
+
     public UserRegisterRespDto registerUser(UserRequestDto Dto) throws NoSuchAlgorithmException {
         Boolean result = true;
         String err_msg = "회원가입 성공";
         String username = Dto.getUsername();
         String nickname = Dto.getNickname();
+
+        if(!isEmail(username)){
+            err_msg = "잘못된 이메일 양식입니다.";
+            result = false;
+            return new UserRegisterRespDto(result, err_msg);
+        }
 
         Optional<Users> foundusername = userRepository.findByUsername(username);
         Optional<Users> foundnickname = userRepository.findByNickname(nickname);
@@ -93,8 +108,15 @@ public class UserService {
             return new UserRegisterRespDto(result, err_msg);
         }
 
+        String pw = Dto.getPassword();
+        if(!isPassword(pw)){
+            err_msg = "잘못된 비밀번호 입니다.";
+            result = false;
+            return new UserRegisterRespDto(result, err_msg);
+        }
+
         // 패스워드 암호화
-        String password = bCryptPasswordEncoder.encode(Dto.getPassword());
+        String password = bCryptPasswordEncoder.encode(pw);
 
         Users user = new Users(username, nickname, password);
         System.out.println(Dto.getUsername());
