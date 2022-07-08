@@ -91,6 +91,11 @@ public class UserController {
         return userService.updateUserPw(id, userRequestDto, request);
     }
 
+    @GetMapping("/user/profile")
+    public Users findUserProfile(HttpServletRequest request) {
+        return userService.findUserProfile(request);
+    }
+    
     @GetMapping("/user/profile/{id}")
     public UserProfileDto findUserProfile(Model model, @PathVariable Long id, HttpServletRequest request) {
 
