@@ -54,8 +54,8 @@ public class S3Uploader {
 
     /* MultipartFile와 path만 가지고 이미지 업로드 */
     public FileUploadResponse upload(MultipartFile uploadFile, String path) {
-        File imageFile = fileUpload.multipartFileToFileWithUpload(uploadFile);
         String imgName = path + fileUtils.makeFileName(uploadFile);
+        File imageFile = fileUpload.multipartFileToFileWithUpload(uploadFile);
         String uploadImageUrl = putS3(imageFile, imgName);
         removeNewFile(imageFile);
         return new FileUploadResponse(uploadImageUrl);
