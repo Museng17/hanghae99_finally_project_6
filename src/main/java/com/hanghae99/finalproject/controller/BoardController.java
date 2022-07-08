@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 public class BoardController {
 
     private final BoardService boardService;
-    private final S3Uploader s3Uploader;
 
     @GetMapping("/board")
     private FolderAndBoardResponseDto findMyFolderAndBoardList(HttpServletRequest request) {
