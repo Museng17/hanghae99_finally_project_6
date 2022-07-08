@@ -20,7 +20,7 @@ public class FollowService {
         Users following = userRepository.findFollowingById(followingId);
         Users follower = userRepository.findFollowerById(followerId);
 
-        Follow follow = followRepository.findFollowByFollowingAndFollower(following, follower);
+        Follow follow = followRepository.findByFollowingIdAndFollowerId(followingId, followerId);
 
         if (follow != null) return follow.getId();
         else throw new RuntimeException("팔로우 취소 할 대상이 없습니다");
@@ -31,7 +31,7 @@ public class FollowService {
         Users following = userRepository.findFollowingById(followingId);
         Users follower = userRepository.findFollowerById(followerId);
 
-        if (followRepository.findFollowByFollowingAndFollower(following, follower) != null)
+        if (followRepository.findByFollowingIdAndFollowerId(followingId, followerId) != null)
             throw new RuntimeException("이미 팔로우 하였습니다.");
 
         return followRepository.save(Follow.builder()
