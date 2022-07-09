@@ -33,4 +33,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     Page<Board> findByFolderIdAndTitleContainingAndCategoryIn(Long folderId, String keyword, List<CategoryType> categoryTypeList, Pageable pageable);
 
     List<Board> findByFolder(Folder folder);
+
+    List<Board> findByUsersId(Long id);
 }

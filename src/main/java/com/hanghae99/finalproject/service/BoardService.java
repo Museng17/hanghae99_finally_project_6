@@ -107,6 +107,10 @@ public class BoardService {
         return boardRepository.findAllById(longs);
     }
 
+    public List<Board> findAllById(Folder folder) {
+        return boardRepository.findByFolder(folder);
+    }
+
     public void boardDeleteByFolderId(Long folderId) {
         boardRepository.deleteByFolderId(folderId);
     }
@@ -222,5 +226,9 @@ public class BoardService {
 
     public List<Board> findByFolder(Folder folder) {
         return boardRepository.findByFolder(folder);
+    }
+
+    public List<Board> findByUserId(Long id) {
+        return boardRepository.findByUsersId(id);
     }
 }
