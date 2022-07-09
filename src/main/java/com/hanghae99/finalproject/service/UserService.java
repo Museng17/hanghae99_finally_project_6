@@ -156,6 +156,24 @@ public class UserService {
         return userProfileDto;
     }
 
+    @Transactional
+    public MyProfileDto getMyProfile(HttpServletRequest request) {
+        MyProfileDto myProfileDto = new MyProfileDto();
+
+        Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
+        myProfileDto.setId(user.getId());
+        myProfileDto.setNickname(user.getNickname());
+        myProfileDto.setImgPath(user.getImgPath());
+        myProfileDto.setInformation(user.getInformation());
+        myProfileDto.setBoardCnt(user.getBoardList().size());
+        myProfileDto.setFolderCnt(user.getFolderList().size());
+
+        myProfileDto.setFollowerCnt(followRepository.findFollowerCountById(user.getId()));
+        myProfileDto.setFollowingCnt(followRepository.findFollowingCountById(user.getId()));
+
+        return myProfileDto;
+    }
+
     public Users findUser(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("UserService 109 에러 찾는 회원이 없습니다."));

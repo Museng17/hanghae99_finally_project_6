@@ -107,6 +107,13 @@ public class UserController {
         return userService.getProfile(id, request);
     }
 
+    @GetMapping("/user/myprofile")
+    public MyProfileDto findMyProfile(Model model, HttpServletRequest request) {
+
+        model.addAttribute("myProfileDto");
+        return userService.getMyProfile(request);
+    }
+
     @PostMapping("/user/profilePhoto/{id}")
     public ResponseEntity<?> uploadProfilePhoto(@PathVariable Long id,
                                                 HttpServletRequest request,
