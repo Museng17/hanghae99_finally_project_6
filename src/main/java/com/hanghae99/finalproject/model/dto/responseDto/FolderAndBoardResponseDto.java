@@ -4,6 +4,7 @@ import com.hanghae99.finalproject.model.dto.requestDto.FolderRequestDto;
 import com.hanghae99.finalproject.model.dto.requestDto.BoardRequestDto;
 import com.hanghae99.finalproject.model.entity.*;
 import lombok.*;
+import org.springframework.data.domain.Page;
 
 import java.util.*;
 
@@ -34,4 +35,5 @@ public class FolderAndBoardResponseDto {
         }
         return folderRequestDtos;
     }
+
 }

@@ -1,10 +1,13 @@
 package com.hanghae99.finalproject.controller;
 
 import com.hanghae99.finalproject.model.dto.requestDto.*;
+import com.hanghae99.finalproject.model.dto.responseDto.FolderAndBoardResponseDto;
 import com.hanghae99.finalproject.model.entity.Folder;
 import com.hanghae99.finalproject.service.FolderService;
+import com.hanghae99.finalproject.util.resultType.CategoryType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.*;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,7 +62,7 @@ public class FolderController {
                                   HttpServletRequest request) {
         folderService.folderOrderChange(folderAndBoardRequestDto, request);
     }
-    
+
     @GetMapping("/folders")
     public List<Folder> folders() {
         return folderService.folders();
@@ -77,7 +80,21 @@ public class FolderController {
     }
 
     @GetMapping("/BestFolders/{page}/{size}")
-    public Page<Folder> findBestFolders(@PathVariable int page, @PathVariable int size){
+    public Page<Folder> findBestFolders(@PathVariable int page, @PathVariable int size) {
         return folderService.findBestFolder(page, size);
+    }
+
+
+    @PostMapping("/board/{userId}/{keyword}")
+    public void YourPage(@PathVariable String keyword,
+                         @RequestBody List<CategoryType> categoryTypeList,
+                         @PathVariable String userId) {
+    }
+
+    @PostMapping("/folders/{keyword}")
+    public List<Folder> myPage(@PathVariable String keyword,
+                                            HttpServletRequest request,
+                                            @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
+        return folderService.myPage(keyword, request, pageable);
     }
 }

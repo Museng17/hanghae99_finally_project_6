@@ -2,6 +2,7 @@ package com.hanghae99.finalproject.model.repository;
 
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.util.DisclosureStatus;
+import com.hanghae99.finalproject.util.resultType.CategoryType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
@@ -23,4 +24,11 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     Long findBoardCount(Long id);
 
     List<Board> findByUsers(Users user);
+
+    @Query("select b from Board b where b.folder.id = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end ")
+    Page<Board> findByFolderIdAndTitleContaining(Long folderId, String keyword, Pageable pageable);
+
+
+    @Query("select b from Board b where b.folder.id = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and b.category in ?3")
+    Page<Board> findByFolderIdAndTitleContainingAndCategoryIn(Long folderId, String keyword, List<CategoryType> categoryTypeList, Pageable pageable);
 }

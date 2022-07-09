@@ -1,6 +1,6 @@
 package com.hanghae99.finalproject.util.resultType;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 
 @Getter
