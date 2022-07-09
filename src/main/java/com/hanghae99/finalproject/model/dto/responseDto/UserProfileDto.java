@@ -8,7 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 public class UserProfileDto {
     private Long id;
-    private boolean loginUser;
     private boolean follow;
     private String nickname;
     private String imgPath;

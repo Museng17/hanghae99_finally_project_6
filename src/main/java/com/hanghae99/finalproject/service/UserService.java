@@ -147,7 +147,6 @@ public class UserService {
         userProfileDto.setFolderCnt(user.getFolderList().size());
 
         Users loginUser = userFindById(findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId());
-        userProfileDto.setLoginUser(loginUser.getId() == user.getId());
 
         userProfileDto.setFollow(followRepository.findByFollowingIdAndFollowerId(loginUser.getId(), id) != null);
 
