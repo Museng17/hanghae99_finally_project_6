@@ -197,13 +197,14 @@ public class UserService {
     }
 
     @Transactional
-    public Boolean UserDelete(Long id, HttpServletRequest request) {
-        Users user = userFindById(id);
+    public Boolean UserDelete(HttpServletRequest request) {
+        Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
+
         if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
 
             boardRepository.deleteAllByUsers(user);
             folderRepository.deleteAllByUsers(user);
-            userRepository.deleteById(id);
+            userRepository.deleteById(user.getId());
 
             return true;
         } else {
