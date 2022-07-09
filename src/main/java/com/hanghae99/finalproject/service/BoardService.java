@@ -5,15 +5,12 @@ import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
-import com.hanghae99.finalproject.util.DisclosureStatus;
-import com.hanghae99.finalproject.util.UserinfoHttpRequest;
+import com.hanghae99.finalproject.util.*;
 import com.hanghae99.finalproject.util.resultType.*;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,7 +61,8 @@ public class BoardService {
                 new Board(
                         boardRepository.findBoardCount(user.getId()),
                         boardRequestDto,
-                        user
+                        user,
+                        folderRepository.findById(1L).orElseThrow(() -> new RuntimeException("무제폴더가 없습니다."))
                 )
         );
     }
@@ -181,8 +179,8 @@ public class BoardService {
     }
 
     @Transactional
-    public Page<Board> findNewBoard(int page, int size){
+    public Page<Board> findNewBoard(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdDate"));
-        return boardRepository.findAllByStatus(DisclosureStatus.PUBLIC,pageRequest);
+        return boardRepository.findAllByStatus(DisclosureStatus.PUBLIC, pageRequest);
     }
 }
