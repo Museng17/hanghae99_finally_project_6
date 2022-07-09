@@ -46,25 +46,23 @@ public class FolderService {
 
     @Transactional
     public void boardInFolder(Long folderId, FolderRequestDto folderRequestDto, HttpServletRequest request) {
+        Users users = userinfoHttpRequest.userFindByToken(request);
+
         Folder folder = findFolder(
                 folderId,
                 request
         );
 
-        List<Board> removeBoardList = boardService.findAllById(
-                folder.getBoardList().stream()
-                        .map(Board::getId)
-                        .collect(Collectors.toList())
+        List<Board> removeBoardList = boardService.findAllById(folder);
+
+        userinfoHttpRequest.userAndWriterMatches(
+                folder.getUsers().getId(),
+                users.getId()
         );
 
         for (Board board : removeBoardList) {
             board.removeFolderId();
         }
-
-        userinfoHttpRequest.userAndWriterMatches(
-                folder.getUsers().getId(),
-                userinfoHttpRequest.userFindByToken(request).getId()
-        );
 
         List<Board> addBoardList = boardService.findAllById(
                 folderRequestDto.getBoardList().stream()
@@ -74,6 +72,14 @@ public class FolderService {
 
         for (Board board : addBoardList) {
             board.addFolderId(folder);
+        }
+
+        List<Board> boards = boardService.findByUserId(users.getId());
+        Folder addFolder = findByBasicFolder(users);
+        for (Board board : boards){
+            if(!Optional.ofNullable(board.getFolder()).isPresent()) {
+                board.addFolderId(addFolder);
+            }
         }
     }
 
