@@ -2,8 +2,7 @@ package com.hanghae99.finalproject.model.repository;
 
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.util.DisclosureStatus;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.*;
 
 import java.util.*;
@@ -25,4 +24,6 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
 
     List<Folder> findByUsers(Users userFindByToken);
 
+    @Query("select f from Folder f where f.users = ?2 and  f.name LIKE case when ?1 = '%all%' then '%%' else ?1 end ")
+    Page<Folder> findByNameContaining(String keyword, Users users, Pageable pageable);
 }

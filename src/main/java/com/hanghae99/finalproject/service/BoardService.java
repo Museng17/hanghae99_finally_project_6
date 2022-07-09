@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.hanghae99.finalproject.util.resultType.CategoryType.ALL;
 import static com.hanghae99.finalproject.util.resultType.FileUploadType.BOARD;
 
 @Service
@@ -127,7 +128,6 @@ public class BoardService {
         } catch (Exception e) {
             ogResponseDto = new OgResponseDto("", "", "");
         }
-
         return ogResponseDto;
 
     }
@@ -182,5 +182,41 @@ public class BoardService {
     public Page<Board> findNewBoard(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdDate"));
         return boardRepository.findAllByStatus(DisclosureStatus.PUBLIC, pageRequest);
+    }
+
+    @Transactional(readOnly = true)
+    public FolderRequestDto myPage(List<FolderRequestDto> folderRequestDtos, String keyword, HttpServletRequest request, Pageable pageable, Long folderId) {
+        Optional<FolderRequestDto> all = folderRequestDtos.stream()
+                .filter(categoryType -> categoryType.getCategory() == ALL)
+                .findFirst();
+
+        if (all.isPresent()) {
+            return new FolderRequestDto(
+                    boardRepository.findByFolderIdAndTitleContaining(
+                            folderId,
+                            "%" + keyword + "%",
+                            pageable
+                    ),
+                    folderRepository.findById(folderId).get()
+            );
+        }
+
+        return new FolderRequestDto(
+                boardRepository.findByFolderIdAndTitleContainingAndCategoryIn(
+                        folderId,
+                        "%" + keyword + "%",
+                        FolderRequestDtoToCategoryTypeList(folderRequestDtos),
+                        pageable
+                ),
+                folderRepository.findById(folderId).get()
+        );
+    }
+
+    public List<CategoryType> FolderRequestDtoToCategoryTypeList(List<FolderRequestDto> folderRequestDtos) {
+        List<CategoryType> categoryTypeList = new ArrayList<>();
+        for (FolderRequestDto folderRequestDto : folderRequestDtos) {
+            categoryTypeList.add(folderRequestDto.getCategory());
+        }
+        return categoryTypeList;
     }
 }

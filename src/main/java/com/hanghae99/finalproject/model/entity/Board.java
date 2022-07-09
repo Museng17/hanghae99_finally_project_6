@@ -65,7 +65,7 @@ public class Board extends TimeStamp {
         this.explanation = boardRequestDto.getExplanation();
         this.imgPath = boardRequestDto.getImgPath();
         this.content = boardRequestDto.getContent();
-        this.status = boardRequestDto.getStatus();
+        this.status = DisclosureStatus.PRIVATE;
         this.boardType = boardRequestDto.getBoardType();
         this.category = boardRequestDto.getCategory();
         this.boardOrder = totalCont + 1;

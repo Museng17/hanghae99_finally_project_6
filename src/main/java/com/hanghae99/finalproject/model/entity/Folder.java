@@ -29,9 +29,6 @@ public class Folder extends TimeStamp {
     @Column(nullable = false)
     private Long sharedCount = 0L;
 
-
-
-
     @Column(nullable = false)
     private Long folderOrder;
 
@@ -43,14 +40,12 @@ public class Folder extends TimeStamp {
     private Share share;
 
     @OneToMany
-    @JoinColumn(name = "folder_id")
     private List<Board> boardList = new ArrayList<>();
 
     public Folder(Long id, String name, DisclosureStatus status) {
         this.id = id;
         this.name = name;
         this.status = status;
-
     }
 
     public Folder( Users users) {
@@ -71,6 +66,7 @@ public class Folder extends TimeStamp {
         this.users = users;
         this.sharedCount = folderRequestDto.getSharedCount()+1;
     }
+
 
     public void update(FolderRequestDto folderRequestDto) {
         this.name = folderRequestDto.getName();
