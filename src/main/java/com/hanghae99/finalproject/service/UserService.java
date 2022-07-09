@@ -254,8 +254,8 @@ public class UserService {
     }
 
     @Transactional
-    public Boolean updateUserName(Long id, UserRequestDto userRequestDto, HttpServletRequest request) {
-        Users user = userFindById(id);
+    public Boolean updateUserName(UserRequestDto userRequestDto, HttpServletRequest request) {
+        Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
         if (!checkNameDuplicate(userRequestDto.getNickname())) {
             throw new RuntimeException("닉네임이 중복되었습니다.");
         }
@@ -271,16 +271,18 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUserImg(Long id, String url, HttpServletRequest request) {
-        Users user = userFindById(id);
+    public void updateUserImg(String url, HttpServletRequest request) {
+        Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
+
         if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
             user.updateImg(url);
         }
     }
 
     @Transactional
-    public Boolean updateUserInfo(Long id, UserRequestDto userRequestDto, HttpServletRequest request) {
-        Users user = userFindById(id);
+    public Boolean updateUserInfo(UserRequestDto userRequestDto, HttpServletRequest request) {
+        Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
+
         if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
             user.updateInfo(userRequestDto);
 
@@ -292,8 +294,9 @@ public class UserService {
     }
 
     @Transactional
-    public Boolean updateUserPw(Long id, UserRequestDto userRequestDto, HttpServletRequest request) {
-        Users user = userFindById(id);
+    public Boolean updateUserPw(UserRequestDto userRequestDto, HttpServletRequest request) {
+        Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
+
         if (!bCryptPasswordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {
             throw new RuntimeException("비밀번호가 틀렸습니다.");
         }

@@ -71,28 +71,25 @@ public class UserController {
         return userService.UserDelete(id, request);
     }
 
-    @PutMapping("/user/updateName/{id}")
-    public Boolean userUpdate(@PathVariable Long id,
-                              @RequestBody UserRequestDto userRequestDto,
+    @PutMapping("/user/updateName")
+    public Boolean userUpdate(@RequestBody UserRequestDto userRequestDto,
                               HttpServletRequest request) {
 
-        return userService.updateUserName(id, userRequestDto, request);
+        return userService.updateUserName(userRequestDto, request);
     }
 
-    @PutMapping("/user/updateInfo/{id}")
-    public Boolean userUpdateInfo(@PathVariable Long id,
-                                  @RequestBody UserRequestDto userRequestDto,
+    @PutMapping("/user/updateInfo")
+    public Boolean userUpdateInfo(@RequestBody UserRequestDto userRequestDto,
                                   HttpServletRequest request) {
 
-        return userService.updateUserInfo(id, userRequestDto, request);
+        return userService.updateUserInfo(userRequestDto, request);
     }
 
-    @PutMapping("/user/pw/update/{id}")
-    public Boolean userPwUpdate(@PathVariable Long id,
-                                @RequestBody UserRequestDto userRequestDto,
+    @PutMapping("/user/pw/update")
+    public Boolean userPwUpdate(@RequestBody UserRequestDto userRequestDto,
                                 HttpServletRequest request) {
 
-        return userService.updateUserPw(id, userRequestDto, request);
+        return userService.updateUserPw(userRequestDto, request);
     }
 
     @GetMapping("/user/profile")
@@ -107,21 +104,20 @@ public class UserController {
         return userService.getProfile(id, request);
     }
 
-    @GetMapping("/user/myprofile")
+    @GetMapping("/user/myProfile")
     public MyProfileDto findMyProfile(Model model, HttpServletRequest request) {
 
         model.addAttribute("myProfileDto");
         return userService.getMyProfile(request);
     }
 
-    @PostMapping("/user/profilePhoto/{id}")
-    public ResponseEntity<?> uploadProfilePhoto(@PathVariable Long id,
-                                                HttpServletRequest request,
+    @PostMapping("/user/profilePhoto")
+    public ResponseEntity<?> uploadProfilePhoto(HttpServletRequest request,
                                                 @RequestParam("profilePhoto") MultipartFile multipartFile) throws IOException {
 
         Users user = userinfoHttpRequest.userFindByToken(request);
         FileUploadResponse profile = s3Uploader.upload(user.getId(), multipartFile, "profile");
-        userService.updateUserImg(id, profile.getUrl(), request);
+        userService.updateUserImg(profile.getUrl(), request);
         return ResponseEntity.ok(profile);
     }
 
