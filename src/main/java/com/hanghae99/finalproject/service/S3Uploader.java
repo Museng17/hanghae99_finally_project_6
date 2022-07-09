@@ -42,7 +42,7 @@ public class S3Uploader {
     }
 
     private FileUploadResponse upload(Long userId, File uploadFile, String dirName) {
-        String imgName = dirName + "/" + UUID.randomUUID().toString() + uploadFile.getName().substring(uploadFile.getName().lastIndexOf("."));
+        String imgName = dirName + "/" + fileUtils.makeFileName(uploadFile);
         String uploadImageUrl = putS3(uploadFile, imgName);
         removeNewFile(uploadFile);
 
