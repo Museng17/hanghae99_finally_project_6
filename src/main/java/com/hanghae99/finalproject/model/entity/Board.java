@@ -48,6 +48,7 @@ public class Board extends TimeStamp {
 
     @ManyToOne
     @JsonIgnore
+    @JoinColumn(name = "users_id")
     private Users users;
 
     @ManyToOne
@@ -57,11 +58,7 @@ public class Board extends TimeStamp {
     @OneToOne
     @JsonIgnore
     private Share share;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private Users user;
-
+    
     public Board(Long totalCont, BoardRequestDto boardRequestDto, Users user) {
         this.title = boardRequestDto.getTitle();
         this.link = boardRequestDto.getLink();
