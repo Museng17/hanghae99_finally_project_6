@@ -24,6 +24,8 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
 
     List<Folder> findByUsers(Users userFindByToken);
 
-    @Query("select f from Folder f where f.users = ?2 and  f.name LIKE case when ?1 = '%all%' then '%%' else ?1 end ")
-    Page<Folder> findByNameContaining(String keyword, Users users, Pageable pageable);
+    @Query("select f from Folder f where f.users = ?2 and  f.name LIKE case when ?1 = '%all%' then '%%' else ?1 end and f.name not like case when ?3 = false then '무제' else '' end  ")
+    Page<Folder> findByNameContaining(String keyword, Users users, boolean test, Pageable pageable);
+
+    Folder findByUsersAndName(Users users, String basicFolder);
 }

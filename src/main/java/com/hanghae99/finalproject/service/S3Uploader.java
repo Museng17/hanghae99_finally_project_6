@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -63,7 +62,7 @@ public class S3Uploader {
 
     /* imagePath만 가지고 이미지 업로드 */
     public FileUploadResponse upload(String imagePath, String path) {
-        String imgName = fileUtils.makeFileName(path);
+        String imgName = fileUtils.makeFileName();
         File imageFile = fileUpload.imageUploadToSever(path, imgName);
         String uploadImageUrl = putS3(imageFile, imagePath + imgName);
         removeNewFile(imageFile);
