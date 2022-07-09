@@ -3,8 +3,7 @@ package com.hanghae99.finalproject.service;
 import com.hanghae99.finalproject.jwt.*;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
-import com.hanghae99.finalproject.model.entity.Folder;
-import com.hanghae99.finalproject.model.entity.Users;
+import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.restTemplates.SocialLoginRestTemplate;
 import io.jsonwebtoken.Claims;
@@ -72,12 +71,12 @@ public class UserService {
         return true;
     }
 
-    public static boolean isEmail(String s){
-        return Pattern.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$",s);
+    public static boolean isEmail(String s) {
+        return Pattern.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", s);
     }
 
-    public static boolean isPassword(String s){
-        return Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$",s);
+    public static boolean isPassword(String s) {
+        return Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$", s);
     }
 
     public UserRegisterRespDto registerUser(UserRequestDto Dto) throws NoSuchAlgorithmException {
@@ -86,7 +85,7 @@ public class UserService {
         String username = Dto.getUsername();
         String nickname = Dto.getNickname();
 
-        if(!isEmail(username)){
+        if (!isEmail(username)) {
             err_msg = "잘못된 이메일 양식입니다.";
             result = false;
             return new UserRegisterRespDto(result, err_msg);
@@ -110,7 +109,7 @@ public class UserService {
         }
 
         String pw = Dto.getPassword();
-        if(!isPassword(pw)){
+        if (!isPassword(pw)) {
             err_msg = "잘못된 비밀번호 입니다.";
             result = false;
             return new UserRegisterRespDto(result, err_msg);
@@ -123,7 +122,7 @@ public class UserService {
         System.out.println(Dto.getUsername());
         System.out.println(Dto.getNickname());
         userRepository.save(user);
-        Users user1= userRepository.save(user);
+        Users user1 = userRepository.save(user);
         folderRepository.save(
                 new Folder(
                         user1
@@ -314,6 +313,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Users findUserProfile(HttpServletRequest request) {
-        return findUser(request.getAttribute(JWT_HEADER_KEY).toString());
+        return userRepository.findByUsernameNoJoin(request.getAttribute(JWT_HEADER_KEY).toString())
+                .orElseThrow(() -> new RuntimeException("찾는 회원이 없습니다."));
     }
 }

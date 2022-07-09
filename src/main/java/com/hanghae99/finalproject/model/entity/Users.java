@@ -59,6 +59,14 @@ public class Users extends TimeStamp {
         this.nickname = "USER(" + UUID.randomUUID().toString().replaceAll("-", "").substring(5, 9) + allCount + ")";
     }
 
+    public Users(Long id, String imgPath, String information, String nickname, String username) {
+        this.id = id;
+        this.username = username;
+        this.nickname = nickname;
+        this.imgPath = imgPath;
+        this.information = information;
+    }
+
     public void update(UserRequestDto userRequestDto) {
         this.nickname = userRequestDto.getNickname();
     }
