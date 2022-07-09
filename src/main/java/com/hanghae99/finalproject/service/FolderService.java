@@ -1,7 +1,6 @@
 package com.hanghae99.finalproject.service;
 
 import com.hanghae99.finalproject.model.dto.requestDto.*;
-import com.hanghae99.finalproject.model.dto.responseDto.FolderAndBoardResponseDto;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.*;
@@ -188,10 +187,23 @@ public class FolderService {
 
     @Transactional(readOnly = true)
     public List<Folder> myPage(String keyword, HttpServletRequest request, Pageable pageable) {
+        Users users = userinfoHttpRequest.userFindByToken(request);
+        Folder folder = findByBasicFolder(users);
+        boolean test = false;
+
+        if (boardService.findByFolder(folder).size() > 0) {
+            test = true;
+        }
+
         return folderRepository.findByNameContaining(
                 "%" + keyword + "%",
-                userinfoHttpRequest.userFindByToken(request),
+                users,
+                test,
                 pageable
         ).getContent();
+    }
+
+    public Folder findByBasicFolder(Users users) {
+        return folderRepository.findByUsersAndName(users, "무제");
     }
 }

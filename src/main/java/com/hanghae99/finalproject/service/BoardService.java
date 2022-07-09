@@ -63,7 +63,7 @@ public class BoardService {
                         boardRepository.findBoardCount(user.getId()),
                         boardRequestDto,
                         user,
-                        folderRepository.findById(1L).orElseThrow(() -> new RuntimeException("무제폴더가 없습니다."))
+                        folderRepository.findByUsersAndName(user, "무제")
                 )
         );
     }
@@ -218,5 +218,9 @@ public class BoardService {
             categoryTypeList.add(folderRequestDto.getCategory());
         }
         return categoryTypeList;
+    }
+
+    public List<Board> findByFolder(Folder folder) {
+        return boardRepository.findByFolder(folder);
     }
 }
