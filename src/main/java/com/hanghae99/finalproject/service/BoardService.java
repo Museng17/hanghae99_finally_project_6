@@ -5,6 +5,7 @@ import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
+import com.hanghae99.finalproject.util.DisclosureStatus;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;
 import com.hanghae99.finalproject.util.resultType.*;
 import lombok.RequiredArgsConstructor;
@@ -182,6 +183,6 @@ public class BoardService {
     @Transactional
     public Page<Board> findNewBoard(int page, int size){
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt"));
-        return boardRepository.findAll(pageRequest);
+        return boardRepository.findAllByStatus(DisclosureStatus.PUBLIC,pageRequest);
     }
 }

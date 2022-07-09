@@ -3,6 +3,7 @@ package com.hanghae99.finalproject.service;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
+import com.hanghae99.finalproject.util.DisclosureStatus;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -185,6 +186,6 @@ public class FolderService {
     @Transactional
     public Page<Folder> findBestFolder(int page, int size){
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("sharedCount").descending());
-        return folderRepository.findAll(pageRequest);
+        return folderRepository.findAllBystatus(DisclosureStatus.PUBLIC,pageRequest);
     }
 }

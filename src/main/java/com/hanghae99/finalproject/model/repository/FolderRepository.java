@@ -1,6 +1,7 @@
 package com.hanghae99.finalproject.model.repository;
 
 import com.hanghae99.finalproject.model.entity.*;
+import com.hanghae99.finalproject.util.DisclosureStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
@@ -15,7 +16,7 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
 
     void deleteAllByUsers(Users user);
 
-    Page<Folder> findAll(Pageable pageable);
+    Page<Folder> findAllBystatus(DisclosureStatus status, Pageable pageable);
 
     Optional<Folder> findByIdAndUsersIdNot(Long folderId, Long id);
 
