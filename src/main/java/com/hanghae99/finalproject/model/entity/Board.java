@@ -59,7 +59,7 @@ public class Board extends TimeStamp {
     @JsonIgnore
     private Share share;
     
-    public Board(Long totalCont, BoardRequestDto boardRequestDto, Users user) {
+    public Board(Long totalCont, BoardRequestDto boardRequestDto, Users user, Folder folder) {
         this.title = boardRequestDto.getTitle();
         this.link = boardRequestDto.getLink();
         this.explanation = boardRequestDto.getExplanation();
@@ -70,6 +70,7 @@ public class Board extends TimeStamp {
         this.category = boardRequestDto.getCategory();
         this.boardOrder = totalCont + 1;
         this.users = user;
+        this.folder = folder;
     }
     public Board(BoardRequestDto boardRequestDto, Users user) {
         this.title = boardRequestDto.getTitle();
