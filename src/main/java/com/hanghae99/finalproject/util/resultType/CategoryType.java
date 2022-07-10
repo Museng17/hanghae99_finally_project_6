@@ -52,7 +52,10 @@ public enum CategoryType {
     ECONOMY("경제"),
 
     @JsonProperty("기타")
-    OTHERS("기타");
+    OTHERS("기타"),
+
+    @JsonProperty("기타")
+    OTHERSt("기타");
 
     private String name;
 
