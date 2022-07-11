@@ -26,11 +26,6 @@ public class FolderController {
         folderService.folderSave(folderRequestDto, request);
     }
 
-    @GetMapping("/folder/{folderId}")
-    public Folder findFolder(@PathVariable Long folderId, HttpServletRequest request) {
-        return folderService.findFolder(folderId, request);
-    }
-
     @PostMapping("/folder/{folderId}")
     public void boardInFolder(@PathVariable Long folderId,
                               @RequestBody FolderRequestDto folderRequestDto,

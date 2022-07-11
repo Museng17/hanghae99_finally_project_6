@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.*;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
-    List<Board> findByUsersIdAndFolderIdIsNull(Long id);
 
     void deleteByFolderId(Long folderId);
 

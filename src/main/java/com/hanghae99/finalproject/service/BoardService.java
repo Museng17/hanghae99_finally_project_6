@@ -33,15 +33,6 @@ public class BoardService {
     private final S3Uploader s3Uploader;
     private final UserRepository userRepository;
 
-    @Transactional(readOnly = true)
-    public FolderAndBoardResponseDto findMyFolderAndBoardList(HttpServletRequest request) {
-        Users user = userinfoHttpRequest.userFindByToken(request);
-        return new FolderAndBoardResponseDto(
-                boardRepository.findByUsersIdAndFolderIdIsNull(user.getId()),
-                folderRepository.findByUsersIdOnlyFolder(user.getId(), "all")
-        );
-    }
-
     @Transactional
     public Board boardSave(BoardRequestDto boardRequestDto, HttpServletRequest request) {
         if (boardRequestDto.getBoardType() == BoardType.LINK) {

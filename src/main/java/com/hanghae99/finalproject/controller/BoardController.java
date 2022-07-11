@@ -20,11 +20,6 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    @GetMapping("/board")
-    private FolderAndBoardResponseDto findMyFolderAndBoardList(HttpServletRequest request) {
-        return boardService.findMyFolderAndBoardList(request);
-    }
-
     @PostMapping("/board")
     public Board boardSave(@RequestBody BoardRequestDto boardRequestDto,
                            HttpServletRequest request) {
