@@ -93,4 +93,8 @@ public class FolderController {
                              @PathVariable Long userId) {
         return folderService.moum(keyword, request, pageable, userId);
     }
+    @PostMapping("/allfolders/{keyword}/{page}")
+    public FolderAndBoardResponseDto allmoum(@PathVariable String keyword, @PathVariable int page, @RequestBody List<FolderRequestDto> folderRequestDtos){
+        return folderService.allmoum(keyword, page, folderRequestDtos);
+    }
 }
