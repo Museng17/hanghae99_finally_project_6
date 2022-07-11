@@ -178,6 +178,12 @@ public class UserService {
                                 )
                         )
                 );
+
+        folderRepository.save(
+                new Folder(
+                        user
+                )
+        );
         return createTokens2(user.getUsername());
     }
 
