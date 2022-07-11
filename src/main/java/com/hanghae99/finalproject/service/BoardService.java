@@ -31,6 +31,7 @@ public class BoardService {
     private final FolderRepository folderRepository;
     private final UserinfoHttpRequest userinfoHttpRequest;
     private final S3Uploader s3Uploader;
+    private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
     public FolderAndBoardResponseDto findMyFolderAndBoardList(HttpServletRequest request) {
@@ -117,9 +118,11 @@ public class BoardService {
     }
 
     public void statusUpdateByFolderId(Long id, FolderRequestDto folderRequestDto) {
-        Board board = boardRepository.findByFolderId(id)
-                .orElseThrow(() -> new IllegalArgumentException("BoardService 87 에러 해당 폴더를 찾지 못했습니다."));
-        board.updateStatus(folderRequestDto);
+        Optional<Board> board = boardRepository.findByFolderId(id);
+        if (board.isPresent()) {
+            board.get().updateStatus(folderRequestDto);
+        }
+
     }
 
     public OgResponseDto thumbnailLoad(String url) {
@@ -189,34 +192,6 @@ public class BoardService {
         return boardRepository.findAllByStatus(DisclosureStatus.PUBLIC, pageRequest);
     }
 
-    @Transactional(readOnly = true)
-    public FolderRequestDto myPage(List<FolderRequestDto> folderRequestDtos, String keyword, HttpServletRequest request, Pageable pageable, Long folderId) {
-        Optional<FolderRequestDto> all = folderRequestDtos.stream()
-                .filter(categoryType -> categoryType.getCategory() == ALL)
-                .findFirst();
-
-        if (all.isPresent()) {
-            return new FolderRequestDto(
-                    boardRepository.findByFolderIdAndTitleContaining(
-                            folderId,
-                            "%" + keyword + "%",
-                            pageable
-                    ),
-                    folderRepository.findById(folderId).get()
-            );
-        }
-
-        return new FolderRequestDto(
-                boardRepository.findByFolderIdAndTitleContainingAndCategoryIn(
-                        folderId,
-                        "%" + keyword + "%",
-                        FolderRequestDtoToCategoryTypeList(folderRequestDtos),
-                        pageable
-                ),
-                folderRepository.findById(folderId).get()
-        );
-    }
-
     public List<CategoryType> FolderRequestDtoToCategoryTypeList(List<FolderRequestDto> folderRequestDtos) {
         List<CategoryType> categoryTypeList = new ArrayList<>();
         for (FolderRequestDto folderRequestDto : folderRequestDtos) {
@@ -231,5 +206,53 @@ public class BoardService {
 
     public List<Board> findByUserId(Long id) {
         return boardRepository.findByUsersId(id);
+    }
+
+    public FolderRequestDto moum(List<FolderRequestDto> folderRequestDtos,
+                                 String keyword,
+                                 HttpServletRequest request,
+                                 Pageable pageable,
+                                 Long folderId,
+                                 Long userId) {
+        List<DisclosureStatus> disclosureStatuses = new ArrayList<>();
+        disclosureStatuses.add(DisclosureStatus.PUBLIC);
+
+        Users user = userRepository.findById(userId)
+                .orElseGet(() -> {
+                    if (userId == 0L) {
+                        disclosureStatuses.add(DisclosureStatus.PRIVATE);
+                        return userinfoHttpRequest.userFindByToken(request);
+                    }
+                    throw new RuntimeException("회원을 찾을 수 없습니다.");
+                });
+
+        Optional<FolderRequestDto> all = folderRequestDtos.stream()
+                .filter(categoryType -> categoryType.getCategory() == ALL)
+                .findFirst();
+
+        if (all.isPresent()) {
+            return new FolderRequestDto(
+                    boardRepository.findByFolderIdAndTitleContaining(
+                            folderId,
+                            "%" + keyword + "%",
+                            user.getId(),
+                            disclosureStatuses,
+                            pageable
+                    ),
+                    folderRepository.findByIdAndUsersId(folderId, user.getId()).get()
+            );
+        }
+
+        return new FolderRequestDto(
+                boardRepository.findByFolderIdAndTitleContainingAndCategoryIn(
+                        folderId,
+                        "%" + keyword + "%",
+                        FolderRequestDtoToCategoryTypeList(folderRequestDtos),
+                        user.getId(),
+                        disclosureStatuses,
+                        pageable
+                ),
+                folderRepository.findById(folderId).get()
+        );
     }
 }

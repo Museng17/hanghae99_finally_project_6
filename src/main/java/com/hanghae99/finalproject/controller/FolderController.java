@@ -91,10 +91,11 @@ public class FolderController {
                          @PathVariable String userId) {
     }
 
-    @PostMapping("/folders/{keyword}")
-    public List<Folder> myPage(@PathVariable String keyword,
-                                            HttpServletRequest request,
-                                            @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
-        return folderService.myPage(keyword, request, pageable);
+    @PostMapping("/folders/{userId}/{keyword}")
+    public List<Folder> moum(@PathVariable String keyword,
+                             HttpServletRequest request,
+                             @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
+                             @PathVariable Long userId) {
+        return folderService.moum(keyword, request, pageable, userId);
     }
 }

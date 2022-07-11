@@ -70,12 +70,13 @@ public class BoardController {
         return boardService.findNewBoard(page, size);
     }
 
-    @PostMapping("/boards/{folderId}/{keyword}")
-    public FolderRequestDto myPage(@RequestBody List<FolderRequestDto> folderRequestDtos,
-                                   @PathVariable String keyword,
-                                   HttpServletRequest request,
-                                   @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
-                                   @PathVariable Long folderId) {
-        return boardService.myPage(folderRequestDtos, keyword, request, pageable, folderId);
+    @PostMapping("/boards/{userId}/{folderId}/{keyword}")
+    public FolderRequestDto moum(@RequestBody List<FolderRequestDto> folderRequestDtos,
+                                     @PathVariable String keyword,
+                                     HttpServletRequest request,
+                                     @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
+                                     @PathVariable Long folderId,
+                                     @PathVariable Long userId) {
+        return boardService.moum(folderRequestDtos, keyword, request, pageable, folderId, userId);
     }
 }
