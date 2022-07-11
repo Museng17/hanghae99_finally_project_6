@@ -5,6 +5,7 @@ import com.hanghae99.finalproject.util.DisclosureStatus;
 import com.hanghae99.finalproject.util.resultType.CategoryType;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.*;
+import org.springframework.data.repository.query.Param;
 
 import java.util.*;
 
@@ -35,4 +36,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> findByFolder(Folder folder);
 
     List<Board> findByUsersId(Long id);
+
+    @Query(value = "SELECT DISTINCT(B.CATEGORY) FROM board B WHERE B.USERS_ID = :id", nativeQuery = true)
+    List<CategoryType> findAllCategoryByUsersId(@Param("id") Long id);
 }

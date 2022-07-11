@@ -58,7 +58,7 @@ public class BoardService {
         }
 
         Users user = userinfoHttpRequest.userFindByToken(request);
-        return boardRepository.save(
+        Board board = boardRepository.save(
                 new Board(
                         boardRepository.findBoardCount(user.getId()),
                         boardRequestDto,
@@ -66,6 +66,7 @@ public class BoardService {
                         folderRepository.findByUsersAndName(user, "무제")
                 )
         );
+        return board;
     }
 
     @Transactional
