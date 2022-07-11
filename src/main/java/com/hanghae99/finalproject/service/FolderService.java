@@ -22,6 +22,7 @@ public class FolderService {
     private final UserinfoHttpRequest userinfoHttpRequest;
     private final BoardService boardService;
     private final ShareRepository shareRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public void folderSave(FolderRequestDto folderRequestDto, HttpServletRequest request) {
@@ -41,7 +42,7 @@ public class FolderService {
                         folderId,
                         userinfoHttpRequest.userFindByToken(request).getId()
                 )
-                .orElseThrow(() -> new RuntimeException("FolderService 42 에러, 찾는 폴더가 없습니다."));
+                .orElseThrow(() -> new RuntimeException("FolderService 45 에러, 찾는 폴더가 없습니다."));
     }
 
     @Transactional
@@ -191,25 +192,36 @@ public class FolderService {
         return folderRepository.findAllBystatus(DisclosureStatus.PUBLIC, pageRequest);
     }
 
-    @Transactional(readOnly = true)
-    public List<Folder> myPage(String keyword, HttpServletRequest request, Pageable pageable) {
-        Users users = userinfoHttpRequest.userFindByToken(request);
+    public Folder findByBasicFolder(Users users) {
+        return folderRepository.findByUsersAndName(users, "무제");
+    }
+
+    public List<Folder> moum(String keyword, HttpServletRequest request, Pageable pageable, Long userId) {
+        List<DisclosureStatus> disclosureStatuses = new ArrayList<>();
+        disclosureStatuses.add(DisclosureStatus.PUBLIC);
+
+        Users users = userRepository.findById(userId)
+                .orElseGet(() -> {
+                    if (userId == 0L) {
+                        disclosureStatuses.add(DisclosureStatus.PRIVATE);
+                        return userinfoHttpRequest.userFindByToken(request);
+                    }
+                    throw new RuntimeException("회원을 찾을 수 없습니다.");
+                });
+
         Folder folder = findByBasicFolder(users);
-        boolean test = false;
+        boolean isBoardInBasicFolder = false;
 
         if (boardService.findByFolder(folder).size() > 0) {
-            test = true;
+            isBoardInBasicFolder = true;
         }
 
         return folderRepository.findByNameContaining(
                 "%" + keyword + "%",
                 users,
-                test,
+                isBoardInBasicFolder,
+                disclosureStatuses,
                 pageable
         ).getContent();
-    }
-
-    public Folder findByBasicFolder(Users users) {
-        return folderRepository.findByUsersAndName(users, "무제");
     }
 }
