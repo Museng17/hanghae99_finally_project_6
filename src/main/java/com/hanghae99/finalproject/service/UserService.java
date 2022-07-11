@@ -136,41 +136,27 @@ public class UserService {
     @Transactional
     public UserProfileDto getProfile(long id, HttpServletRequest request) {
         UserProfileDto userProfileDto = new UserProfileDto();
-
         Users user = userFindById(id);
-        userProfileDto.setId(user.getId());
-        userProfileDto.setNickname(user.getNickname());
-        userProfileDto.setImgPath(user.getImgPath());
-        userProfileDto.setInformation(user.getInformation());
-        userProfileDto.setBoardCnt(user.getBoardList().size());
-        userProfileDto.setFolderCnt(user.getFolderList().size());
-
         Users loginUser = userFindById(findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId());
-
-        userProfileDto.setFollow(followRepository.findByFollowingIdAndFollowerId(loginUser.getId(), id) != null);
-
-        userProfileDto.setFollowerCnt(followRepository.findFollowerCountById(id));
-        userProfileDto.setFollowingCnt(followRepository.findFollowingCountById(id));
-
+        userProfileDto = new UserProfileDto(
+                user,
+                boardRepository.findAllCategoryByUsersId(user.getId()),
+                followRepository.findFollowerCountById(id),
+                followRepository.findFollowingCountById(id),
+                followRepository.findByFollowingIdAndFollowerId(loginUser.getId(), id) != null
+        );
         return userProfileDto;
     }
 
     @Transactional
     public MyProfileDto getMyProfile(HttpServletRequest request) {
-        MyProfileDto myProfileDto = new MyProfileDto();
-
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
-        myProfileDto.setId(user.getId());
-        myProfileDto.setNickname(user.getNickname());
-        myProfileDto.setImgPath(user.getImgPath());
-        myProfileDto.setInformation(user.getInformation());
-        myProfileDto.setBoardCnt(user.getBoardList().size());
-        myProfileDto.setFolderCnt(user.getFolderList().size());
-
-        myProfileDto.setFollowerCnt(followRepository.findFollowerCountById(user.getId()));
-        myProfileDto.setFollowingCnt(followRepository.findFollowingCountById(user.getId()));
-
-        return myProfileDto;
+        return new MyProfileDto(
+                user,
+                boardRepository.findAllCategoryByUsersId(user.getId()),
+                followRepository.findFollowerCountById(user.getId()),
+                followRepository.findFollowingCountById(user.getId())
+        );
     }
 
     public Users findUser(String username) {

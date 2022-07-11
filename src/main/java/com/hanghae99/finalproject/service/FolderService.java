@@ -76,8 +76,8 @@ public class FolderService {
 
         List<Board> boards = boardService.findByUserId(users.getId());
         Folder addFolder = findByBasicFolder(users);
-        for (Board board : boards){
-            if(!Optional.ofNullable(board.getFolder()).isPresent()) {
+        for (Board board : boards) {
+            if (!Optional.ofNullable(board.getFolder()).isPresent()) {
                 board.addFolderId(addFolder);
             }
         }

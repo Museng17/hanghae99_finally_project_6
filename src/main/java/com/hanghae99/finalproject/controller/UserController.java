@@ -3,9 +3,7 @@ package com.hanghae99.finalproject.controller;
 import com.hanghae99.finalproject.model.dto.requestDto.UserRequestDto;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.Users;
-import com.hanghae99.finalproject.service.FollowService;
-import com.hanghae99.finalproject.service.S3Uploader;
-import com.hanghae99.finalproject.service.UserService;
+import com.hanghae99.finalproject.service.*;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -96,7 +94,7 @@ public class UserController {
     public Users findUserProfile(HttpServletRequest request) {
         return userService.findUserProfile(request);
     }
-    
+
     @GetMapping("/user/profile/{id}")
     public UserProfileDto findUserProfile(Model model, @PathVariable Long id, HttpServletRequest request) {
 
@@ -106,7 +104,6 @@ public class UserController {
 
     @GetMapping("/user/myProfile")
     public MyProfileDto findMyProfile(Model model, HttpServletRequest request) {
-
         model.addAttribute("myProfileDto");
         return userService.getMyProfile(request);
     }
@@ -122,7 +119,7 @@ public class UserController {
     }
 
     @GetMapping("/followinguser/{page}/{size}")
-    public List<UserRequestDto> findFollowingUser(@PathVariable int page, @PathVariable int size, HttpServletRequest request){
-        return followService.findFollowingUser(page,size,request);
+    public List<UserRequestDto> findFollowingUser(@PathVariable int page, @PathVariable int size, HttpServletRequest request) {
+        return followService.findFollowingUser(page, size, request);
     }
 }
