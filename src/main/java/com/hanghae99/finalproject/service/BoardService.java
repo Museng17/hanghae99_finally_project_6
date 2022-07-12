@@ -73,9 +73,13 @@ public class BoardService {
         );
 
         if (!board.getImgPath().equals(boardRequestDto.getImgPath())) {
-            S3Object s3Object = s3Uploader.selectImage(BOARD.getPath(), board.getImgPath());
-            if (Optional.ofNullable(s3Object).isPresent()) {
-                s3Uploader.fileDelete(s3Object.getKey());
+            S3Object removeImageUrl = s3Uploader.selectImage(BOARD.getPath(), board.getImgPath());
+            if (Optional.ofNullable(removeImageUrl).isPresent()) {
+                s3Uploader.fileDelete(removeImageUrl.getKey());
+            }
+            S3Object addImageUrl = s3Uploader.selectImage(BOARD.getPath(), boardRequestDto.getImgPath());
+            if (!Optional.ofNullable(addImageUrl).isPresent()) {
+                boardRequestDto.setImgPath(s3Uploader.upload(BOARD.getPath(), boardRequestDto.getImgPath()).getUrl());
             }
         }
         board.update(boardRequestDto);
