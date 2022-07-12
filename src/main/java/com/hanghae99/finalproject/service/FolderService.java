@@ -169,7 +169,7 @@ public class FolderService {
         }
     }
 
-    public Folder findShareFolder(Long folderId, HttpServletRequest request) {
+    private Folder findShareFolder(Long folderId, HttpServletRequest request) {
         return folderRepository.findByIdAndUsersIdNot(folderId, userinfoHttpRequest.userFindByToken(request).getId()).orElseThrow(()
                 -> new RuntimeException("원하는 폴더를 찾지 못했습니다."));
     }
@@ -180,6 +180,7 @@ public class FolderService {
         FolderRequestDto folderRequestDto = new FolderRequestDto(folder);
         Folder folder1 = new Folder(folderRequestDto, users);
         folderRepository.save(folder1);
+        users.setFolderCnt(users.getFolderCnt() + 1);
     }
 
     @Transactional

@@ -156,6 +156,7 @@ public class BoardService {
         BoardRequestDto boardRequestDto = new BoardRequestDto(board);
         Board board1 = new Board(boardRequestDto, users);
         boardRepository.save(board1);
+        users.setBoardCnt(users.getBoardCnt() + 1);
     }
 
     @Transactional

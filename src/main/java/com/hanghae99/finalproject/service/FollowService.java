@@ -1,6 +1,7 @@
 package com.hanghae99.finalproject.service;
 
 import com.hanghae99.finalproject.model.dto.requestDto.UserRequestDto;
+import com.hanghae99.finalproject.model.dto.responseDto.UserProfileDto;
 import com.hanghae99.finalproject.model.entity.Follow;
 import com.hanghae99.finalproject.model.entity.Users;
 import com.hanghae99.finalproject.model.repository.FollowRepository;
@@ -51,20 +52,30 @@ public class FollowService {
     }
 
     @Transactional
-    public List<UserRequestDto> findFollowingUser(int page, int size, HttpServletRequest request){
+    public List<UserProfileDto> findFollowingUser(int page, int size, HttpServletRequest request){
         Users following = userRepository.findFollowingById(userinfoHttpRequest.userFindByToken(request).getId());
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Follow> follow = followRepository.findAllByFollowing(pageRequest,following);
         List<Follow> follow1 = follow.getContent();
         List<UserRequestDto> follow2 = toBoardRequestDtoList(follow1);
-        return follow2;
+        List<UserProfileDto> follow3 = toFollowRequestDtoList(follow2);
+        return follow3;
     }
-    private List<UserRequestDto> toBoardRequestDtoList(List<Follow> boards) {
+    private List<UserRequestDto> toBoardRequestDtoList(List<Follow> follows) {
         List<UserRequestDto> boardRequestDtoList = new ArrayList<>();
 
-        for (Follow follow : boards) {
+        for (Follow follow : follows) {
             boardRequestDtoList.add(new UserRequestDto(follow));
         }
         return boardRequestDtoList;
+    }
+    private List<UserProfileDto> toFollowRequestDtoList(List<UserRequestDto> followusers){
+        List<UserProfileDto> followRequestDtoList = new ArrayList<>();
+
+        for (UserRequestDto userRequestDto : followusers){
+            Long followercnt = followRepository.findFollowerCountById(userRequestDto.getId());
+            followRequestDtoList.add(new UserProfileDto(userRequestDto,followercnt));
+        }
+        return followRequestDtoList;
     }
 }

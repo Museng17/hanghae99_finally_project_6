@@ -1,5 +1,6 @@
 package com.hanghae99.finalproject.model.dto.responseDto;
 
+import com.hanghae99.finalproject.model.dto.requestDto.UserRequestDto;
 import com.hanghae99.finalproject.model.entity.Users;
 import com.hanghae99.finalproject.util.resultType.CategoryType;
 import lombok.*;
@@ -43,5 +44,12 @@ public class UserProfileDto {
             addList.add(adMap);
         }
         return addList;
+    }
+    public UserProfileDto(UserRequestDto userRequestDto, long followerCnt) {
+        this.id = userRequestDto.getId();
+        this.nickname = userRequestDto.getNickname();
+        this.imgPath = userRequestDto.getImgPath();
+        this.information = userRequestDto.getInformation();
+        this.followerCnt = followerCnt;
     }
 }

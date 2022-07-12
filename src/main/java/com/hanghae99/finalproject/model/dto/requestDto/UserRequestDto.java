@@ -14,6 +14,8 @@ public class UserRequestDto {
     private String information;
     private String password;
     private String newPassword;
+    private Long boardCnt;
+    private Long folderCnt;
 
     public UserRequestDto(Follow follower)
     {
@@ -21,5 +23,6 @@ public class UserRequestDto {
         this.nickname = follower.getFollower().getNickname();
         this.imgPath = follower.getFollower().getImgPath();
         this.information = follower.getFollower().getInformation();
+        this.boardCnt = follower.getFollower().getBoardCnt();
     }
 }
