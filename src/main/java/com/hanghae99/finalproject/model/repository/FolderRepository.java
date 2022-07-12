@@ -12,7 +12,7 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
     Optional<Folder> findByIdAndUsersId(Long folderId, Long userId);
 
     void deleteAllByUsers(Users user);
-
+    @Query("select f from Folder f where  f.name not like '무제'   and f.status in ?1")
     Page<Folder> findAllBystatus(DisclosureStatus status, Pageable pageable);
 
     Optional<Folder> findByIdAndUsersIdNot(Long folderId, Long id);

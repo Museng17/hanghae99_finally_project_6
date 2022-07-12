@@ -71,6 +71,9 @@ public class Folder extends TimeStamp {
         this.status = folderRequestDto.getStatus();
         this.users = users;
         this.sharedCount = folderRequestDto.getSharedCount() + 1;
+        this.BoardCnt = folderRequestDto.getBoardCnt();
+        this.boardList = folderRequestDto.getBoardList();
+        this.folderOrder = users.getFolderCnt()+1;
     }
 
     public void update(FolderRequestDto folderRequestDto) {

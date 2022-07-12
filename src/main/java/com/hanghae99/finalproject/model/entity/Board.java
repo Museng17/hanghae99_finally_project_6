@@ -82,6 +82,20 @@ public class Board extends TimeStamp {
         this.users = user;
     }
 
+    public Board(Board board, Users users,Folder folder){
+        this.title = board.getTitle();
+        this.link = board.getLink();
+        this.explanation = board.getExplanation();
+        this.imgPath = board.getImgPath();
+        this.content = board.getContent();
+        this.status = board.getStatus();
+        this.boardType = board.getBoardType();
+        this.category = board.getCategory();
+        this.boardOrder = board.getBoardOrder();
+        this.users = users;
+        this.folder =folder;
+    }
+
     public void update(BoardRequestDto boardRequestDto) {
         this.title = boardRequestDto.getTitle();
         this.link = boardRequestDto.getLink();

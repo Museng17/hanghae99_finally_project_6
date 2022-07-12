@@ -38,4 +38,12 @@ public class FolderRequestDto {
         this.folderOrder = folder.getFolderOrder();
         this.boardList = boards.getContent();
     }
+    public FolderRequestDto(Folder folder, List<Board> boards) {
+        this.id = folder.getId();
+        this.name = folder.getName();
+        this.status = folder.getStatus();
+        this.folderOrder = folder.getFolderOrder();
+        this.sharedCount = folder.getSharedCount();
+        this.boardCnt = folder.getBoardCnt();
+    }
 }

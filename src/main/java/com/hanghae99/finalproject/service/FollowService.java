@@ -73,8 +73,8 @@ public class FollowService {
         List<UserProfileDto> followRequestDtoList = new ArrayList<>();
 
         for (UserRequestDto userRequestDto : followusers){
-            Long followercnt = followRepository.findFollowerCountById(userRequestDto.getId());
-            followRequestDtoList.add(new UserProfileDto(userRequestDto,followercnt));
+            Long followingcnt = followRepository.findFollowingCountById(userRequestDto.getId());
+            followRequestDtoList.add(new UserProfileDto(userRequestDto,followingcnt));
         }
         return followRequestDtoList;
     }

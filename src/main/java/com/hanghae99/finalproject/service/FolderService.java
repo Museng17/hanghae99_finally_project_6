@@ -177,10 +177,18 @@ public class FolderService {
     public void cloneFolder(Long folderId, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
         Folder folder = findShareFolder(folderId, request);
-        FolderRequestDto folderRequestDto = new FolderRequestDto(folder);
+        List<Board> boards = boardService.findAllById(folder);
+        FolderRequestDto folderRequestDto = new FolderRequestDto(folder,boards);
         Folder folder1 = new Folder(folderRequestDto, users);
-        folderRepository.save(folder1);
+
+        Folder folder2=folderRepository.save(folder1);
+        List<Board> boards1 = new ArrayList<>();
+        for(Board board : boards){
+            boards1.add(new Board(board,users,folder2));
+        }
+        boardRepository.saveAll(boards1);
         users.setFolderCnt(users.getFolderCnt() + 1);
+        users.setBoardCnt(users.getBoardCnt()+ folder2.getBoardCnt());
     }
 
     @Transactional
