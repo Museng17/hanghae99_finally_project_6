@@ -1,7 +1,6 @@
 package com.hanghae99.finalproject.model.dto.requestDto;
 
 import com.hanghae99.finalproject.model.entity.Follow;
-import com.hanghae99.finalproject.model.entity.Users;
 import lombok.*;
 
 @Getter

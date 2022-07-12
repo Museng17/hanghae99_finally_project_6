@@ -1,6 +1,7 @@
 package com.hanghae99.finalproject.service;
 
 import com.hanghae99.finalproject.model.dto.requestDto.*;
+import com.hanghae99.finalproject.model.dto.responseDto.FolderAndBoardResponseDto;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.*;
@@ -14,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.hanghae99.finalproject.util.resultType.CategoryType.ALL;
+
 @Service
 @RequiredArgsConstructor
 public class FolderService {
@@ -23,6 +26,8 @@ public class FolderService {
     private final BoardService boardService;
     private final ShareRepository shareRepository;
     private final UserRepository userRepository;
+
+    private final BoardRepository boardRepository;
 
     @Transactional
     public void folderSave(FolderRequestDto folderRequestDto, HttpServletRequest request) {
@@ -223,5 +228,21 @@ public class FolderService {
                 disclosureStatuses,
                 pageable
         ).getContent();
+    }
+    public FolderAndBoardResponseDto allmoum(String keyword, int page, List<FolderRequestDto> folderRequestDtos){
+        Optional<FolderRequestDto> all = folderRequestDtos.stream()
+                .filter(categoryType -> categoryType.getCategory() == ALL)
+                .findFirst();
+        Page<Board> boards;
+        PageRequest pageRequest = PageRequest.of(page, 4, Sort.by("createdDate").descending());
+        if(all.isPresent()){
+            boards = boardRepository.findAllByStatusAndTitleContaining(DisclosureStatus.PUBLIC,"%"+keyword+"%",pageRequest );
+        }
+        else{
+            boards = boardRepository.findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatus.PUBLIC,"%"+keyword+"%",boardService.FolderRequestDtoToCategoryTypeList(folderRequestDtos),pageRequest );
+        }
+        Page<Folder> folders = folderRepository.findAllByNameContaining1(
+                "%"+keyword+"%", DisclosureStatus.PUBLIC,pageRequest);
+        return new FolderAndBoardResponseDto(boards,folders);
     }
 }

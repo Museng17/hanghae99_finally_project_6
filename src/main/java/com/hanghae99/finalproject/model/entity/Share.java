@@ -4,7 +4,6 @@ import com.hanghae99.finalproject.util.TimeStamp;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.catalina.User;
 
 import javax.persistence.*;
 

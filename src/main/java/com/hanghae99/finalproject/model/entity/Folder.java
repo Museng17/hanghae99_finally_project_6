@@ -3,7 +3,6 @@ package com.hanghae99.finalproject.model.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae99.finalproject.model.dto.requestDto.FolderRequestDto;
 import com.hanghae99.finalproject.util.*;
-import com.hanghae99.finalproject.util.resultType.CategoryType;
 import lombok.*;
 
 import javax.persistence.*;
