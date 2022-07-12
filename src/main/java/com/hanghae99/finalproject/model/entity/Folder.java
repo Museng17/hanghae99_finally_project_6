@@ -31,6 +31,8 @@ public class Folder extends TimeStamp {
     @Column(nullable = false)
     private Long folderOrder;
 
+    private Long BoardCnt;
+
     @JsonIgnore
     @ManyToOne
     private Users users;

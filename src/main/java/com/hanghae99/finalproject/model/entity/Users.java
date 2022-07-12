@@ -40,6 +40,13 @@ public class Users extends TimeStamp {
     @Column(nullable = true)
     private String password;
 
+    @Column(nullable = false)
+    private Long folderCnt;
+
+    @JsonIgnore
+    @Column(nullable = false)
+    private Long boardCnt;
+
     @OneToMany
     @JoinColumn(name = "folder_id")
     private List<Folder> folderList;
