@@ -49,6 +49,7 @@ public class WebConfig implements WebMvcConfigurer {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("http://spartastatic.s3-website.ap-northeast-2.amazonaws.com");
         configuration.addAllowedHeader("Content-Type");
         configuration.addAllowedHeader("Custom-Header");
         configuration.addAllowedMethod(HttpMethod.POST);
