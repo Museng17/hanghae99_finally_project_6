@@ -31,6 +31,7 @@ public class Folder extends TimeStamp {
     @Column(nullable = false)
     private Long folderOrder;
 
+    @Column(nullable = false)
     private Long BoardCnt;
 
     @JsonIgnore
@@ -49,25 +50,28 @@ public class Folder extends TimeStamp {
         this.status = status;
     }
 
-    public Folder( Users users) {
+    public Folder(Users users) {
         this.name = "무제";
-        this.status = DisclosureStatus.PUBLIC ;
+        this.status = DisclosureStatus.PUBLIC;
         this.folderOrder = 1L;
         this.users = users;
+        this.BoardCnt = 0L;
     }
+
     public Folder(FolderRequestDto folderRequestDto, Users users, Long folderCount) {
         this.name = folderRequestDto.getName();
         this.status = folderRequestDto.getStatus();
         this.folderOrder = folderCount + 1;
         this.users = users;
+        this.BoardCnt = 0L;
     }
+
     public Folder(FolderRequestDto folderRequestDto, Users users) {
         this.name = folderRequestDto.getName();
         this.status = folderRequestDto.getStatus();
         this.users = users;
-        this.sharedCount = folderRequestDto.getSharedCount()+1;
+        this.sharedCount = folderRequestDto.getSharedCount() + 1;
     }
-
 
     public void update(FolderRequestDto folderRequestDto) {
         this.name = folderRequestDto.getName();

@@ -51,6 +51,15 @@ public class FolderService {
                 .orElseThrow(() -> new RuntimeException("FolderService 45 에러, 찾는 폴더가 없습니다."));
     }
 
+    @Transactional(readOnly = true)
+    public List<Folder> findAllFolder(List<Long> folderRequestDto, HttpServletRequest request) {
+        return folderRepository.findAllByIdInAndUsersId(
+                        folderRequestDto,
+                        userinfoHttpRequest.userFindByToken(request).getId()
+                )
+                .orElseThrow(() -> new RuntimeException("FolderService 45 에러, 찾는 폴더가 없습니다."));
+    }
+
     @Transactional
     public void boardInFolder(Long folderId, FolderRequestDto folderRequestDto, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
@@ -93,18 +102,29 @@ public class FolderService {
     }
 
     @Transactional
-    public void folderDelete(Long folderId, HttpServletRequest request) {
+    public void folderDelete(List<FolderRequestDto> folderRequestDto, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
-        Folder folder = findFolder(folderId, request);
+        List<Long> longs = folderRequestDto.stream()
+                .map(FolderRequestDto::getId)
+                .collect(Collectors.toList());
 
-        userinfoHttpRequest.userAndWriterMatches(
-                folder.getUsers().getId(),
-                users.getId()
-        );
+        List<Folder> folders = findAllFolder(longs, request);
 
-        boardService.boardDeleteByFolderId(folderId);
-        folderRepository.deleteById(folderId);
-        users.setFolderCnt(users.getFolderCnt() - 1);
+        List<Long> DbLongList = folders.stream()
+                .map(Folder::getId)
+                .collect(Collectors.toList());
+
+        for (Folder folder : folders) {
+            userinfoHttpRequest.userAndWriterMatches(
+                    folder.getUsers().getId(),
+                    users.getId()
+            );
+        }
+
+        List<Board> removeBoardList = boardService.boardDeleteByFolderId(DbLongList);
+        folderRepository.deleteAllById(DbLongList);
+        users.setBoardCnt(users.getBoardCnt() - removeBoardList.size());
+        users.setFolderCnt(users.getFolderCnt() - DbLongList.size());
     }
 
     @Transactional
