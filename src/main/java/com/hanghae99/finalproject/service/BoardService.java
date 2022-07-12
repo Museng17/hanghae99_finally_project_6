@@ -58,6 +58,7 @@ public class BoardService {
                         folderRepository.findByUsersAndName(user, "무제")
                 )
         );
+        user.setBoardCnt(user.getBoardCnt() + 1);
         return board;
     }
 
@@ -81,14 +82,15 @@ public class BoardService {
 
     @Transactional
     public void boardDelete(Long id, HttpServletRequest request) {
+        Users users = userinfoHttpRequest.userFindByToken(request);
         Board board = boardFindById(id);
 
         userinfoHttpRequest.userAndWriterMatches(
                 board.getUsers().getId(),
-                userinfoHttpRequest.userFindByToken(request).getId()
+                users.getId()
         );
-
         boardRepository.deleteById(id);
+        users.setBoardCnt(users.getBoardCnt() - 1);
     }
 
     public Board boardFindById(Long id) {
