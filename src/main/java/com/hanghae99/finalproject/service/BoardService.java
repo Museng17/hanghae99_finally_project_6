@@ -71,17 +71,19 @@ public class BoardService {
                 board.getUsers().getId(),
                 userinfoHttpRequest.userFindByToken(request).getId()
         );
-
-        if (!board.getImgPath().equals(boardRequestDto.getImgPath())) {
-            S3Object removeImageUrl = s3Uploader.selectImage(BOARD.getPath(), board.getImgPath());
-            if (Optional.ofNullable(removeImageUrl).isPresent()) {
-                s3Uploader.fileDelete(removeImageUrl.getKey());
-            }
-            S3Object addImageUrl = s3Uploader.selectImage(BOARD.getPath(), boardRequestDto.getImgPath());
-            if (!Optional.ofNullable(addImageUrl).isPresent()) {
-                boardRequestDto.setImgPath(s3Uploader.upload(BOARD.getPath(), boardRequestDto.getImgPath()).getUrl());
+        if (boardRequestDto.getBoardType() == BoardType.LINK) {
+            if (!board.getImgPath().equals(boardRequestDto.getImgPath())) {
+                S3Object removeImageUrl = s3Uploader.selectImage(BOARD.getPath(), board.getImgPath());
+                if (Optional.ofNullable(removeImageUrl).isPresent()) {
+                    s3Uploader.fileDelete(removeImageUrl.getKey());
+                }
+                S3Object addImageUrl = s3Uploader.selectImage(BOARD.getPath(), boardRequestDto.getImgPath());
+                if (!Optional.ofNullable(addImageUrl).isPresent()) {
+                    boardRequestDto.setImgPath(s3Uploader.upload(BOARD.getPath(), boardRequestDto.getImgPath()).getUrl());
+                }
             }
         }
+
         board.update(boardRequestDto);
     }
 
