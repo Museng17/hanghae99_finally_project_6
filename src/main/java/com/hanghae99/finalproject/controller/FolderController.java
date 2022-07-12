@@ -33,10 +33,10 @@ public class FolderController {
         folderService.boardInFolder(folderId, folderRequestDto, request);
     }
 
-    @DeleteMapping("/folder/{folderId}")
-    public void folderDelete(@PathVariable Long folderId,
+    @DeleteMapping("/folders")
+    public void folderDelete(@RequestBody List<FolderRequestDto> folderRequestDto,
                              HttpServletRequest request) {
-        folderService.folderDelete(folderId, request);
+        folderService.folderDelete(folderRequestDto, request);
     }
 
     @PutMapping("/folder/{folderId}")
@@ -79,7 +79,6 @@ public class FolderController {
         return folderService.findBestFolder(page, size);
     }
 
-
     @PostMapping("/board/{userId}/{keyword}")
     public void YourPage(@PathVariable String keyword,
                          @RequestBody List<CategoryType> categoryTypeList,
@@ -93,8 +92,9 @@ public class FolderController {
                              @PathVariable Long userId) {
         return folderService.moum(keyword, request, pageable, userId);
     }
+
     @PostMapping("/allfolders/{keyword}/{page}")
-    public FolderAndBoardResponseDto allmoum(@PathVariable String keyword, @PathVariable int page, @RequestBody List<FolderRequestDto> folderRequestDtos){
+    public FolderAndBoardResponseDto allmoum(@PathVariable String keyword, @PathVariable int page, @RequestBody List<FolderRequestDto> folderRequestDtos) {
         return folderService.allmoum(keyword, page, folderRequestDtos);
     }
 }

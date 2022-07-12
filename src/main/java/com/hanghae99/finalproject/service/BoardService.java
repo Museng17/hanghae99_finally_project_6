@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.hanghae99.finalproject.util.resultType.CategoryType.ALL;
 import static com.hanghae99.finalproject.util.resultType.FileUploadType.BOARD;
@@ -81,21 +82,32 @@ public class BoardService {
     }
 
     @Transactional
-    public void boardDelete(Long id, HttpServletRequest request) {
+    public void boardDelete(List<BoardRequestDto> boardRequestDto, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
-        Board board = boardFindById(id);
+        List<Long> longs = boardRequestDto.stream()
+                .map(BoardRequestDto::getId)
+                .collect(Collectors.toList());
 
-        userinfoHttpRequest.userAndWriterMatches(
-                board.getUsers().getId(),
-                users.getId()
-        );
-        boardRepository.deleteById(id);
-        users.setBoardCnt(users.getBoardCnt() - 1);
+        List<Board> boardList = boardAllFindById(longs);
+        for (Board board : boardList) {
+            userinfoHttpRequest.userAndWriterMatches(
+                    board.getUsers().getId(),
+                    users.getId()
+            );
+        }
+
+        boardRepository.deleteAllById(longs);
+        users.setBoardCnt(users.getBoardCnt() - boardList.size());
     }
 
     public Board boardFindById(Long id) {
         return boardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("BoardService 74 에러, 해당 글을 찾지 못했습니다."));
+    }
+
+    public List<Board> boardAllFindById(List<Long> boardIdList) {
+        return boardRepository.findAllById(boardIdList);
+
     }
 
     public List<Board> findAllById(List<Long> longs) {
@@ -106,8 +118,8 @@ public class BoardService {
         return boardRepository.findByFolder(folder);
     }
 
-    public void boardDeleteByFolderId(Long folderId) {
-        boardRepository.deleteByFolderId(folderId);
+    public List<Board> boardDeleteByFolderId(List<Long> folderIdList) {
+        return boardRepository.deleteAllByFolderIdIn(folderIdList);
     }
 
     public void statusUpdateByFolderId(Long id, FolderRequestDto folderRequestDto) {

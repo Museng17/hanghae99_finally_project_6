@@ -33,10 +33,10 @@ public class BoardController {
         boardService.boardUpdate(id, boardRequestDto, request);
     }
 
-    @DeleteMapping("/board/{id}")
-    public void boardDelete(@PathVariable Long id,
+    @DeleteMapping("/boards")
+    public void boardDelete(@RequestBody List<BoardRequestDto> boardRequestDtos,
                             HttpServletRequest request) {
-        boardService.boardDelete(id, request);
+        boardService.boardDelete(boardRequestDtos, request);
     }
 
     @PostMapping("/image/og")
@@ -67,11 +67,11 @@ public class BoardController {
 
     @PostMapping("/boards/{userId}/{folderId}/{keyword}")
     public FolderRequestDto moum(@RequestBody List<FolderRequestDto> folderRequestDtos,
-                                     @PathVariable String keyword,
-                                     HttpServletRequest request,
-                                     @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
-                                     @PathVariable Long folderId,
-                                     @PathVariable Long userId) {
+                                 @PathVariable String keyword,
+                                 HttpServletRequest request,
+                                 @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
+                                 @PathVariable Long folderId,
+                                 @PathVariable Long userId) {
         return boardService.moum(folderRequestDtos, keyword, request, pageable, folderId, userId);
     }
 }
