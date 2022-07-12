@@ -30,8 +30,8 @@ public class UserProfileDto {
         this.information = user.getInformation();
         this.followingCnt = followingCount;
         this.followerCnt = followerCount;
-        this.boardCnt = user.getBoardList().size();
-        this.folderCnt = user.getFolderList().size();
+        this.boardCnt = user.getBoardCnt();
+        this.folderCnt = user.getFolderCnt();
         this.categoryList = categoryListToMap(allCategoryByUsersId);
     }
 

@@ -1,19 +1,13 @@
 package com.hanghae99.finalproject.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.hanghae99.finalproject.model.dto.requestDto.SocialLoginRequestDto;
-import com.hanghae99.finalproject.model.dto.requestDto.UserRequestDto;
-import com.hanghae99.finalproject.model.dto.responseDto.FileUploadResponse;
+import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.util.TimeStamp;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.UUID;
+
+import java.util.*;
 
 @Entity
 @Getter
@@ -59,11 +53,15 @@ public class Users extends TimeStamp {
         this.username = username;
         this.nickname = nickname;
         this.password = password;
+        this.boardCnt = 0L;
+        this.folderCnt = 0L;
     }
 
     public Users(SocialLoginRequestDto socialLoginRequestDto, int allCount) {
         this.username = socialLoginRequestDto.getEmail();
         this.nickname = "USER(" + UUID.randomUUID().toString().replaceAll("-", "").substring(5, 9) + allCount + ")";
+        this.folderCnt = 0L;
+        this.boardCnt = 0L;
     }
 
     public Users(Long id, String imgPath, String information, String nickname, String username) {

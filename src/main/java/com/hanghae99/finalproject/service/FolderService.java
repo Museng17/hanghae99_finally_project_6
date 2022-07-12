@@ -39,6 +39,7 @@ public class FolderService {
                         folderRepository.findFolderCount(user.getId())
                 )
         );
+        user.setFolderCnt(user.getFolderCnt() + 1);
     }
 
     @Transactional(readOnly = true)
@@ -80,6 +81,8 @@ public class FolderService {
             board.addFolderId(folder);
         }
 
+        folder.setBoardCnt(0L + addBoardList.size());
+
         List<Board> boards = boardService.findByUserId(users.getId());
         Folder addFolder = findByBasicFolder(users);
         for (Board board : boards) {
@@ -91,15 +94,17 @@ public class FolderService {
 
     @Transactional
     public void folderDelete(Long folderId, HttpServletRequest request) {
+        Users users = userinfoHttpRequest.userFindByToken(request);
         Folder folder = findFolder(folderId, request);
 
         userinfoHttpRequest.userAndWriterMatches(
                 folder.getUsers().getId(),
-                userinfoHttpRequest.userFindByToken(request).getId()
+                users.getId()
         );
 
         boardService.boardDeleteByFolderId(folderId);
         folderRepository.deleteById(folderId);
+        users.setFolderCnt(users.getFolderCnt() - 1);
     }
 
     @Transactional
@@ -229,20 +234,20 @@ public class FolderService {
                 pageable
         ).getContent();
     }
-    public FolderAndBoardResponseDto allmoum(String keyword, int page, List<FolderRequestDto> folderRequestDtos){
+
+    public FolderAndBoardResponseDto allmoum(String keyword, int page, List<FolderRequestDto> folderRequestDtos) {
         Optional<FolderRequestDto> all = folderRequestDtos.stream()
                 .filter(categoryType -> categoryType.getCategory() == ALL)
                 .findFirst();
         Page<Board> boards;
         PageRequest pageRequest = PageRequest.of(page, 4, Sort.by("createdDate").descending());
-        if(all.isPresent()){
-            boards = boardRepository.findAllByStatusAndTitleContaining(DisclosureStatus.PUBLIC,"%"+keyword+"%",pageRequest );
-        }
-        else{
-            boards = boardRepository.findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatus.PUBLIC,"%"+keyword+"%",boardService.FolderRequestDtoToCategoryTypeList(folderRequestDtos),pageRequest );
+        if (all.isPresent()) {
+            boards = boardRepository.findAllByStatusAndTitleContaining(DisclosureStatus.PUBLIC, "%" + keyword + "%", pageRequest);
+        } else {
+            boards = boardRepository.findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatus.PUBLIC, "%" + keyword + "%", boardService.FolderRequestDtoToCategoryTypeList(folderRequestDtos), pageRequest);
         }
         Page<Folder> folders = folderRepository.findAllByNameContaining1(
-                "%"+keyword+"%", DisclosureStatus.PUBLIC,pageRequest);
-        return new FolderAndBoardResponseDto(boards,folders);
+                "%" + keyword + "%", DisclosureStatus.PUBLIC, pageRequest);
+        return new FolderAndBoardResponseDto(boards, folders);
     }
 }
