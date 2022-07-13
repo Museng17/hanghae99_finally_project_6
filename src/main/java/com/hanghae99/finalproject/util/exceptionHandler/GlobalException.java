@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.*;
 public class GlobalException {
 
     @ExceptionHandler(ExpiredJwtException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.GONE)
     public ErrorMassageResponseDto ExpiredJwtExceptionException() {
         return new ErrorMassageResponseDto("토큰의 유효시간이 만료되었습니다.");
     }
 
     @ExceptionHandler(JwtException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
     public ErrorMassageResponseDto JwtExceptionException() {
         return new ErrorMassageResponseDto("변질 된 토큰입니다.");
     }
