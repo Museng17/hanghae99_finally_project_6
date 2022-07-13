@@ -2,7 +2,7 @@ package com.hanghae99.finalproject.controller;
 
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.FolderAndBoardResponseDto;
-import com.hanghae99.finalproject.model.entity.Folder;
+import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.service.FolderService;
 import com.hanghae99.finalproject.util.resultType.CategoryType;
 import lombok.RequiredArgsConstructor;
@@ -47,9 +47,9 @@ public class FolderController {
     }
 
     @PutMapping("/folder")
-    public void crateBoardInFolder(@RequestBody BoardRequestDto boardRequestDto,
-                                   HttpServletRequest request) {
-        folderService.crateBoardInFolder(boardRequestDto, request);
+    public Board crateBoardInFolder(@RequestBody BoardRequestDto boardRequestDto,
+                                    HttpServletRequest request) {
+        return folderService.crateBoardInFolder(boardRequestDto, request);
     }
 
     @PostMapping("/folders")
