@@ -36,9 +36,11 @@ public class MyProfileDto {
     private List<Map<String, CategoryType>> categoryListToMap(List<CategoryType> categoryList) {
         List<Map<String, CategoryType>> addList = new ArrayList<>();
         for (CategoryType categoryType : categoryList) {
-            Map<String, CategoryType> adMap = new HashMap<>();
-            adMap.put("category", categoryType);
-            addList.add(adMap);
+            if(Optional.ofNullable(categoryType).isPresent()){
+                Map<String, CategoryType> adMap = new HashMap<>();
+                adMap.put("category", categoryType);
+                addList.add(adMap);
+            }
         }
         return addList;
     }
