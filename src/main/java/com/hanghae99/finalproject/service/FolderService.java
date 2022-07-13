@@ -1,7 +1,7 @@
 package com.hanghae99.finalproject.service;
 
 import com.hanghae99.finalproject.model.dto.requestDto.*;
-import com.hanghae99.finalproject.model.dto.responseDto.FolderAndBoardResponseDto;
+import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.*;
@@ -235,7 +235,8 @@ public class FolderService {
         return folderRepository.findByUsersAndName(users, "무제");
     }
 
-    public List<Folder> moum(String keyword, HttpServletRequest request, Pageable pageable, Long userId) {
+    @Transactional(readOnly = true)
+    public FolderAndShareResponseDto moum(String keyword, HttpServletRequest request, Pageable pageable, Long userId) {
         List<DisclosureStatus> disclosureStatuses = new ArrayList<>();
         disclosureStatuses.add(DisclosureStatus.PUBLIC);
 
@@ -248,20 +249,19 @@ public class FolderService {
                     throw new RuntimeException("회원을 찾을 수 없습니다.");
                 });
 
-        Folder folder = findByBasicFolder(users);
-        boolean isBoardInBasicFolder = false;
-
-        if (boardService.findByFolder(folder).size() > 0) {
-            isBoardInBasicFolder = true;
-        }
-
-        return folderRepository.findByNameContaining(
-                "%" + keyword + "%",
-                users,
-                isBoardInBasicFolder,
-                disclosureStatuses,
-                pageable
-        ).getContent();
+        return new FolderAndShareResponseDto(
+                folderRepository.findByNameContaining(
+                        "%" + keyword + "%",
+                        users,
+                        boardService.findByFolder(findByBasicFolder(users)).size() > 0,
+                        disclosureStatuses,
+                        pageable
+                ).getContent(),
+                folderRepository.findAllByIdAndNameLike(
+                        listToId(shareRepository.findAllByUsersId(users.getId())),
+                        "%" + keyword + "%"
+                )
+        );
     }
 
     public FolderAndBoardResponseDto allmoum(String keyword, int page, List<FolderRequestDto> folderRequestDtos) {
@@ -278,5 +278,9 @@ public class FolderService {
         Page<Folder> folders = folderRepository.findAllByNameContaining1(
                 "%" + keyword + "%", DisclosureStatus.PUBLIC, pageRequest);
         return new FolderAndBoardResponseDto(boards, folders);
+    }
+
+    private List<Long> listToId(List<Share> List) {
+        return List.stream().map(Share::getId).collect(Collectors.toList());
     }
 }

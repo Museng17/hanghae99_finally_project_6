@@ -1,7 +1,7 @@
 package com.hanghae99.finalproject.controller;
 
 import com.hanghae99.finalproject.model.dto.requestDto.*;
-import com.hanghae99.finalproject.model.dto.responseDto.FolderAndBoardResponseDto;
+import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.Folder;
 import com.hanghae99.finalproject.service.FolderService;
 import com.hanghae99.finalproject.util.resultType.CategoryType;
@@ -86,10 +86,10 @@ public class FolderController {
     }
 
     @PostMapping("/folders/{userId}/{keyword}")
-    public List<Folder> moum(@PathVariable String keyword,
-                             HttpServletRequest request,
-                             @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
-                             @PathVariable Long userId) {
+    public FolderAndShareResponseDto moum(@PathVariable String keyword,
+                                          HttpServletRequest request,
+                                          @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
+                                          @PathVariable Long userId) {
         return folderService.moum(keyword, request, pageable, userId);
     }
 
