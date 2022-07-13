@@ -320,6 +320,18 @@ public class UserService {
         }
     }
 
+    @Transactional
+    public Boolean checkUserPw(UserRequestDto userRequestDto, HttpServletRequest request) {
+        Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
+
+        if (!bCryptPasswordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {
+            throw new RuntimeException("현재 비밀번호와 다릅니다.");
+        } else {
+
+            return true;
+        }
+    }
+
     @Transactional(readOnly = true)
     public Users findUserProfile(HttpServletRequest request) {
         return userRepository.findByUsernameNoJoin(request.getAttribute(JWT_HEADER_KEY).toString())

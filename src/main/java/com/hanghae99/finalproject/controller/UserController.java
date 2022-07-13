@@ -95,6 +95,13 @@ public class UserController {
         return userService.updateUserPw(userRequestDto, request);
     }
 
+    @PostMapping("/user/pw/check")
+    public Boolean userPwCheck(@RequestBody UserRequestDto userRequestDto,
+                               HttpServletRequest request) {
+
+        return userService.checkUserPw(userRequestDto, request);
+    }
+
     @GetMapping("/user/profile")
     public Users findUserProfile(HttpServletRequest request) {
         return userService.findUserProfile(request);
