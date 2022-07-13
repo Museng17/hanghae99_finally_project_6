@@ -144,7 +144,7 @@ public class FolderService {
     }
 
     @Transactional
-    public void crateBoardInFolder(BoardRequestDto boardRequestDto, HttpServletRequest request) {
+    public Board crateBoardInFolder(BoardRequestDto boardRequestDto, HttpServletRequest request) {
         Board board = boardService.boardSave(
                 boardRequestDto,
                 request
@@ -156,6 +156,7 @@ public class FolderService {
         );
 
         board.addFolderId(folder);
+        return board;
     }
 
     @Transactional
