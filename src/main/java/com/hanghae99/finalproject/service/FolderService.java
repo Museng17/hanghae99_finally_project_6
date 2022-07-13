@@ -30,16 +30,16 @@ public class FolderService {
     private final BoardRepository boardRepository;
 
     @Transactional
-    public void folderSave(FolderRequestDto folderRequestDto, HttpServletRequest request) {
+    public Folder folderSave(FolderRequestDto folderRequestDto, HttpServletRequest request) {
         Users user = userinfoHttpRequest.userFindByToken(request);
-        folderRepository.save(
+        user.setFolderCnt(user.getFolderCnt() + 1);
+        return folderRepository.save(
                 new Folder(
                         folderRequestDto,
                         user,
                         folderRepository.findFolderCount(user.getId())
                 )
         );
-        user.setFolderCnt(user.getFolderCnt() + 1);
     }
 
     @Transactional(readOnly = true)
@@ -178,17 +178,17 @@ public class FolderService {
         Users users = userinfoHttpRequest.userFindByToken(request);
         Folder folder = findShareFolder(folderId, request);
         List<Board> boards = boardService.findAllById(folder);
-        FolderRequestDto folderRequestDto = new FolderRequestDto(folder,boards);
+        FolderRequestDto folderRequestDto = new FolderRequestDto(folder, boards);
         Folder folder1 = new Folder(folderRequestDto, users);
 
-        Folder folder2=folderRepository.save(folder1);
+        Folder folder2 = folderRepository.save(folder1);
         List<Board> boards1 = new ArrayList<>();
-        for(Board board : boards){
-            boards1.add(new Board(board,users,folder2));
+        for (Board board : boards) {
+            boards1.add(new Board(board, users, folder2));
         }
         boardRepository.saveAll(boards1);
         users.setFolderCnt(users.getFolderCnt() + 1);
-        users.setBoardCnt(users.getBoardCnt()+ folder2.getBoardCnt());
+        users.setBoardCnt(users.getBoardCnt() + folder2.getBoardCnt());
     }
 
     @Transactional
