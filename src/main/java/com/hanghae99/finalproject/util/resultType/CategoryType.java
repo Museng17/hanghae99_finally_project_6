@@ -51,6 +51,12 @@ public enum CategoryType {
     @JsonProperty("경제")
     ECONOMY("경제"),
 
+    @JsonProperty("카페")
+    Cafe("카페"),
+
+    @JsonProperty("쇼핑")
+    SHOPPING("쇼핑"),
+
     @JsonProperty("기타")
     OTHERS("기타");
 
