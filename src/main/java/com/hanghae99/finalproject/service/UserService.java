@@ -231,6 +231,23 @@ public class UserService {
         return createTokens(findUser((String) decodeToken.get(CLAIMS_KEY)).getUsername());
     }
 
+    @Transactional(readOnly = true)
+    public TokenResponseDto refreshToken2(String refreshToken) {
+        jwtTokenProvider.validToken(refreshToken);
+        Claims decodeToken = userInfoInJwt.getRefreshToken(refreshToken);
+
+        String decodeRefresh = (String) decodeToken.get(REFRESH_TOKEN);
+
+        if ((Optional.ofNullable(decodeRefresh).isPresent())) {
+            if (!decodeRefresh.equals(REFRESH_TOKEN)) {
+                throw new RuntimeException(refreshToken + "는 " + REFRESH_TOKEN + "이 아닙니다.  UserService + 163에러 ");
+            }
+        } else {
+            throw new RuntimeException(REFRESH_TOKEN + "이 아닙니다. UserService 166에러 ");
+        }
+        return createTokens2(findUser((String) decodeToken.get(CLAIMS_KEY)).getUsername());
+    }
+
     public TokenResponseDto createTokens(String username) {
         return new TokenResponseDto(
                 jwtTokenProvider.createAccessToken(username),
