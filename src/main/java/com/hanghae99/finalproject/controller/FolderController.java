@@ -21,9 +21,9 @@ public class FolderController {
     private final FolderService folderService;
 
     @PostMapping("/folder")
-    public void folderSave(@RequestBody FolderRequestDto folderRequestDto,
-                           HttpServletRequest request) {
-        folderService.folderSave(folderRequestDto, request);
+    public Folder folderSave(@RequestBody FolderRequestDto folderRequestDto,
+                             HttpServletRequest request) {
+        return folderService.folderSave(folderRequestDto, request);
     }
 
     @PostMapping("/folder/{folderId}")
