@@ -284,16 +284,20 @@ public class FolderService {
         Optional<FolderRequestDto> all = folderRequestDtos.stream()
                 .filter(categoryType -> categoryType.getCategory() == ALL)
                 .findFirst();
+        int boardsCnt;
         Page<Board> boards;
         PageRequest pageRequest = PageRequest.of(page, 4, Sort.by("createdDate").descending());
         if (all.isPresent()) {
             boards = boardRepository.findAllByStatusAndTitleContaining(DisclosureStatus.PUBLIC, "%" + keyword + "%", pageRequest);
+            boardsCnt = boardRepository.findAllByStatusAndTitleContaining(DisclosureStatus.PUBLIC, "%" + keyword + "%").size();
         } else {
             boards = boardRepository.findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatus.PUBLIC, "%" + keyword + "%", boardService.FolderRequestDtoToCategoryTypeList(folderRequestDtos), pageRequest);
+            boardsCnt = boardRepository.findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatus.PUBLIC, "%" + keyword + "%", boardService.FolderRequestDtoToCategoryTypeList(folderRequestDtos)).size();
         }
         Page<Folder> folders = folderRepository.findAllByNameContaining1(
                 "%" + keyword + "%", DisclosureStatus.PUBLIC, pageRequest);
-        return new FolderAndBoardResponseDto(boards, folders);
+        int foldersCnt = folderRepository.findAllByNameContaining1("%" + keyword + "%", DisclosureStatus.PUBLIC).size();
+        return new FolderAndBoardResponseDto(boards,boardsCnt, folders,foldersCnt);
     }
 
     private List<Long> listToId(List<Share> List) {
