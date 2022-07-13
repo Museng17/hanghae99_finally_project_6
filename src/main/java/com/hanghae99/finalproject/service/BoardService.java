@@ -232,7 +232,6 @@ public class BoardService {
                                  Pageable pageable,
                                  Long folderId,
                                  Long userId) {
-
         List<DisclosureStatus> disclosureStatuses = new ArrayList<>();
         disclosureStatuses.add(DisclosureStatus.PUBLIC);
 

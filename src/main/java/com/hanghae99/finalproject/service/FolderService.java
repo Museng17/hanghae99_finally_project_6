@@ -1,7 +1,7 @@
 package com.hanghae99.finalproject.service;
 
 import com.hanghae99.finalproject.model.dto.requestDto.*;
-import com.hanghae99.finalproject.model.dto.responseDto.*;
+import com.hanghae99.finalproject.model.dto.responseDto.FolderAndBoardResponseDto;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.*;
@@ -236,7 +236,7 @@ public class FolderService {
     }
 
     @Transactional(readOnly = true)
-    public FolderAndShareResponseDto moum(String keyword, HttpServletRequest request, Pageable pageable, Long userId) {
+    public List<Folder> moum(String keyword, HttpServletRequest request, Pageable pageable, Long userId) {
         List<DisclosureStatus> disclosureStatuses = new ArrayList<>();
         disclosureStatuses.add(DisclosureStatus.PUBLIC);
 
@@ -249,19 +249,34 @@ public class FolderService {
                     throw new RuntimeException("회원을 찾을 수 없습니다.");
                 });
 
-        return new FolderAndShareResponseDto(
-                folderRepository.findByNameContaining(
-                        "%" + keyword + "%",
-                        users,
-                        boardService.findByFolder(findByBasicFolder(users)).size() > 0,
-                        disclosureStatuses,
-                        pageable
-                ).getContent(),
-                folderRepository.findAllByIdAndNameLike(
-                        listToId(shareRepository.findAllByUsersId(users.getId())),
-                        "%" + keyword + "%"
-                )
-        );
+        return folderRepository.findByNameContaining(
+                "%" + keyword + "%",
+                users,
+                boardService.findByFolder(findByBasicFolder(users)).size() > 0,
+                disclosureStatuses,
+                pageable
+        ).getContent();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Folder> shareList(String keyword, HttpServletRequest request, Pageable pageable, Long userId) {
+        List<DisclosureStatus> disclosureStatuses = new ArrayList<>();
+        disclosureStatuses.add(DisclosureStatus.PUBLIC);
+
+        Users users = userRepository.findById(userId)
+                .orElseGet(() -> {
+                    if (userId == 0L) {
+                        disclosureStatuses.add(DisclosureStatus.PRIVATE);
+                        return userinfoHttpRequest.userFindByToken(request);
+                    }
+                    throw new RuntimeException("회원을 찾을 수 없습니다.");
+                });
+
+        return folderRepository.findAllByIdAndNameLike(
+                listToId(shareRepository.findAllByUsersId(users.getId())),
+                "%" + keyword + "%",
+                pageable
+        ).getContent();
     }
 
     public FolderAndBoardResponseDto allmoum(String keyword, int page, List<FolderRequestDto> folderRequestDtos) {

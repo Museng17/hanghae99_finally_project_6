@@ -34,5 +34,5 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
     Optional<List<Folder>> findAllByIdInAndUsersId(List<Long> folderId, Long id);
 
     @Query("select f FROM Folder f where f.id In ?1 and f.name LIKE CASE WHEN ?2 = '%all%' then '%%' else ?2 end")
-    List<Folder> findAllByIdAndNameLike(List<Long> listToId, String s);
+    Page<Folder> findAllByIdAndNameLike(List<Long> listToId, String s, Pageable pageable);
 }
