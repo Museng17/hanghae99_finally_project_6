@@ -79,12 +79,6 @@ public class FolderController {
         return folderService.findBestFolder(page, size);
     }
 
-    @PostMapping("/board/{userId}/{keyword}")
-    public void YourPage(@PathVariable String keyword,
-                         @RequestBody List<CategoryType> categoryTypeList,
-                         @PathVariable String userId) {
-    }
-
     @GetMapping("/folders/{userId}/{keyword}")
     public List<Folder> moum(@PathVariable String keyword,
                              HttpServletRequest request,
