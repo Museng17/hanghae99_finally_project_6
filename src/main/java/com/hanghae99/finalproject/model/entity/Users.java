@@ -3,6 +3,7 @@ package com.hanghae99.finalproject.model.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.util.TimeStamp;
+import com.hanghae99.finalproject.util.resultType.LoginType;
 import lombok.*;
 
 import javax.persistence.*;
@@ -37,9 +38,11 @@ public class Users extends TimeStamp {
     @Column(nullable = false)
     private Long folderCnt;
 
-    @JsonIgnore
     @Column(nullable = false)
     private Long boardCnt;
+
+    @Column(nullable = false)
+    private LoginType loginType;
 
     @OneToMany
     @JoinColumn(name = "folder_id")
