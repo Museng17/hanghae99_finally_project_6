@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.hanghae99.finalproject.util.resultType.CategoryType.ALL;
+import static com.hanghae99.finalproject.util.resultType.CategoryType.*;
 import static com.hanghae99.finalproject.util.resultType.FileUploadType.BOARD;
 
 @Service
@@ -31,6 +31,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final FolderRepository folderRepository;
     private final UserinfoHttpRequest userinfoHttpRequest;
+    private final ShareRepository shareRepository;
     private final S3Uploader s3Uploader;
     private final UserRepository userRepository;
 
@@ -51,14 +52,18 @@ public class BoardService {
         }
 
         Users user = userinfoHttpRequest.userFindByToken(request);
+
+        Folder folder = folderRepository.findByUsersAndName(user, "무제");
+
         Board board = boardRepository.save(
                 new Board(
                         boardRepository.findBoardCount(user.getId()),
                         boardRequestDto,
                         user,
-                        folderRepository.findByUsersAndName(user, "무제")
+                        folder
                 )
         );
+        folder.setBoardCnt(folder.getBoardCnt() + 1);
         user.setBoardCnt(user.getBoardCnt() + 1);
         return board;
     }
@@ -220,12 +225,14 @@ public class BoardService {
         return boardRepository.findByUsersId(id);
     }
 
+    @Transactional(readOnly = true)
     public FolderRequestDto moum(List<FolderRequestDto> folderRequestDtos,
                                  String keyword,
                                  HttpServletRequest request,
                                  Pageable pageable,
                                  Long folderId,
                                  Long userId) {
+
         List<DisclosureStatus> disclosureStatuses = new ArrayList<>();
         disclosureStatuses.add(DisclosureStatus.PUBLIC);
 
@@ -238,33 +245,31 @@ public class BoardService {
                     throw new RuntimeException("회원을 찾을 수 없습니다.");
                 });
 
-        Optional<FolderRequestDto> all = folderRequestDtos.stream()
-                .filter(categoryType -> categoryType.getCategory() == ALL)
-                .findFirst();
-
-        if (all.isPresent()) {
-            return new FolderRequestDto(
-                    boardRepository.findByFolderIdAndTitleContaining(
-                            folderId,
-                            "%" + keyword + "%",
-                            user.getId(),
-                            disclosureStatuses,
-                            pageable
-                    ),
-                    folderRepository.findByIdAndUsersId(folderId, user.getId()).get()
-            );
-        }
-
         return new FolderRequestDto(
                 boardRepository.findByFolderIdAndTitleContainingAndCategoryIn(
                         folderId,
                         "%" + keyword + "%",
-                        FolderRequestDtoToCategoryTypeList(folderRequestDtos),
+                        findSelectCategory(folderRequestDtos),
                         user.getId(),
                         disclosureStatuses,
                         pageable
                 ),
                 folderRepository.findById(folderId).get()
         );
+    }
+
+    private List<CategoryType> findSelectCategory(List<FolderRequestDto> folderRequestDtos) {
+        List<CategoryType> categoryTypeList = null;
+
+        Optional<FolderRequestDto> findAllCategory = folderRequestDtos.stream()
+                .filter(categoryType -> categoryType.getCategory() == ALL)
+                .findFirst();
+
+        if (findAllCategory.isPresent()) {
+            categoryTypeList = ALL_CATEGORYT;
+        } else {
+            categoryTypeList = FolderRequestDtoToCategoryTypeList(folderRequestDtos);
+        }
+        return categoryTypeList;
     }
 }

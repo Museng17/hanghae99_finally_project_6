@@ -1,7 +1,9 @@
 package com.hanghae99.finalproject.util.resultType;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+
+import java.util.*;
 
 @Getter
 @NoArgsConstructor
@@ -52,7 +54,7 @@ public enum CategoryType {
     ECONOMY("경제"),
 
     @JsonProperty("카페")
-    Cafe("카페"),
+    CAFE("카페"),
 
     @JsonProperty("쇼핑")
     SHOPPING("쇼핑"),
@@ -62,7 +64,29 @@ public enum CategoryType {
 
     private String name;
 
+    public final static List<CategoryType> ALL_CATEGORYT = Arrays.asList(
+            ALL,
+            DESIGN,
+            MUSIC,
+            FOOD,
+            HEALTH,
+            MOVIE,
+            SPORTS,
+            HOBBY,
+            TRAVEL,
+            SHOW,
+            EXHIBITION,
+            STUDY,
+            BUSINESS,
+            FASHION,
+            ECONOMY,
+            CAFE,
+            SHOPPING,
+            OTHERS
+    );
+
     CategoryType(String name) {
         this.name = name;
     }
+
 }

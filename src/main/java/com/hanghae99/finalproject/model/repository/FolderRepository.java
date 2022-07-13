@@ -12,6 +12,7 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
     Optional<Folder> findByIdAndUsersId(Long folderId, Long userId);
 
     void deleteAllByUsers(Users user);
+
     @Query("select f from Folder f where  f.name not like '무제'   and f.status in ?1")
     Page<Folder> findAllBystatus(DisclosureStatus status, Pageable pageable);
 
@@ -31,4 +32,7 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
     Page<Folder> findAllByNameContaining1(String keyword, DisclosureStatus disclosureStatuses, Pageable pageable);
 
     Optional<List<Folder>> findAllByIdInAndUsersId(List<Long> folderId, Long id);
+
+    @Query("select f FROM Folder f where f.id In ?1 and f.name LIKE CASE WHEN ?2 = '%all%' then '%%' else ?2 end")
+    List<Folder> findAllByIdAndNameLike(List<Long> listToId, String s);
 }

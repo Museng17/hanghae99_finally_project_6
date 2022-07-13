@@ -24,9 +24,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     List<Board> findByUsers(Users user);
 
-    @Query("select b from Board b where b.folder.id = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and b.users.id = ?3 and b.status IN ?4")
-    Page<Board> findByFolderIdAndTitleContaining(Long folderId, String keyword, Long userId, List<DisclosureStatus> disclosureStatuses, Pageable pageable);
-
     @Query("select b from Board b where  b.folder.id = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and b.category in ?3 and b.users.id = ?4 and b.status IN ?5")
     Page<Board> findByFolderIdAndTitleContainingAndCategoryIn(Long folderId,
                                                               String keyword,
