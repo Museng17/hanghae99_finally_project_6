@@ -1,6 +1,8 @@
 package com.hanghae99.finalproject.service;
 
 import com.hanghae99.finalproject.model.dto.requestDto.UserRequestDto;
+import com.hanghae99.finalproject.model.dto.responseDto.FollowDto;
+import com.hanghae99.finalproject.model.dto.responseDto.FollowResponseDto;
 import com.hanghae99.finalproject.model.dto.responseDto.UserProfileDto;
 import com.hanghae99.finalproject.model.entity.Follow;
 import com.hanghae99.finalproject.model.entity.Users;
@@ -52,14 +54,15 @@ public class FollowService {
     }
 
     @Transactional
-    public List<UserProfileDto> findFollowingUser(int page, int size, HttpServletRequest request){
+    public FollowResponseDto findFollowingUser(int page, int size, HttpServletRequest request){
         Users following = userRepository.findFollowingById(userinfoHttpRequest.userFindByToken(request).getId());
         PageRequest pageRequest = PageRequest.of(page, size);
+        Long follows = followRepository.findFollowingCountById(following.getId());
         Page<Follow> follow = followRepository.findAllByFollowing(pageRequest,following);
         List<Follow> follow1 = follow.getContent();
         List<UserRequestDto> follow2 = toBoardRequestDtoList(follow1);
-        List<UserProfileDto> follow3 = toFollowRequestDtoList(follow2);
-        return follow3;
+        List<FollowDto> followDtos = toFollowRequestDtoList(follow2);
+        return  new FollowResponseDto(followDtos, follows);
     }
     private List<UserRequestDto> toBoardRequestDtoList(List<Follow> follows) {
         List<UserRequestDto> boardRequestDtoList = new ArrayList<>();
@@ -69,12 +72,12 @@ public class FollowService {
         }
         return boardRequestDtoList;
     }
-    private List<UserProfileDto> toFollowRequestDtoList(List<UserRequestDto> followusers){
-        List<UserProfileDto> followRequestDtoList = new ArrayList<>();
+    private List<FollowDto> toFollowRequestDtoList(List<UserRequestDto> followusers){
+        List<FollowDto> followRequestDtoList = new ArrayList<>();
 
         for (UserRequestDto userRequestDto : followusers){
-            Long followingcnt = followRepository.findFollowingCountById(userRequestDto.getId());
-            followRequestDtoList.add(new UserProfileDto(userRequestDto,followingcnt));
+            Long followercnt = followRepository.findFollowerCountById(userRequestDto.getId());
+            followRequestDtoList.add(new FollowDto(userRequestDto,followercnt));
         }
         return followRequestDtoList;
     }

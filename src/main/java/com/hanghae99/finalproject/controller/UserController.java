@@ -119,7 +119,7 @@ public class UserController {
     }
 
     @GetMapping("/followinguser/{page}/{size}")
-    public List<UserProfileDto> findFollowingUser(@PathVariable int page, @PathVariable int size, HttpServletRequest request) {
+    public FollowResponseDto findFollowingUser(@PathVariable int page, @PathVariable int size, HttpServletRequest request) {
         return followService.findFollowingUser(page, size, request);
     }
 }

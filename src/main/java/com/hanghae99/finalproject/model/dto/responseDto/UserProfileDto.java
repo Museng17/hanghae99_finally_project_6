@@ -45,11 +45,5 @@ public class UserProfileDto {
         }
         return addList;
     }
-    public UserProfileDto(UserRequestDto userRequestDto, long followingCnt) {
-        this.id = userRequestDto.getId();
-        this.nickname = userRequestDto.getNickname();
-        this.imgPath = userRequestDto.getImgPath();
-        this.information = userRequestDto.getInformation();
-        this.followingCnt = followingCnt;
-    }
+
 }
