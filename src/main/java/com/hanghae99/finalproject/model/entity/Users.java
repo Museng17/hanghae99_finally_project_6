@@ -56,6 +56,7 @@ public class Users extends TimeStamp {
         this.username = username;
         this.nickname = nickname;
         this.password = password;
+        this.loginType =LoginType.USER;
         this.boardCnt = 0L;
         this.folderCnt = 0L;
     }

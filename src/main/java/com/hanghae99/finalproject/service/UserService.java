@@ -129,8 +129,7 @@ public class UserService {
                 )
         );
 
-        UserRegisterRespDto responseDto = new UserRegisterRespDto(result, err_msg);
-        return responseDto;
+        return new UserRegisterRespDto(result, err_msg);
     }
 
     @Transactional
