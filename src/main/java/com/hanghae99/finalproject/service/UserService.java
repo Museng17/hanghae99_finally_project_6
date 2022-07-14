@@ -183,6 +183,29 @@ public class UserService {
                         user
                 )
         );
+        return createTokens(user.getUsername());
+    }
+
+    @Transactional
+    public TokenResponseDto findAccessTokenByCode2(String code) {
+        SocialLoginRequestDto response = socialLoginRestTemplate.findAccessTokenByCode(code);
+        SocialLoginRequestDto socialLoginRequestDto = googleUserInfoByAccessToken(response.getAccess_token());
+
+        Users user = userRepository.findByUsername(socialLoginRequestDto.getEmail())
+                .orElseGet(() ->
+                        userRepository.save(
+                                new Users(
+                                        socialLoginRequestDto,
+                                        userRepository.findAllCount()
+                                )
+                        )
+                );
+
+        folderRepository.save(
+                new Folder(
+                        user
+                )
+        );
         return createTokens2(user.getUsername());
     }
 
