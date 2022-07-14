@@ -205,7 +205,7 @@ public class BoardService {
 
     @Transactional
     public Page<Board> findNewBoard(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdDate"));
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdDate").descending());
         return boardRepository.findAllByStatus(DisclosureStatus.PUBLIC, pageRequest);
     }
 
