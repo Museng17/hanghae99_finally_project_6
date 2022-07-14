@@ -1,6 +1,6 @@
 package com.hanghae99.finalproject.util.restTemplates;
 
-import com.hanghae99.finalproject.model.dto.SocialLoginRequestDto;
+import com.hanghae99.finalproject.model.dto.requestDto.SocialLoginRequestDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;

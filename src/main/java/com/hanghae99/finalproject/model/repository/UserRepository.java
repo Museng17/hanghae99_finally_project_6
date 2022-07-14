@@ -14,4 +14,11 @@ public interface UserRepository extends JpaRepository<Users, Long> {
 
     @Query("select count(u.id) from Users u")
     int findAllCount();
+
+    Users findFollowerById(Long id);
+
+    Users findFollowingById(Long id);
+
+    @Query("select new Users(u.id, u.imgPath, u.information, u.nickname, u.username) from Users u where u.username = ?1")
+    Optional<Users> findByUsernameNoJoin(String toString);
 }

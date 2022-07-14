@@ -1,8 +1,9 @@
 package com.hanghae99.finalproject.service;
 
 import com.hanghae99.finalproject.jwt.*;
-import com.hanghae99.finalproject.model.dto.*;
-import com.hanghae99.finalproject.model.entity.Users;
+import com.hanghae99.finalproject.model.dto.requestDto.*;
+import com.hanghae99.finalproject.model.dto.responseDto.*;
+import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.restTemplates.SocialLoginRestTemplate;
 import io.jsonwebtoken.Claims;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static com.hanghae99.finalproject.interceptor.JwtTokenInterceptor.JWT_HEADER_KEY;
 import static com.hanghae99.finalproject.jwt.JwtTokenProvider.*;
@@ -30,14 +32,15 @@ public class UserService {
     private final BoardRepository boardRepository;
     private final FolderRepository folderRepository;
     private final UserInfoInJwt userInfoInJwt;
+    private final FollowRepository followRepository;
 
     @Transactional(readOnly = true)
     public TokenResponseDto login(UserRequestDto userRequestDto) {
         Users user = userRepository.findByUsername(userRequestDto.getUsername())
-                .orElseThrow(() -> new RuntimeException("회원가입되지 않은 아이디입니다."));
+                .orElseThrow(() -> new RuntimeException("UserService 38에러 회원가입되지 않은 아이디입니다."));
 
         if (!bCryptPasswordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {
-            throw new RuntimeException("비밀번호가 틀렸습니다.");
+            throw new RuntimeException("UserService 41 에러 비밀번호가 틀렸습니다.");
         }
         return createTokens(user.getUsername());
     }
@@ -68,11 +71,25 @@ public class UserService {
         return true;
     }
 
-    public UserRegisterRespDto registerUser(SignupDto Dto) throws NoSuchAlgorithmException {
+    public static boolean isEmail(String s) {
+        return Pattern.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", s);
+    }
+
+    public static boolean isPassword(String s) {
+        return Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$", s);
+    }
+
+    public UserRegisterRespDto registerUser(UserRequestDto Dto) throws NoSuchAlgorithmException {
         Boolean result = true;
         String err_msg = "회원가입 성공";
         String username = Dto.getUsername();
         String nickname = Dto.getNickname();
+
+        if (!isEmail(username)) {
+            err_msg = "잘못된 이메일 양식입니다.";
+            result = false;
+            return new UserRegisterRespDto(result, err_msg);
+        }
 
         Optional<Users> foundusername = userRepository.findByUsername(username);
         Optional<Users> foundnickname = userRepository.findByNickname(nickname);
@@ -91,21 +108,59 @@ public class UserService {
             return new UserRegisterRespDto(result, err_msg);
         }
 
+        String pw = Dto.getPassword();
+        if (!isPassword(pw)) {
+            err_msg = "잘못된 비밀번호 입니다.";
+            result = false;
+            return new UserRegisterRespDto(result, err_msg);
+        }
+
         // 패스워드 암호화
-        String password = bCryptPasswordEncoder.encode(Dto.getPassword());
+        String password = bCryptPasswordEncoder.encode(pw);
 
         Users user = new Users(username, nickname, password);
         System.out.println(Dto.getUsername());
         System.out.println(Dto.getNickname());
         userRepository.save(user);
+        Users user1 = userRepository.save(user);
+        folderRepository.save(
+                new Folder(
+                        user1
+                )
+        );
 
-        UserRegisterRespDto responseDto = new UserRegisterRespDto(result, err_msg);
-        return responseDto;
+        return new UserRegisterRespDto(result, err_msg);
+    }
+
+    @Transactional
+    public UserProfileDto getProfile(long id, HttpServletRequest request) {
+        UserProfileDto userProfileDto = new UserProfileDto();
+        Users user = userFindById(id);
+        Users loginUser = userFindById(findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId());
+        userProfileDto = new UserProfileDto(
+                user,
+                boardRepository.findAllCategoryByUsersId(user.getId()),
+                followRepository.findFollowerCountById(id),
+                followRepository.findFollowingCountById(id),
+                followRepository.findByFollowingIdAndFollowerId(loginUser.getId(), id) != null
+        );
+        return userProfileDto;
+    }
+
+    @Transactional
+    public MyProfileDto getMyProfile(HttpServletRequest request) {
+        Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
+        return new MyProfileDto(
+                user,
+                boardRepository.findAllCategoryByUsersId(user.getId()),
+                followRepository.findFollowerCountById(user.getId()),
+                followRepository.findFollowingCountById(user.getId())
+        );
     }
 
     public Users findUser(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("찾는 회원이 없습니다."));
+                .orElseThrow(() -> new RuntimeException("UserService 109 에러 찾는 회원이 없습니다."));
     }
 
     @Transactional
@@ -122,17 +177,24 @@ public class UserService {
                                 )
                         )
                 );
-        return createTokens(user.getUsername());
+
+        folderRepository.save(
+                new Folder(
+                        user
+                )
+        );
+        return createTokens2(user.getUsername());
     }
 
     @Transactional
-    public Boolean UserDelete(Long id, HttpServletRequest request) {
-        Users user = userFindById(id);
+    public Boolean UserDelete(HttpServletRequest request) {
+        Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
+
         if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
 
             boardRepository.deleteAllByUsers(user);
             folderRepository.deleteAllByUsers(user);
-            userRepository.deleteById(id);
+            userRepository.deleteById(user.getId());
 
             return true;
         } else {
@@ -159,13 +221,30 @@ public class UserService {
 
         if ((Optional.ofNullable(decodeRefresh).isPresent())) {
             if (!decodeRefresh.equals(REFRESH_TOKEN)) {
-                throw new RuntimeException(refreshToken + "는 " + REFRESH_TOKEN + "이 아닙니다.");
+                throw new RuntimeException(refreshToken + "는 " + REFRESH_TOKEN + "이 아닙니다.  UserService + 163에러 ");
             }
         } else {
-            throw new RuntimeException(REFRESH_TOKEN + "이 아닙니다.");
+            throw new RuntimeException(REFRESH_TOKEN + "이 아닙니다. UserService 166에러 ");
         }
 
         return createTokens(findUser((String) decodeToken.get(CLAIMS_KEY)).getUsername());
+    }
+
+    @Transactional(readOnly = true)
+    public TokenResponseDto refreshToken2(String refreshToken) {
+        jwtTokenProvider.validToken(refreshToken);
+        Claims decodeToken = userInfoInJwt.getRefreshToken(refreshToken);
+
+        String decodeRefresh = (String) decodeToken.get(REFRESH_TOKEN);
+
+        if ((Optional.ofNullable(decodeRefresh).isPresent())) {
+            if (!decodeRefresh.equals(REFRESH_TOKEN)) {
+                throw new RuntimeException(refreshToken + "는 " + REFRESH_TOKEN + "이 아닙니다.  UserService + 163에러 ");
+            }
+        } else {
+            throw new RuntimeException(REFRESH_TOKEN + "이 아닙니다. UserService 166에러 ");
+        }
+        return createTokens2(findUser((String) decodeToken.get(CLAIMS_KEY)).getUsername());
     }
 
     public TokenResponseDto createTokens(String username) {
@@ -174,15 +253,22 @@ public class UserService {
                 jwtTokenProvider.createRefreshToken(username)
         );
     }
-    
+
+    public TokenResponseDto createTokens2(String username) {
+        return new TokenResponseDto(
+                jwtTokenProvider.createAccessToken2(username),
+                jwtTokenProvider.createRefreshToken2(username)
+        );
+    }
+
     @Transactional
-    public Boolean updateUserInfo(Long id, UserRequestDto userRequestDto, HttpServletRequest request) {
-        Users user = userFindById(id);
+    public Boolean updateUserName(UserRequestDto userRequestDto, HttpServletRequest request) {
+        Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
         if (!checkNameDuplicate(userRequestDto.getNickname())) {
             throw new RuntimeException("닉네임이 중복되었습니다.");
         }
 
-        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()){
+        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
             user.update(userRequestDto);
 
             return true;
@@ -193,13 +279,37 @@ public class UserService {
     }
 
     @Transactional
-    public Boolean updateUserPw(Long id, UserRequestDto userRequestDto, HttpServletRequest request) {
-        Users user = userFindById(id);
+    public void updateUserImg(String url, HttpServletRequest request) {
+        Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
+
+        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
+            user.updateImg(url);
+        }
+    }
+
+    @Transactional
+    public Boolean updateUserInfo(UserRequestDto userRequestDto, HttpServletRequest request) {
+        Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
+
+        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
+            user.updateInfo(userRequestDto);
+
+            return true;
+        } else {
+
+            return false;
+        }
+    }
+
+    @Transactional
+    public Boolean updateUserPw(UserRequestDto userRequestDto, HttpServletRequest request) {
+        Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
+
         if (!bCryptPasswordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {
             throw new RuntimeException("비밀번호가 틀렸습니다.");
         }
 
-        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()){
+        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
             user.updatePw(bCryptPasswordEncoder.encode(userRequestDto.getNewPassword()));
 
             return true;
@@ -207,5 +317,23 @@ public class UserService {
 
             return false;
         }
+    }
+
+    @Transactional
+    public Boolean checkUserPw(UserRequestDto userRequestDto, HttpServletRequest request) {
+        Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
+
+        if (!bCryptPasswordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {
+            throw new RuntimeException("현재 비밀번호와 다릅니다.");
+        } else {
+
+            return true;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public Users findUserProfile(HttpServletRequest request) {
+        return userRepository.findByUsernameNoJoin(request.getAttribute(JWT_HEADER_KEY).toString())
+                .orElseThrow(() -> new RuntimeException("찾는 회원이 없습니다."));
     }
 }

@@ -1,15 +1,14 @@
 package com.hanghae99.finalproject.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.hanghae99.finalproject.model.dto.SocialLoginRequestDto;
-import com.hanghae99.finalproject.model.dto.UserRequestDto;
+import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.util.TimeStamp;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.hanghae99.finalproject.util.resultType.LoginType;
+import lombok.*;
 
 import javax.persistence.*;
-import java.util.UUID;
+
+import java.util.*;
 
 @Entity
 @Getter
@@ -36,24 +35,62 @@ public class Users extends TimeStamp {
     @Column(nullable = true)
     private String password;
 
+    @Column(nullable = false)
+    private Long folderCnt;
+
+    @Column(nullable = false)
+    private Long boardCnt;
+
+    @Column(nullable = false)
+    private LoginType loginType;
+
+    @OneToMany
+    @JoinColumn(name = "folder_id")
+    private List<Folder> folderList;
+
+    @OneToMany
+    @JoinColumn(name = "board_id")
+    private List<Board> boardList;
+
     public Users(String username, String nickname, String password) {
         this.username = username;
         this.nickname = nickname;
         this.password = password;
+        this.loginType =LoginType.USER;
+        this.boardCnt = 0L;
+        this.folderCnt = 0L;
     }
 
     public Users(SocialLoginRequestDto socialLoginRequestDto, int allCount) {
         this.username = socialLoginRequestDto.getEmail();
         this.nickname = "USER(" + UUID.randomUUID().toString().replaceAll("-", "").substring(5, 9) + allCount + ")";
+        this.folderCnt = 0L;
+        this.boardCnt = 0L;
+        this.loginType = LoginType.GOOGLE;
+    }
+
+    public Users(Long id, String imgPath, String information, String nickname, String username) {
+        this.id = id;
+        this.username = username;
+        this.nickname = nickname;
+        this.imgPath = imgPath;
+        this.information = information;
     }
 
     public void update(UserRequestDto userRequestDto) {
         this.nickname = userRequestDto.getNickname();
-        this.imgPath = userRequestDto.getImgPath();
+    }
+
+    public void updateInfo(UserRequestDto userRequestDto) {
+        this.information = userRequestDto.getInformation();
     }
 
     public void updatePw(String newPassword) {
 
         this.password = newPassword;
+    }
+
+    public void updateImg(String url) {
+        this.imgPath = url;
     }
 }

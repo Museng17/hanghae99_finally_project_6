@@ -40,8 +40,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/upload/**")
-                .addResourceLocations("file:///home/ubuntu/upload/");
+        registry.addResourceHandler("/ubuntu/**")
+                .addResourceLocations("file:///home/ubuntu/");
     }
 
     // CORS 허용 적용
@@ -49,6 +49,7 @@ public class WebConfig implements WebMvcConfigurer {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("http://spartastatic.s3-website.ap-northeast-2.amazonaws.com");
         configuration.addAllowedHeader("Content-Type");
         configuration.addAllowedHeader("Custom-Header");
         configuration.addAllowedMethod(HttpMethod.POST);
@@ -73,16 +74,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .csrf().disable()
                 .headers().frameOptions().sameOrigin()
                 .and()
-                .cors().configurationSource(corsConfigurationSource())
-                .and()
-                .authorizeHttpRequests(auth -> {
-                            try {
-                                auth.anyRequest().permitAll();
-                            } catch (Exception e) {
-                                throw new RuntimeException(e.getMessage());
-                            }
-                        }
-                );
+                .cors().configurationSource(corsConfigurationSource());
         return http.build();
     }
 

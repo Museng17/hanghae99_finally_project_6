@@ -1,15 +1,21 @@
 package com.hanghae99.finalproject.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-// github actions test용 controller
+// test용 controller
 @RestController
+@RequiredArgsConstructor
 public class TestController {
     @GetMapping("/test")
     public String test() {
         String testStr = "Hello World";
         System.out.println(testStr);
         return testStr;
+    }
+
+    @PostMapping("/test/test")
+    public void tes2t(@RequestParam("test") MultipartFile multipartFile) {
     }
 }

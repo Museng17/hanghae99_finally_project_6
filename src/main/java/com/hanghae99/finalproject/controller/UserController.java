@@ -1,14 +1,21 @@
 package com.hanghae99.finalproject.controller;
 
-import com.hanghae99.finalproject.model.dto.*;
-import com.hanghae99.finalproject.service.UserService;
+import com.hanghae99.finalproject.model.dto.requestDto.UserRequestDto;
+import com.hanghae99.finalproject.model.dto.responseDto.*;
+import com.hanghae99.finalproject.model.entity.Users;
+import com.hanghae99.finalproject.service.*;
+import com.hanghae99.finalproject.util.UserinfoHttpRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 import static com.hanghae99.finalproject.config.WebConfig.SOCIAL_HEADER_KEY;
 import static com.hanghae99.finalproject.jwt.JwtTokenProvider.REFRESH_TOKEN;
@@ -18,6 +25,10 @@ import static com.hanghae99.finalproject.jwt.JwtTokenProvider.REFRESH_TOKEN;
 public class UserController {
 
     private final UserService userService;
+    private final S3Uploader s3Uploader;
+    private final UserinfoHttpRequest userinfoHttpRequest;
+
+    private final FollowService followService;
 
     @PostMapping("/user/login")
     public TokenResponseDto login(@RequestBody UserRequestDto userRequestDto) {
@@ -29,13 +40,18 @@ public class UserController {
         return userService.findAccessTokenByCode(code);
     }
 
+    @PostMapping("/user/refresh2")
+    public TokenResponseDto refreshToken2(@RequestHeader(REFRESH_TOKEN) String refresh) {
+        return userService.refreshToken2(refresh);
+    }
+
     @PostMapping("/user/refresh")
     public TokenResponseDto refreshToken(@RequestHeader(REFRESH_TOKEN) String refresh) {
         return userService.refreshToken(refresh);
     }
 
     @PostMapping("/user/signup")
-    public UserRegisterRespDto registerUser(@RequestBody SignupDto Dto) throws NoSuchAlgorithmException {
+    public UserRegisterRespDto registerUser(@RequestBody UserRequestDto Dto) throws NoSuchAlgorithmException {
         return userService.registerUser(Dto);
     }
 
@@ -52,32 +68,70 @@ public class UserController {
         return userService.checkNameDuplicate(nickname);
     }
 
-    @DeleteMapping("/user/getout/{id}")
-    public Boolean userDelete(@PathVariable Long id, HttpServletRequest request) {
+    @DeleteMapping("/user/getout")
+    public Boolean userDelete(HttpServletRequest request) {
 
-        return userService.UserDelete(id, request);
+        return userService.UserDelete(request);
     }
 
-    @PutMapping("/user/update/{id}")
-    public Boolean userUpdate(@PathVariable Long id,
-                              @RequestBody UserRequestDto userRequestDto,
+    @PutMapping("/user/updateName")
+    public Boolean userUpdate(@RequestBody UserRequestDto userRequestDto,
                               HttpServletRequest request) {
 
-        return userService.updateUserInfo(id, userRequestDto, request);
+        return userService.updateUserName(userRequestDto, request);
     }
 
-    @PutMapping("/user/pw/update/{id}")
-    public Boolean userPwUpdate(@PathVariable Long id,
-                                @RequestBody UserRequestDto userRequestDto,
+    @PutMapping("/user/updateInfo")
+    public Boolean userUpdateInfo(@RequestBody UserRequestDto userRequestDto,
+                                  HttpServletRequest request) {
+
+        return userService.updateUserInfo(userRequestDto, request);
+    }
+
+    @PutMapping("/user/pw/update")
+    public Boolean userPwUpdate(@RequestBody UserRequestDto userRequestDto,
                                 HttpServletRequest request) {
 
-        return userService.updateUserPw(id, userRequestDto, request);
+        return userService.updateUserPw(userRequestDto, request);
     }
 
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorMassageResponseDto exceptionHandler(Exception e) {
-        return new ErrorMassageResponseDto(e.getMessage());
+    @PostMapping("/user/pw/check")
+    public Boolean userPwCheck(@RequestBody UserRequestDto userRequestDto,
+                               HttpServletRequest request) {
+
+        return userService.checkUserPw(userRequestDto, request);
     }
-    
+
+    @GetMapping("/user/profile")
+    public Users findUserProfile(HttpServletRequest request) {
+        return userService.findUserProfile(request);
+    }
+
+    @GetMapping("/user/profile/{id}")
+    public UserProfileDto findUserProfile(Model model, @PathVariable Long id, HttpServletRequest request) {
+
+        model.addAttribute("userProfileDto");
+        return userService.getProfile(id, request);
+    }
+
+    @GetMapping("/user/myProfile")
+    public MyProfileDto findMyProfile(Model model, HttpServletRequest request) {
+        model.addAttribute("myProfileDto");
+        return userService.getMyProfile(request);
+    }
+
+    @PostMapping("/user/profilePhoto")
+    public ResponseEntity<?> uploadProfilePhoto(HttpServletRequest request,
+                                                @RequestParam("profilePhoto") MultipartFile multipartFile) throws IOException {
+
+        Users user = userinfoHttpRequest.userFindByToken(request);
+        FileUploadResponse profile = s3Uploader.upload(user.getId(), multipartFile, "profile");
+        userService.updateUserImg(profile.getUrl(), request);
+        return ResponseEntity.ok(profile);
+    }
+
+    @GetMapping("/followinguser/{page}/{size}")
+    public FollowResponseDto findFollowingUser(@PathVariable int page, @PathVariable int size, HttpServletRequest request) {
+        return followService.findFollowingUser(page, size, request);
+    }
 }

@@ -1,4 +1,4 @@
-package com.hanghae99.finalproject.model.dto;
+package com.hanghae99.finalproject.model.dto.responseDto;
 
 import lombok.*;
 import org.springframework.stereotype.Service;
