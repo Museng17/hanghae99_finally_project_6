@@ -36,7 +36,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     List<Board> findByUsersId(Long id);
 
-    @Query(value = "SELECT DISTINCT(B.CATEGORY) FROM board B WHERE B.USERS_ID = :id", nativeQuery = true)
+    @Query("SELECT DISTINCT(B.category) FROM Board B WHERE B.users.id = :id")
     List<CategoryType> findAllCategoryByUsersId(@Param("id") Long id);
 
     @Query("select b from Board b where  b.status = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and b.category in ?3")
@@ -49,5 +49,9 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query("select b from Board b where  b.status = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end")
     List<Board> findAllByStatusAndTitleContaining(DisclosureStatus status, String keyword);
+
     List<Board> deleteAllByFolderIdIn(List<Long> folderIdList);
+
+    @Query("SELECT DISTINCT(b.category) FROM Board b WHERE b.users.id = ?1 and b.folder.id = ?2")
+    List<CategoryType> findCategoryByUsersIdAndFolderId(Long id, Long folderId);
 }

@@ -1,8 +1,7 @@
 package com.hanghae99.finalproject.service;
 
 import com.hanghae99.finalproject.model.dto.requestDto.*;
-import com.hanghae99.finalproject.model.dto.responseDto.FolderAndBoardResponseDto;
-import com.hanghae99.finalproject.model.dto.responseDto.FolderResponseDto;
+import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.*;
@@ -15,8 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.hanghae99.finalproject.util.resultType.CategoryType.ALL;
 
 @Service
 @RequiredArgsConstructor
@@ -238,7 +235,11 @@ public class FolderService {
     }
 
     @Transactional(readOnly = true)
-    public List<Folder> moum(String keyword, HttpServletRequest request, Pageable pageable, Long userId) {
+    public FolderPageResponseDto moum(String keyword,
+                                      HttpServletRequest request,
+                                      Pageable pageable,
+                                      Long userId,
+                                      List<FolderRequestDto> folderRequestDtos) {
         List<DisclosureStatus> disclosureStatuses = new ArrayList<>();
         disclosureStatuses.add(DisclosureStatus.PUBLIC);
 
@@ -250,14 +251,17 @@ public class FolderService {
                     }
                     throw new RuntimeException("회원을 찾을 수 없습니다.");
                 });
-
-        return folderRepository.findByNameContaining(
-                "%" + keyword + "%",
-                users,
-                boardService.findByFolder(findByBasicFolder(users)).size() > 0,
-                disclosureStatuses,
-                pageable
-        ).getContent();
+        return new FolderPageResponseDto(
+                folderRepository.findByNameContaining(
+                        "%" + keyword + "%",
+                        users,
+                        boardService.findByFolder(findByBasicFolder(users)).size() > 0,
+                        disclosureStatuses,
+                        boardService.findSelectCategory(folderRequestDtos),
+                        pageable
+                ).getContent(),
+                boardService.findCategoryByUsersId(users.getId())
+        );
     }
 
     @Transactional(readOnly = true)
@@ -286,10 +290,11 @@ public class FolderService {
         Page<Folder> folders = folderRepository.findAllByNameContaining1(
                 "%" + keyword + "%", DisclosureStatus.PUBLIC, pageRequest);
         int foldersCnt = folderRepository.findAllByNameContaining1("%" + keyword + "%", DisclosureStatus.PUBLIC).size();
-        return new FolderResponseDto(folders,foldersCnt);
+        return new FolderResponseDto(folders, foldersCnt);
     }
 
     private List<Long> listToId(List<Share> List) {
         return List.stream().map(Share::getId).collect(Collectors.toList());
     }
+
 }
