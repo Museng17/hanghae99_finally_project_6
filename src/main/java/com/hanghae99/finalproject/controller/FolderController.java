@@ -2,6 +2,7 @@ package com.hanghae99.finalproject.controller;
 
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.FolderAndBoardResponseDto;
+import com.hanghae99.finalproject.model.dto.responseDto.FolderResponseDto;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.service.FolderService;
 import com.hanghae99.finalproject.util.resultType.CategoryType;
@@ -96,7 +97,7 @@ public class FolderController {
     }
 
     @PostMapping("/allfolders/{keyword}/{page}")
-    public FolderAndBoardResponseDto allmoum(@PathVariable String keyword, @PathVariable int page, @RequestBody List<FolderRequestDto> folderRequestDtos) {
-        return folderService.allmoum(keyword, page, folderRequestDtos);
+    public FolderResponseDto allFolders(@PathVariable String keyword, @PathVariable int page) {
+        return folderService.allFolders(keyword, page);
     }
 }

@@ -271,4 +271,21 @@ public class BoardService {
         }
         return categoryTypeList;
     }
+
+    public BoardResponseDto allBoards(String keyword, int page, List<FolderRequestDto> folderRequestDtos) {
+        Optional<FolderRequestDto> all = folderRequestDtos.stream()
+                .filter(categoryType -> categoryType.getCategory() == ALL)
+                .findFirst();
+        int boardsCnt;
+        Page<Board> boards;
+        PageRequest pageRequest = PageRequest.of(page, 4, Sort.by("createdDate").descending());
+        if (all.isPresent()) {
+            boards = boardRepository.findAllByStatusAndTitleContaining(DisclosureStatus.PUBLIC, "%" + keyword + "%", pageRequest);
+            boardsCnt = boardRepository.findAllByStatusAndTitleContaining(DisclosureStatus.PUBLIC, "%" + keyword + "%").size();
+        } else {
+            boards = boardRepository.findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatus.PUBLIC, "%" + keyword + "%", FolderRequestDtoToCategoryTypeList(folderRequestDtos), pageRequest);
+            boardsCnt = boardRepository.findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatus.PUBLIC, "%" + keyword + "%", FolderRequestDtoToCategoryTypeList(folderRequestDtos)).size();
+        }
+        return new BoardResponseDto(boards,boardsCnt);
+    }
 }
