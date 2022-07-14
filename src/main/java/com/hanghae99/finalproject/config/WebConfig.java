@@ -74,16 +74,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .csrf().disable()
                 .headers().frameOptions().sameOrigin()
                 .and()
-                .cors().configurationSource(corsConfigurationSource())
-                .and()
-                .authorizeHttpRequests(auth -> {
-                            try {
-                                auth.anyRequest().permitAll();
-                            } catch (Exception e) {
-                                throw new RuntimeException(e.getMessage());
-                            }
-                        }
-                );
+                .cors().configurationSource(corsConfigurationSource());
         return http.build();
     }
 
