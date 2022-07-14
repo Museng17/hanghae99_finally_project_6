@@ -59,6 +59,9 @@ public enum CategoryType {
     @JsonProperty("쇼핑")
     SHOPPING("쇼핑"),
 
+    @JsonProperty("미정")
+    NO_CATEGORY("미정"),
+
     @JsonProperty("기타")
     OTHERS("기타");
 
@@ -79,6 +82,7 @@ public enum CategoryType {
             STUDY,
             BUSINESS,
             FASHION,
+            NO_CATEGORY,
             ECONOMY,
             CAFE,
             SHOPPING,

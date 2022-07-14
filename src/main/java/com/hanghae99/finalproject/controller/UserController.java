@@ -40,6 +40,11 @@ public class UserController {
         return userService.findAccessTokenByCode(code);
     }
 
+    @PostMapping("/user/social2")
+    public TokenResponseDto socialLogin2(@RequestHeader(SOCIAL_HEADER_KEY) String code) {
+        return userService.findAccessTokenByCode2(code);
+    }
+
     @PostMapping("/user/refresh2")
     public TokenResponseDto refreshToken2(@RequestHeader(REFRESH_TOKEN) String refresh) {
         return userService.refreshToken2(refresh);
