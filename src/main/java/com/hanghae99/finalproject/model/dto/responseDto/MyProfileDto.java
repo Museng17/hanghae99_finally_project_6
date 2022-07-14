@@ -21,7 +21,7 @@ public class MyProfileDto {
     private long folderCnt;
     private List<Map<String, CategoryType>> categoryList;
 
-    public MyProfileDto(Users user, List<CategoryType> categoryList, long followerCount, long followingCount) {
+    public MyProfileDto(Users user, long followerCount, long followingCount) {
         this.id = user.getId();
         this.nickname = user.getNickname();
         this.imgPath = user.getImgPath();
@@ -30,18 +30,5 @@ public class MyProfileDto {
         this.followerCnt = followerCount;
         this.boardCnt = user.getBoardCnt();
         this.folderCnt = user.getFolderCnt();
-        this.categoryList = categoryListToMap(categoryList);
-    }
-
-    private List<Map<String, CategoryType>> categoryListToMap(List<CategoryType> categoryList) {
-        List<Map<String, CategoryType>> addList = new ArrayList<>();
-        for (CategoryType categoryType : categoryList) {
-            if (categoryType != CategoryType.NO_CATEGORY) {
-                Map<String, CategoryType> adMap = new HashMap<>();
-                adMap.put("category", categoryType);
-                addList.add(adMap);
-            }
-        }
-        return addList;
     }
 }

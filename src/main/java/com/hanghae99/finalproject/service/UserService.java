@@ -139,7 +139,6 @@ public class UserService {
         Users loginUser = userFindById(findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId());
         userProfileDto = new UserProfileDto(
                 user,
-                boardRepository.findAllCategoryByUsersId(user.getId()),
                 followRepository.findFollowerCountById(id),
                 followRepository.findFollowingCountById(id),
                 followRepository.findByFollowingIdAndFollowerId(loginUser.getId(), id) != null
@@ -152,7 +151,6 @@ public class UserService {
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
         return new MyProfileDto(
                 user,
-                boardRepository.findAllCategoryByUsersId(user.getId()),
                 followRepository.findFollowerCountById(user.getId()),
                 followRepository.findFollowingCountById(user.getId())
         );
