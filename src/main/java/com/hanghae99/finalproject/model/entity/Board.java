@@ -8,6 +8,8 @@ import lombok.*;
 
 import javax.persistence.*;
 
+import java.util.Optional;
+
 @Entity
 @Getter
 @Setter
@@ -39,7 +41,7 @@ public class Board extends TimeStamp {
     @Column(nullable = false)
     private BoardType boardType;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     private CategoryType category;
 
     @Column(nullable = false)
@@ -57,7 +59,7 @@ public class Board extends TimeStamp {
     @OneToOne
     @JsonIgnore
     private Share share;
-    
+
     public Board(Long totalCont, BoardRequestDto boardRequestDto, Users user, Folder folder) {
         this.title = boardRequestDto.getTitle();
         this.link = boardRequestDto.getLink();
@@ -66,11 +68,19 @@ public class Board extends TimeStamp {
         this.content = boardRequestDto.getContent();
         this.status = DisclosureStatus.PRIVATE;
         this.boardType = boardRequestDto.getBoardType();
-        this.category = boardRequestDto.getCategory();
+        this.category = inNullCheck(boardRequestDto.getCategory());
         this.boardOrder = totalCont + 1;
         this.users = user;
         this.folder = folder;
     }
+
+    private CategoryType inNullCheck(CategoryType category) {
+        if (!Optional.ofNullable(category).isPresent()) {
+            return CategoryType.NO_CATEGORY;
+        }
+        return category;
+    }
+
     public Board(BoardRequestDto boardRequestDto, Users user) {
         this.title = boardRequestDto.getTitle();
         this.explanation = boardRequestDto.getExplanation();
@@ -82,7 +92,7 @@ public class Board extends TimeStamp {
         this.users = user;
     }
 
-    public Board(Board board, Users users,Folder folder){
+    public Board(Board board, Users users, Folder folder) {
         this.title = board.getTitle();
         this.link = board.getLink();
         this.explanation = board.getExplanation();
@@ -93,7 +103,7 @@ public class Board extends TimeStamp {
         this.category = board.getCategory();
         this.boardOrder = board.getBoardOrder();
         this.users = users;
-        this.folder =folder;
+        this.folder = folder;
     }
 
     public void update(BoardRequestDto boardRequestDto) {
@@ -104,7 +114,7 @@ public class Board extends TimeStamp {
         this.content = boardRequestDto.getContent();
         this.status = boardRequestDto.getStatus();
         this.boardType = boardRequestDto.getBoardType();
-        this.category = boardRequestDto.getCategory();
+        this.category = inNullCheck(boardRequestDto.getCategory());
     }
 
     public void updateOrder(Long order) {

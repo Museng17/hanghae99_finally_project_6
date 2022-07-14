@@ -74,6 +74,7 @@ public class Users extends TimeStamp {
         this.nickname = nickname;
         this.imgPath = imgPath;
         this.information = information;
+        this.loginType = LoginType.GOOGLE;
     }
 
     public void update(UserRequestDto userRequestDto) {

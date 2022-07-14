@@ -36,7 +36,7 @@ public class MyProfileDto {
     private List<Map<String, CategoryType>> categoryListToMap(List<CategoryType> categoryList) {
         List<Map<String, CategoryType>> addList = new ArrayList<>();
         for (CategoryType categoryType : categoryList) {
-            if(Optional.ofNullable(categoryType).isPresent()){
+            if (categoryType != CategoryType.NO_CATEGORY) {
                 Map<String, CategoryType> adMap = new HashMap<>();
                 adMap.put("category", categoryType);
                 addList.add(adMap);

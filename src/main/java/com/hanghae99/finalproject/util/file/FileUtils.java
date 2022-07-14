@@ -38,7 +38,7 @@ public class FileUtils {
                 || originalFileExtension.equals(".bmp")) {
             return originalFileExtension;
         }
-        
+
         throw new RuntimeException(originalFileExtension + "는 지원하지 않습니다.");
     }
 }
