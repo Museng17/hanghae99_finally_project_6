@@ -278,7 +278,7 @@ public class BoardService {
                 .findFirst();
         int boardsCnt;
         Page<Board> boards;
-        PageRequest pageRequest = PageRequest.of(page, 4, Sort.by("createdDate").descending());
+        PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("createdDate").descending());
         if (all.isPresent()) {
             boards = boardRepository.findAllByStatusAndTitleContaining(DisclosureStatus.PUBLIC, "%" + keyword + "%", pageRequest);
             boardsCnt = boardRepository.findAllByStatusAndTitleContaining(DisclosureStatus.PUBLIC, "%" + keyword + "%").size();

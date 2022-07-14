@@ -282,7 +282,7 @@ public class FolderService {
     }
 
     public FolderResponseDto allFolders(String keyword, int page) {
-        PageRequest pageRequest = PageRequest.of(page, 4, Sort.by("createdDate").descending());
+        PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("createdDate").descending());
         Page<Folder> folders = folderRepository.findAllByNameContaining1(
                 "%" + keyword + "%", DisclosureStatus.PUBLIC, pageRequest);
         int foldersCnt = folderRepository.findAllByNameContaining1("%" + keyword + "%", DisclosureStatus.PUBLIC).size();
