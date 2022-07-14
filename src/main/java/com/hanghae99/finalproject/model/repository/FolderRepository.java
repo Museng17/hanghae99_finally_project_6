@@ -2,6 +2,7 @@ package com.hanghae99.finalproject.model.repository;
 
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.util.DisclosureStatus;
+import com.hanghae99.finalproject.util.resultType.CategoryType;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.*;
 
@@ -23,13 +24,20 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
 
     List<Folder> findByUsers(Users userFindByToken);
 
-    @Query("select f from Folder f where f.users = ?2 and  f.name LIKE case when ?1 = '%all%' then '%%' else ?1 end and f.name not like case when ?3 = false then '무제' else '' end and f.status in ?4")
-    Page<Folder> findByNameContaining(String keyword, Users users, boolean isBoardInBasicFolder, List<DisclosureStatus> disclosureStatuses, Pageable pageable);
+    @Query("select f from Folder f, Board b where f.users = ?2 and  f.name LIKE case when ?1 = '%all%' then '%%' else ?1 end and f.name not like case when ?3 = false then '무제' else '' end and f.status in ?4 and b.folder.id = f.id and b.category in ?5")
+    Page<Folder> findByNameContaining(String keyword,
+                                      Users users,
+                                      boolean isBoardInBasicFolder,
+                                      List<DisclosureStatus> disclosureStatuses,
+                                      List<CategoryType> selectCategory,
+                                      Pageable pageable);
+
 
     Folder findByUsersAndName(Users users, String basicFolder);
 
     @Query("select f from Folder f where   f.name LIKE case when ?1 = '%all%' then '%%' else ?1 end and f.name not like '무제'   and f.status in ?2")
     Page<Folder> findAllByNameContaining1(String keyword, DisclosureStatus disclosureStatuses, Pageable pageable);
+
     @Query("select f from Folder f where   f.name LIKE case when ?1 = '%all%' then '%%' else ?1 end and f.name not like '무제'   and f.status in ?2")
     List<Folder> findAllByNameContaining1(String keyword, DisclosureStatus disclosureStatuses);
 

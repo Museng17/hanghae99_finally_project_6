@@ -1,11 +1,9 @@
 package com.hanghae99.finalproject.controller;
 
 import com.hanghae99.finalproject.model.dto.requestDto.*;
-import com.hanghae99.finalproject.model.dto.responseDto.FolderAndBoardResponseDto;
-import com.hanghae99.finalproject.model.dto.responseDto.FolderResponseDto;
+import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.service.FolderService;
-import com.hanghae99.finalproject.util.resultType.CategoryType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
@@ -80,12 +78,13 @@ public class FolderController {
         return folderService.findBestFolder(page, size);
     }
 
-    @GetMapping("/folders/{userId}/{keyword}")
-    public List<Folder> moum(@PathVariable String keyword,
-                             HttpServletRequest request,
-                             @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
-                             @PathVariable Long userId) {
-        return folderService.moum(keyword, request, pageable, userId);
+    @PostMapping("/folders/{userId}/{keyword}")
+    public FolderPageResponseDto moum(@PathVariable String keyword,
+                                      HttpServletRequest request,
+                                      @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
+                                      @PathVariable Long userId,
+                                      @RequestBody List<FolderRequestDto> folderRequestDtos) {
+        return folderService.moum(keyword, request, pageable, userId, folderRequestDtos);
     }
 
     @GetMapping("/shares/{userId}/{keyword}")
