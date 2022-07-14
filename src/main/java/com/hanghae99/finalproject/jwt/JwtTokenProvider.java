@@ -2,6 +2,7 @@ package com.hanghae99.finalproject.jwt;
 
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -15,11 +16,13 @@ import static com.hanghae99.finalproject.interceptor.JwtTokenInterceptor.BEARER;
 @Component
 public class JwtTokenProvider {
 
-    private String SECRET_KEY = "sec";
+    @Value("login.secret_key")
+    private String SECRET_KEY;
+
     public final static String CLAIMS_KEY = "username";
     public final static String REFRESH_TOKEN = "RefreshToken";
 
-    private static final Long TokenValidTime  = 1000L * 60;  //1분
+    private static final Long TokenValidTime = 1000L * 60;  //1분
 
     @PostConstruct
     protected void init() {
@@ -80,8 +83,8 @@ public class JwtTokenProvider {
 
     //AccessToken 유효성 검사
     public boolean isValidAccessToken(String token) {
-            getClaimsFormToken(token);
-            return true;
+        getClaimsFormToken(token);
+        return true;
     }
 
     //JWT 구문분석 함수
@@ -92,7 +95,7 @@ public class JwtTokenProvider {
                 .getBody();
     }
 
-    public boolean validToken(String authorization){
+    public boolean validToken(String authorization) {
 
         String accessToken = authorization.substring(7);
 

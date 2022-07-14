@@ -5,6 +5,7 @@ import com.hanghae99.finalproject.util.exceptionHandler.CustumException.NotToken
 import io.jsonwebtoken.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @RestControllerAdvice
 public class GlobalException {
@@ -39,4 +40,9 @@ public class GlobalException {
         return new ErrorMassageResponseDto(e.getMessage());
     }
 
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorMassageResponseDto NotTokenHeaderExceptionHandler(MaxUploadSizeExceededException e) {
+        return new ErrorMassageResponseDto("파일의 최대 크기는 10MB 입니다.");
+    }
 }
