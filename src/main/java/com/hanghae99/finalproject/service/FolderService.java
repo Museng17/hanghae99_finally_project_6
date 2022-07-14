@@ -2,6 +2,7 @@ package com.hanghae99.finalproject.service;
 
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.FolderAndBoardResponseDto;
+import com.hanghae99.finalproject.model.dto.responseDto.FolderResponseDto;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.*;
@@ -280,24 +281,12 @@ public class FolderService {
         ).getContent();
     }
 
-    public FolderAndBoardResponseDto allmoum(String keyword, int page, List<FolderRequestDto> folderRequestDtos) {
-        Optional<FolderRequestDto> all = folderRequestDtos.stream()
-                .filter(categoryType -> categoryType.getCategory() == ALL)
-                .findFirst();
-        int boardsCnt;
-        Page<Board> boards;
+    public FolderResponseDto allFolders(String keyword, int page) {
         PageRequest pageRequest = PageRequest.of(page, 4, Sort.by("createdDate").descending());
-        if (all.isPresent()) {
-            boards = boardRepository.findAllByStatusAndTitleContaining(DisclosureStatus.PUBLIC, "%" + keyword + "%", pageRequest);
-            boardsCnt = boardRepository.findAllByStatusAndTitleContaining(DisclosureStatus.PUBLIC, "%" + keyword + "%").size();
-        } else {
-            boards = boardRepository.findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatus.PUBLIC, "%" + keyword + "%", boardService.FolderRequestDtoToCategoryTypeList(folderRequestDtos), pageRequest);
-            boardsCnt = boardRepository.findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatus.PUBLIC, "%" + keyword + "%", boardService.FolderRequestDtoToCategoryTypeList(folderRequestDtos)).size();
-        }
         Page<Folder> folders = folderRepository.findAllByNameContaining1(
                 "%" + keyword + "%", DisclosureStatus.PUBLIC, pageRequest);
         int foldersCnt = folderRepository.findAllByNameContaining1("%" + keyword + "%", DisclosureStatus.PUBLIC).size();
-        return new FolderAndBoardResponseDto(boards,boardsCnt, folders,foldersCnt);
+        return new FolderResponseDto(folders,foldersCnt);
     }
 
     private List<Long> listToId(List<Share> List) {
