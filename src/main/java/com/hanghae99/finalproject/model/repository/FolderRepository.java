@@ -51,4 +51,12 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
 
     @Query("select f FROM Folder f where f.id In ?1 and f.name LIKE CASE WHEN ?2 = '%all%' then '%%' else ?2 end")
     Page<Folder> findAllByIdAndNameLike(List<Long> listToId, String s, Pageable pageable);
+
+    @Modifying
+    @Query("update Folder f set f.folderOrder = f.folderOrder +1 where f.folderOrder < ?1 and ?2 <= f.folderOrder ")
+    void updateOrderSum(Long beforeOrder, Long afterOrder);
+
+    @Modifying
+    @Query("update Folder f set f.folderOrder = f.folderOrder -1 where f.folderOrder > ?1 and ?2 >= f.folderOrder ")
+    void updateOrderMinus(Long beforeOrder, Long afterOrder);
 }

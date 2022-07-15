@@ -53,9 +53,9 @@ public class FolderController {
     }
 
     @PostMapping("/folders")
-    public void folderOrderChange(@RequestBody FolderAndBoardRequestDto folderAndBoardRequestDto,
+    public void folderOrderChange(@RequestBody OrderRequestDto orderRequestDto,
                                   HttpServletRequest request) {
-        folderService.folderOrderChange(folderAndBoardRequestDto, request);
+        folderService.folderOrderChange(orderRequestDto, request);
     }
 
     @GetMapping("/folders")
@@ -71,7 +71,6 @@ public class FolderController {
     @PostMapping("/myshare/folder/{folderId}")
     public void cloneFolder(@PathVariable Long folderId, HttpServletRequest request) {
         folderService.cloneFolder(folderId, request);
-
     }
 
     @GetMapping("/BestFolders/{page}/{size}")

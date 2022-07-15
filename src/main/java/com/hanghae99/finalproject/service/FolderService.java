@@ -5,7 +5,7 @@ import com.hanghae99.finalproject.model.dto.responseDto.FolderResponseDto;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.*;
-import com.hanghae99.finalproject.util.resultType.CategoryType;
+import com.hanghae99.finalproject.util.resultType.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -13,10 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.hanghae99.finalproject.util.resultType.CategoryType.ALL;
+import static com.hanghae99.finalproject.util.resultType.FileUploadType.BOARD;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,7 @@ public class FolderService {
     private final BoardService boardService;
     private final ShareRepository shareRepository;
     private final UserRepository userRepository;
+    private final S3Uploader s3Uploader;
 
     private final BoardRepository boardRepository;
 
@@ -65,41 +68,34 @@ public class FolderService {
     public void boardInFolder(Long folderId, FolderRequestDto folderRequestDto, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
 
-        Folder folder = findFolder(
-                folderId,
-                request
-        );
+        Folder afterFolder = findFolder(folderId, request);
 
-        List<Board> removeBoardList = boardService.findAllById(folder);
-
-        userinfoHttpRequest.userAndWriterMatches(
-                folder.getUsers().getId(),
-                users.getId()
-        );
-
-        for (Board board : removeBoardList) {
-            board.removeFolderId();
-        }
-
-        List<Board> addBoardList = boardService.findAllById(
+        List<Board> afterBoard = boardService.findAllById(
                 folderRequestDto.getBoardList().stream()
                         .map(Board::getId)
                         .collect(Collectors.toList())
         );
 
-        for (Board board : addBoardList) {
-            board.addFolderId(folder);
-        }
+        Long beforeBoardId = boardRepository.findFolderIdById(folderRequestDto.getBoardList().get(0).getId())
+                .orElseThrow(() -> new RuntimeException("없는 글입니다."));
 
-        folder.setBoardCnt(0L + addBoardList.size());
-
-        List<Board> boards = boardService.findByUserId(users.getId());
-        Folder addFolder = findByBasicFolder(users);
-        for (Board board : boards) {
-            if (!Optional.ofNullable(board.getFolder()).isPresent()) {
-                board.addFolderId(addFolder);
-            }
+        Long afterCnt = 1L;
+        for (Board board : afterBoard) {
+            board.addFolderId(afterFolder);
+            board.updateOrder(afterFolder.getBoardCnt() + afterCnt);
+            afterCnt++;
         }
+        afterFolder.setBoardCnt(afterFolder.getBoardCnt() + afterBoard.size());
+
+        Folder beforeFolder = findFolder(beforeBoardId, request);
+        List<Board> beforeBoardList = boardRepository.findByFolder(beforeFolder);
+
+        Long beforeCnt = 1L;
+        for (Board folder : beforeBoardList) {
+            folder.setBoardOrder(beforeCnt);
+            beforeCnt++;
+        }
+        beforeFolder.setBoardCnt(beforeFolder.getBoardCnt() - afterBoard.size());
     }
 
     @Transactional
@@ -150,17 +146,29 @@ public class FolderService {
 
     @Transactional
     public Board crateBoardInFolder(BoardRequestDto boardRequestDto, HttpServletRequest request) {
-        Board board = boardService.boardSave(
-                boardRequestDto,
-                request
-        );
-
         Folder folder = findFolder(
                 boardRequestDto.getFolderId(),
                 request
         );
 
-        board.addFolderId(folder);
+        if (boardRequestDto.getBoardType() == BoardType.LINK) {
+            boardRequestDto.ogTagToBoardRequestDto(
+                    boardService.thumbnailLoad(boardRequestDto.getLink()),
+                    boardRequestDto.getLink()
+            );
+
+            if (!boardRequestDto.getImgPath().equals("") && boardRequestDto.getImgPath() != null) {
+                boardRequestDto.setImgPath(s3Uploader.upload(BOARD.getPath(), boardRequestDto.getImgPath()).getUrl());
+            }
+
+        } else if (boardRequestDto.getBoardType() == BoardType.MEMO) {
+            boardRequestDto.setTitle(new SimpleDateFormat(DateType.YEAR_MONTH_DAY.getPattern()).format(new Date()));
+        }
+
+        Users user = userinfoHttpRequest.userFindByToken(request);
+        Board board = boardRepository.save(new Board(boardRequestDto, folder.getBoardCnt() + 1, user, folder));
+        folder.setBoardCnt(folder.getBoardCnt() + 1);
+        user.setBoardCnt(user.getBoardCnt() + 1);
         return board;
     }
 
@@ -189,8 +197,10 @@ public class FolderService {
 
         Folder folder2 = folderRepository.save(folder1);
         List<Board> boards1 = new ArrayList<>();
+        Long cnt = 1L;
         for (Board board : boards) {
-            boards1.add(new Board(board, users, folder2));
+            boards1.add(new Board(board, users, folder2, cnt));
+            cnt++;
         }
         boardRepository.saveAll(boards1);
         users.setFolderCnt(users.getFolderCnt() + 1);
@@ -198,32 +208,24 @@ public class FolderService {
     }
 
     @Transactional
-    public void folderOrderChange(FolderAndBoardRequestDto folderAndBoardRequestDto, HttpServletRequest request) {
-        List<FolderRequestDto> dbFolderList = toFolderRequestDtoList(
-                folderRepository.findByUsers(
-                        userinfoHttpRequest.userFindByToken(request))
-        );
-
-        for (FolderRequestDto folderRequestDto : folderAndBoardRequestDto.getFolderList()) {
-            for (FolderRequestDto dbFolder : dbFolderList) {
-                if (folderRequestDto.getId() == dbFolder.getId()) {
-                    if (folderRequestDto.getFolderOrder() != dbFolder.getFolderOrder()) {
-                        Folder folder = folderRepository.findById(folderRequestDto.getId())
-                                .orElseThrow(() -> new RuntimeException("FolderService, 133 에러 발생 찾는 폴더가 없습니다."));
-                        folder.updateOrder(folderRequestDto.getFolderOrder());
-                    }
-                }
-            }
+    public void folderOrderChange(OrderRequestDto orderRequestDto, HttpServletRequest request) {
+        Folder folder = folderRepository.findById(orderRequestDto.getFolderId())
+                .orElseThrow(() -> new RuntimeException("없는 게시물입니다."));
+        Users users = userinfoHttpRequest.userFindByToken(request);
+        if (folder.getUsers().getId() != users.getId()) {
+            throw new RuntimeException("폴더 생성자가 아닙니다.");
         }
-    }
 
-    private List<FolderRequestDto> toFolderRequestDtoList(List<Folder> folderList) {
-        List<FolderRequestDto> folderRequestDtoList = new ArrayList<>();
-
-        for (Folder folder : folderList) {
-            folderRequestDtoList.add(new FolderRequestDto(folder));
+        if (folder.getFolderOrder() == orderRequestDto.getAfterOrder() || users.getFolderCnt() + 1 < orderRequestDto.getAfterOrder()) {
+            throw new RuntimeException("잘못된 정보입니다. 기존 order : " + folder.getFolderOrder() + " , 바꾸는 order : " + orderRequestDto.getAfterOrder() + " , forder 최종 order : " + users.getFolderCnt());
+        } else if (folder.getFolderOrder() - orderRequestDto.getAfterOrder() > 0) {
+            folderRepository.updateOrderSum(folder.getFolderOrder(), orderRequestDto.getAfterOrder());
+        } else {
+            folderRepository.updateOrderMinus(folder.getFolderOrder(), orderRequestDto.getAfterOrder());
         }
-        return folderRequestDtoList;
+
+        folder.updateOrder(orderRequestDto.getAfterOrder());
+
     }
 
     @Transactional(readOnly = true)
