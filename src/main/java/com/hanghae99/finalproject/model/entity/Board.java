@@ -74,6 +74,20 @@ public class Board extends TimeStamp {
         this.folder = folder;
     }
 
+    public Board(BoardRequestDto boardRequestDto, long boardOrder, Users users, Folder folder) {
+        this.title = boardRequestDto.getTitle();
+        this.link = boardRequestDto.getLink();
+        this.explanation = boardRequestDto.getExplanation();
+        this.imgPath = boardRequestDto.getImgPath();
+        this.content = boardRequestDto.getContent();
+        this.status = DisclosureStatus.PRIVATE;
+        this.boardType = boardRequestDto.getBoardType();
+        this.category = inNullCheck(boardRequestDto.getCategory());
+        this.boardOrder = boardOrder;
+        this.users = users;
+        this.folder = folder;
+    }
+
     private CategoryType inNullCheck(CategoryType category) {
         if (!Optional.ofNullable(category).isPresent()) {
             return CategoryType.NO_CATEGORY;
@@ -89,10 +103,11 @@ public class Board extends TimeStamp {
         this.status = boardRequestDto.getStatus();
         this.boardType = boardRequestDto.getBoardType();
         this.category = boardRequestDto.getCategory();
+        this.boardOrder = user.getBoardCnt() + 1;
         this.users = user;
     }
 
-    public Board(Board board, Users users, Folder folder) {
+    public Board(Board board, Users users, Folder folder, Long cnt) {
         this.title = board.getTitle();
         this.link = board.getLink();
         this.explanation = board.getExplanation();
@@ -101,7 +116,7 @@ public class Board extends TimeStamp {
         this.status = board.getStatus();
         this.boardType = board.getBoardType();
         this.category = board.getCategory();
-        this.boardOrder = board.getBoardOrder();
+        this.boardOrder = users.getBoardCnt() + cnt;
         this.users = users;
         this.folder = folder;
     }

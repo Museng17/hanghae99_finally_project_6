@@ -34,10 +34,11 @@ public class BoardController {
         boardService.boardUpdate(id, boardRequestDto, request);
     }
 
-    @DeleteMapping("/boards")
+    @DeleteMapping("/boards/{folderId}")
     public void boardDelete(@RequestBody List<BoardRequestDto> boardRequestDtos,
-                            HttpServletRequest request) {
-        boardService.boardDelete(boardRequestDtos, request);
+                            HttpServletRequest request,
+                            @PathVariable Long folderId) {
+        boardService.boardDelete(boardRequestDtos, request, folderId);
     }
 
     @PostMapping("/image/og")
@@ -46,9 +47,9 @@ public class BoardController {
     }
 
     @PostMapping("/boards")
-    public void boardOrderChange(@RequestBody FolderAndBoardRequestDto folderAndBoardRequestDto,
+    public void boardOrderChange(@RequestBody OrderRequestDto orderRequestDto,
                                  HttpServletRequest request) {
-        boardService.boardOrderChange(folderAndBoardRequestDto, request);
+        boardService.boardOrderChange(orderRequestDto, request);
     }
 
     @PostMapping("/myshare/board/{boardId}")

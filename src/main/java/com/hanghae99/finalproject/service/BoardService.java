@@ -57,7 +57,7 @@ public class BoardService {
 
         Board board = boardRepository.save(
                 new Board(
-                        boardRepository.findBoardCount(user.getId()),
+                        folder.getBoardCnt(),
                         boardRequestDto,
                         user,
                         folder
@@ -93,7 +93,7 @@ public class BoardService {
     }
 
     @Transactional
-    public void boardDelete(List<BoardRequestDto> boardRequestDto, HttpServletRequest request) {
+    public void boardDelete(List<BoardRequestDto> boardRequestDto, HttpServletRequest request, Long folderId) {
         Users users = userinfoHttpRequest.userFindByToken(request);
         List<Long> longs = boardRequestDto.stream()
                 .map(BoardRequestDto::getId)
@@ -101,19 +101,32 @@ public class BoardService {
 
         List<Board> boardList = boardAllFindById(longs);
         for (Board board : boardList) {
-            userinfoHttpRequest.userAndWriterMatches(
-                    board.getUsers().getId(),
-                    users.getId()
-            );
+            userinfoHttpRequest.userAndWriterMatches(board.getUsers().getId(), users.getId());
         }
 
         boardRepository.deleteAllById(longs);
         users.setBoardCnt(users.getBoardCnt() - boardList.size());
+
+        List<Board> removeAfterBoardList = boardFindByUsersIdOrderByBoardOrderAsc(users.getId(), folderId);
+
+        Long cnt = 1L;
+        for (Board board : removeAfterBoardList) {
+            board.setBoardOrder(cnt);
+            cnt++;
+        }
+        Folder folder = folderRepository.findById(folderId)
+                .orElseThrow(() -> new RuntimeException("찾는 폴더가 없습니다."));
+
+        folder.setBoardCnt(folder.getBoardCnt() - longs.size());
     }
 
     public Board boardFindById(Long id) {
         return boardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("BoardService 74 에러, 해당 글을 찾지 못했습니다."));
+    }
+
+    public List<Board> boardFindByUsersIdOrderByBoardOrderAsc(Long userId, Long folderId) {
+        return boardRepository.findAllByUsersIdOrderByBoardOrderAsc(userId, folderId);
     }
 
     public List<Board> boardAllFindById(List<Long> boardIdList) {
@@ -135,6 +148,7 @@ public class BoardService {
 
     public void statusUpdateByFolderId(Long id, FolderRequestDto folderRequestDto) {
         Optional<Board> board = boardRepository.findByFolderId(id);
+
         if (board.isPresent()) {
             board.get().updateStatus(folderRequestDto);
         }
@@ -171,32 +185,24 @@ public class BoardService {
     }
 
     @Transactional
-    public void boardOrderChange(FolderAndBoardRequestDto folderAndBoardRequestDto, HttpServletRequest request) {
-        List<BoardRequestDto> dbList = toBoardRequestDtoList(
-                boardRepository.findByUsers(
-                        userinfoHttpRequest.userFindByToken(request)
-                )
-        );
+    public void boardOrderChange(OrderRequestDto orderRequestDto, HttpServletRequest request) {
+        Board board = boardRepository.findById(orderRequestDto.getBoardId())
+                .orElseThrow(() -> new RuntimeException("없는 게시물입니다."));
+        Users users = userinfoHttpRequest.userFindByToken(request);
 
-        for (BoardRequestDto boardRequestDto : folderAndBoardRequestDto.getBoardList()) {
-            for (BoardRequestDto dbDto : dbList) {
-                if (boardRequestDto.getId() == dbDto.getId()) {
-                    if (boardRequestDto.getBoardOrder() != dbDto.getBoardOrder()) {
-                        Board targetBoard = boardFindById(boardRequestDto.getId());
-                        targetBoard.updateOrder(boardRequestDto.getBoardOrder());
-                    }
-                }
-            }
+        if (board.getUsers().getId() != users.getId()) {
+            throw new RuntimeException("글쓴이가 아닙니다.");
         }
-    }
 
-    private List<BoardRequestDto> toBoardRequestDtoList(List<Board> boards) {
-        List<BoardRequestDto> boardRequestDtoList = new ArrayList<>();
-
-        for (Board board : boards) {
-            boardRequestDtoList.add(new BoardRequestDto(board));
+        if (board.getBoardOrder() == orderRequestDto.getAfterOrder() || orderRequestDto.getAfterOrder() > users.getBoardCnt()) {
+            throw new RuntimeException("잘못된 정보입니다. : 기존 order : " + board.getBoardOrder() + "바꾸는 order : " + orderRequestDto.getAfterOrder() + "forder 최종 order : " + users.getBoardCnt() + 1);
+        } else if (board.getBoardOrder() - orderRequestDto.getAfterOrder() > 0) {
+            boardRepository.updateOrderSum(board.getBoardOrder(), orderRequestDto.getAfterOrder(), orderRequestDto.getFolderId());
+        } else {
+            boardRepository.updateOrderMinus(board.getBoardOrder(), orderRequestDto.getAfterOrder(), orderRequestDto.getFolderId());
         }
-        return boardRequestDtoList;
+
+        board.updateOrder(orderRequestDto.getAfterOrder());
     }
 
     public FileUploadResponse boardImageUpload(MultipartFile imageFile) {
