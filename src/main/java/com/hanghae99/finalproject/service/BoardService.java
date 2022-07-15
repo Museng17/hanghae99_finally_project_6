@@ -226,12 +226,12 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public BoardInFolderWithCategoryListResponseDto moum(List<FolderRequestDto> folderRequestDtos,
-                                                         String keyword,
-                                                         HttpServletRequest request,
-                                                         Pageable pageable,
-                                                         Long folderId,
-                                                         Long userId) {
+    public FolderRequestDto moum(List<FolderRequestDto> folderRequestDtos,
+                                 String keyword,
+                                 HttpServletRequest request,
+                                 Pageable pageable,
+                                 Long folderId,
+                                 Long userId) {
         List<DisclosureStatus> disclosureStatuses = new ArrayList<>();
         disclosureStatuses.add(DisclosureStatus.PUBLIC);
 
@@ -244,7 +244,7 @@ public class BoardService {
                     throw new RuntimeException("회원을 찾을 수 없습니다.");
                 });
 
-        return new BoardInFolderWithCategoryListResponseDto(
+        return new FolderRequestDto(
                 boardRepository.findByFolderIdAndTitleContainingAndCategoryIn(
                         folderId,
                         "%" + keyword + "%",
@@ -253,24 +253,8 @@ public class BoardService {
                         disclosureStatuses,
                         pageable
                 ),
-                folderRepository.findById(folderId).get(),
-                findCategoryByUsersIdAndFolderId(user.getId(), folderId)
+                folderRepository.findById(folderId).get()
         );
-    }
-
-    public List<CategoryType> findSelectCategory(List<FolderRequestDto> folderRequestDtos) {
-        List<CategoryType> categoryTypeList = null;
-
-        Optional<FolderRequestDto> findAllCategory = folderRequestDtos.stream()
-                .filter(categoryType -> categoryType.getCategory() == ALL)
-                .findFirst();
-
-        if (findAllCategory.isPresent()) {
-            categoryTypeList = ALL_CATEGORYT;
-        } else {
-            categoryTypeList = FolderRequestDtoToCategoryTypeList(folderRequestDtos);
-        }
-        return categoryTypeList;
     }
 
     public BoardResponseDto allBoards(String keyword, int page, List<FolderRequestDto> folderRequestDtos) {
@@ -291,6 +275,19 @@ public class BoardService {
         return new BoardResponseDto(boards, boardsCnt);
     }
 
+    @Transactional(readOnly = true)
+    public List<Map<String, CategoryType>> findCategoryList(Long userId, Long folderId, HttpServletRequest request) {
+        Users user = userRepository.findById(userId)
+                .orElseGet(() -> {
+                    if (userId == 0L) {
+                        return userinfoHttpRequest.userFindByToken(request);
+                    }
+                    throw new RuntimeException("회원을 찾을 수 없습니다.");
+                });
+
+        return findCategoryByUsersIdAndFolderId(user.getId(), folderId);
+    }
+
     private List<Map<String, CategoryType>> findCategoryByUsersIdAndFolderId(Long id, Long folderId) {
         return ListToListMap(boardRepository.findCategoryByUsersIdAndFolderId(id, folderId));
     }
@@ -309,5 +306,20 @@ public class BoardService {
             }
         }
         return addList;
+    }
+
+    public List<CategoryType> findSelectCategory(List<FolderRequestDto> folderRequestDtos) {
+        List<CategoryType> categoryTypeList = null;
+
+        Optional<FolderRequestDto> findAllCategory = folderRequestDtos.stream()
+                .filter(categoryType -> categoryType.getCategory() == ALL)
+                .findFirst();
+
+        if (findAllCategory.isPresent()) {
+            categoryTypeList = ALL_CATEGORYT;
+        } else {
+            categoryTypeList = FolderRequestDtoToCategoryTypeList(folderRequestDtos);
+        }
+        return categoryTypeList;
     }
 }
