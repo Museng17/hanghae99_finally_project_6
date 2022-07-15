@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.hanghae99.finalproject.util.resultType.CategoryType.ALL;
+
 @Service
 @RequiredArgsConstructor
 public class FolderService {
@@ -253,6 +255,20 @@ public class FolderService {
                     throw new RuntimeException("회원을 찾을 수 없습니다.");
                 });
 
+        Optional<FolderRequestDto> findAllCategory = folderRequestDtos.stream()
+                .filter(categoryType -> categoryType.getCategory() == ALL)
+                .findFirst();
+
+        if (findAllCategory.isPresent()) {
+            return folderRepository.findByNameContaining(
+                    "%" + keyword + "%",
+                    users,
+                    boardService.findByFolder(findByBasicFolder(users)).size() > 0,
+                    disclosureStatuses,
+                    pageable
+            ).getContent();
+        }
+
         return folderRepository.findByNameContaining(
                 "%" + keyword + "%",
                 users,
@@ -307,5 +323,4 @@ public class FolderService {
     private List<Long> listToId(List<Share> List) {
         return List.stream().map(Share::getId).collect(Collectors.toList());
     }
-
 }
