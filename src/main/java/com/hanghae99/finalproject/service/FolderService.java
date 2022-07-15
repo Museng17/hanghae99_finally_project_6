@@ -1,10 +1,11 @@
 package com.hanghae99.finalproject.service;
 
 import com.hanghae99.finalproject.model.dto.requestDto.*;
-import com.hanghae99.finalproject.model.dto.responseDto.*;
+import com.hanghae99.finalproject.model.dto.responseDto.FolderResponseDto;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.util.*;
+import com.hanghae99.finalproject.util.resultType.CategoryType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -235,11 +236,11 @@ public class FolderService {
     }
 
     @Transactional(readOnly = true)
-    public FolderPageResponseDto moum(String keyword,
-                                      HttpServletRequest request,
-                                      Pageable pageable,
-                                      Long userId,
-                                      List<FolderRequestDto> folderRequestDtos) {
+    public List<Folder> moum(String keyword,
+                             HttpServletRequest request,
+                             Pageable pageable,
+                             Long userId,
+                             List<FolderRequestDto> folderRequestDtos) {
         List<DisclosureStatus> disclosureStatuses = new ArrayList<>();
         disclosureStatuses.add(DisclosureStatus.PUBLIC);
 
@@ -251,17 +252,27 @@ public class FolderService {
                     }
                     throw new RuntimeException("회원을 찾을 수 없습니다.");
                 });
-        return new FolderPageResponseDto(
-                folderRepository.findByNameContaining(
-                        "%" + keyword + "%",
-                        users,
-                        boardService.findByFolder(findByBasicFolder(users)).size() > 0,
-                        disclosureStatuses,
-                        boardService.findSelectCategory(folderRequestDtos),
-                        pageable
-                ).getContent(),
-                boardService.findCategoryByUsersId(users.getId())
-        );
+
+        return folderRepository.findByNameContaining(
+                "%" + keyword + "%",
+                users,
+                boardService.findByFolder(findByBasicFolder(users)).size() > 0,
+                disclosureStatuses,
+                boardService.findSelectCategory(folderRequestDtos),
+                pageable
+        ).getContent();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Map<String, CategoryType>> findCategoryList(Long userId, HttpServletRequest request) {
+        Users users = userRepository.findById(userId)
+                .orElseGet(() -> {
+                    if (userId == 0L) {
+                        return userinfoHttpRequest.userFindByToken(request);
+                    }
+                    throw new RuntimeException("회원을 찾을 수 없습니다.");
+                });
+        return boardService.findCategoryByUsersId(users.getId());
     }
 
     @Transactional(readOnly = true)
