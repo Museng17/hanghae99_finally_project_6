@@ -73,7 +73,7 @@ public class Folder extends TimeStamp {
         this.sharedCount = folderRequestDto.getSharedCount() + 1;
         this.BoardCnt = folderRequestDto.getBoardCnt();
         this.boardList = folderRequestDto.getBoardList();
-        this.folderOrder = users.getFolderCnt()+2;
+        this.folderOrder = users.getFolderCnt() + 2;
     }
 
     public void update(FolderRequestDto folderRequestDto) {
