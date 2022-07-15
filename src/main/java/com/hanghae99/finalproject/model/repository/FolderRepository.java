@@ -32,6 +32,12 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
                                       List<CategoryType> selectCategory,
                                       Pageable pageable);
 
+    @Query("select distinct(f) from Folder f where f.users = ?2 and  f.name LIKE case when ?1 = '%all%' then '%%' else ?1 end and f.name not like case when ?3 = false then '무제' else '' end and f.status in ?4")
+    Page<Folder> findByNameContaining(String keyword,
+                                      Users users,
+                                      boolean isBoardInBasicFolder,
+                                      List<DisclosureStatus> disclosureStatuses,
+                                      Pageable pageable);
 
     Folder findByUsersAndName(Users users, String basicFolder);
 
