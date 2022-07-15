@@ -29,8 +29,6 @@ public class FollowService {
 
     @Transactional
     public long getFollowId(Long followingId, Long followerId) {
-        Users following = userRepository.findFollowingById(followingId);
-        Users follower = userRepository.findFollowerById(followerId);
 
         Follow follow = followRepository.findByFollowingIdAndFollowerId(followingId, followerId);
 
