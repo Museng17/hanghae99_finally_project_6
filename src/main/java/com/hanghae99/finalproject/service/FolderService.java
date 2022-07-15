@@ -135,6 +135,10 @@ public class FolderService {
                 request
         );
 
+        if (!folder.getName().equals(folderRequestDto.getName())) {
+            throw new RuntimeException("무제 폴더는 이름을 수정할 수 없습니다.");
+        }
+
         userinfoHttpRequest.userAndWriterMatches(
                 folder.getUsers().getId(),
                 userinfoHttpRequest.userFindByToken(request).getId()
