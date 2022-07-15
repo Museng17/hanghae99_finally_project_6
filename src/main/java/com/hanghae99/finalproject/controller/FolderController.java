@@ -1,9 +1,10 @@
 package com.hanghae99.finalproject.controller;
 
 import com.hanghae99.finalproject.model.dto.requestDto.*;
-import com.hanghae99.finalproject.model.dto.responseDto.*;
+import com.hanghae99.finalproject.model.dto.responseDto.FolderResponseDto;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.service.FolderService;
+import com.hanghae99.finalproject.util.resultType.CategoryType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -79,12 +80,18 @@ public class FolderController {
     }
 
     @PostMapping("/folders/{userId}/{keyword}")
-    public FolderPageResponseDto moum(@PathVariable String keyword,
-                                      HttpServletRequest request,
-                                      @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
-                                      @PathVariable Long userId,
-                                      @RequestBody List<FolderRequestDto> folderRequestDtos) {
+    public List<Folder> moum(@PathVariable String keyword,
+                             HttpServletRequest request,
+                             @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
+                             @PathVariable Long userId,
+                             @RequestBody List<FolderRequestDto> folderRequestDtos) {
         return folderService.moum(keyword, request, pageable, userId, folderRequestDtos);
+    }
+
+    @GetMapping("/folders/{userId}")
+    public List<Map<String, CategoryType>> findCategoryList(@PathVariable Long userId,
+                                                            HttpServletRequest request) {
+        return folderService.findCategoryList(userId, request);
     }
 
     @GetMapping("/shares/{userId}/{keyword}")
