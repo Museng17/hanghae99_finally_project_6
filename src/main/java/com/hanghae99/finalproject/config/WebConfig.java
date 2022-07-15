@@ -27,7 +27,8 @@ public class WebConfig implements WebMvcConfigurer {
             "/user/login",
             "/user/social",
             "/image/og/**",
-            "/user/refresh"
+            "/user/refresh",
+            "/"
     };
     public final static String SOCIAL_HEADER_KEY = "Code";
 
@@ -50,6 +51,7 @@ public class WebConfig implements WebMvcConfigurer {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:3000");
         configuration.addAllowedOrigin("http://spartastatic.s3-website.ap-northeast-2.amazonaws.com");
+        configuration.addAllowedOrigin("http://ec2-13-125-137-133.ap-northeast-2.compute.amazonaws.com");
         configuration.addAllowedHeader("Content-Type");
         configuration.addAllowedHeader("Custom-Header");
         configuration.addAllowedMethod(HttpMethod.POST);
