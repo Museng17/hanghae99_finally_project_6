@@ -3,7 +3,6 @@ package com.hanghae99.finalproject.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 // test용 controller
 @Controller

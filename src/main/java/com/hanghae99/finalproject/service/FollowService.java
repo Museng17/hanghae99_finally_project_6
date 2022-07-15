@@ -3,7 +3,6 @@ package com.hanghae99.finalproject.service;
 import com.hanghae99.finalproject.model.dto.requestDto.UserRequestDto;
 import com.hanghae99.finalproject.model.dto.responseDto.FollowDto;
 import com.hanghae99.finalproject.model.dto.responseDto.FollowResponseDto;
-import com.hanghae99.finalproject.model.dto.responseDto.UserProfileDto;
 import com.hanghae99.finalproject.model.entity.Follow;
 import com.hanghae99.finalproject.model.entity.Users;
 import com.hanghae99.finalproject.model.repository.FollowRepository;

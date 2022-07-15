@@ -21,14 +21,6 @@ public class FolderRequestDto {
     private Long boardCnt;
     private List<Board> boardList = new ArrayList<>();
 
-    public FolderRequestDto(Folder folder) {
-        this.id = folder.getId();
-        this.name = folder.getName();
-        this.status = folder.getStatus();
-        this.folderOrder = folder.getFolderOrder();
-        this.sharedCount = folder.getSharedCount();
-    }
-
     public FolderRequestDto(Page<Board> boards, Folder folder) {
         this.id = folder.getId();
         this.name = folder.getName();
@@ -39,7 +31,7 @@ public class FolderRequestDto {
         this.boardList = boards.getContent();
     }
 
-    public FolderRequestDto(Folder folder, List<Board> boards) {
+    public FolderRequestDto(Folder folder){
         this.id = folder.getId();
         this.name = folder.getName();
         this.status = folder.getStatus();

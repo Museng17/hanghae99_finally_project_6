@@ -31,7 +31,6 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final FolderRepository folderRepository;
     private final UserinfoHttpRequest userinfoHttpRequest;
-    private final ShareRepository shareRepository;
     private final S3Uploader s3Uploader;
     private final UserRepository userRepository;
 
@@ -175,12 +174,15 @@ public class BoardService {
                 -> new RuntimeException("원하는 폴더를 찾지 못했습니다."));
     }
 
+    @Transactional
     public void cloneBoard(Long boardId, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
         Board board = findShareBoard(boardId, request);
         BoardRequestDto boardRequestDto = new BoardRequestDto(board);
-        Board board1 = new Board(boardRequestDto, users);
+        Folder folder = folderRepository.findByUsersAndName(users , "무제");
+        Board board1 = new Board(boardRequestDto, users,folder);
         boardRepository.save(board1);
+        folder.setBoardCnt(folder.getBoardCnt() + 1);
         users.setBoardCnt(users.getBoardCnt() + 1);
     }
 
@@ -227,9 +229,6 @@ public class BoardService {
         return boardRepository.findByFolder(folder);
     }
 
-    public List<Board> findByUserId(Long id) {
-        return boardRepository.findByUsersId(id);
-    }
 
     @Transactional(readOnly = true)
     public FolderRequestDto moum(List<FolderRequestDto> folderRequestDtos,

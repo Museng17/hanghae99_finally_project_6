@@ -66,7 +66,6 @@ public class FolderService {
 
     @Transactional
     public void boardInFolder(Long folderId, FolderRequestDto folderRequestDto, HttpServletRequest request) {
-        Users users = userinfoHttpRequest.userFindByToken(request);
 
         Folder afterFolder = findFolder(folderId, request);
 
@@ -192,15 +191,13 @@ public class FolderService {
         Users users = userinfoHttpRequest.userFindByToken(request);
         Folder folder = findShareFolder(folderId, request);
         List<Board> boards = boardService.findAllById(folder);
-        FolderRequestDto folderRequestDto = new FolderRequestDto(folder, boards);
+        FolderRequestDto folderRequestDto = new FolderRequestDto(folder);
         Folder folder1 = new Folder(folderRequestDto, users);
 
         Folder folder2 = folderRepository.save(folder1);
         List<Board> boards1 = new ArrayList<>();
-        Long cnt = 1L;
         for (Board board : boards) {
-            boards1.add(new Board(board, users, folder2, cnt));
-            cnt++;
+            boards1.add(new Board(board, users, folder2));
         }
         boardRepository.saveAll(boards1);
         users.setFolderCnt(users.getFolderCnt() + 1);
