@@ -1,11 +1,12 @@
 package com.hanghae99.finalproject.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 // test용 controller
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class TestController {
     @GetMapping("/test")
@@ -15,7 +16,9 @@ public class TestController {
         return testStr;
     }
 
-    @PostMapping("/test/test")
-    public void tes2t(@RequestParam("test") MultipartFile multipartFile) {
+    @ResponseBody
+    @GetMapping("/")
+    public String tes2t() {
+        return "whitewise?";
     }
 }
