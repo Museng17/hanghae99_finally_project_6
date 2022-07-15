@@ -112,6 +112,9 @@ public class FolderService {
                 .collect(Collectors.toList());
 
         for (Folder folder : folders) {
+            if (folder.getName().equals("무제")){
+                throw new RuntimeException("무제폴더는 삭제할 수 없습니다.");
+            }
             userinfoHttpRequest.userAndWriterMatches(
                     folder.getUsers().getId(),
                     users.getId()
