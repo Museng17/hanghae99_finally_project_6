@@ -54,12 +54,11 @@ public class FollowService {
     public FollowResponseDto findFollowingUser(int page, int size, HttpServletRequest request){
         Users following = userRepository.findFollowingById(userinfoHttpRequest.userFindByToken(request).getId());
         PageRequest pageRequest = PageRequest.of(page, size);
-        Long follows = followRepository.findFollowingCountById(following.getId());
         Page<Follow> follow = followRepository.findAllByFollowing(pageRequest,following);
         List<Follow> follow1 = follow.getContent();
         List<UserRequestDto> follow2 = toBoardRequestDtoList(follow1);
         List<FollowDto> followDtos = toFollowRequestDtoList(follow2);
-        return  new FollowResponseDto(followDtos, follows);
+        return  new FollowResponseDto(followDtos, follow.getTotalElements());
     }
     private List<UserRequestDto> toBoardRequestDtoList(List<Follow> follows) {
         List<UserRequestDto> boardRequestDtoList = new ArrayList<>();
@@ -73,8 +72,7 @@ public class FollowService {
         List<FollowDto> followRequestDtoList = new ArrayList<>();
 
         for (UserRequestDto userRequestDto : followusers){
-            Long followercnt = followRepository.findFollowerCountById(userRequestDto.getId());
-            followRequestDtoList.add(new FollowDto(userRequestDto,followercnt));
+            followRequestDtoList.add(new FollowDto(userRequestDto,followRepository.findFollowerCountById(userRequestDto.getId())));
         }
         return followRequestDtoList;
     }

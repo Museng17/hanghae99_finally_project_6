@@ -196,16 +196,15 @@ public class FolderService {
         Folder folder = findShareFolder(folderId, request);
         List<Board> boards = boardService.findAllById(folder);
         FolderRequestDto folderRequestDto = new FolderRequestDto(folder);
-        Folder folder1 = new Folder(folderRequestDto, users);
 
-        Folder folder2 = folderRepository.save(folder1);
+        Folder savefolder = folderRepository.save(new Folder(folderRequestDto, users));
         List<Board> boards1 = new ArrayList<>();
         for (Board board : boards) {
-            boards1.add(new Board(board, users, folder2));
+            boards1.add(new Board(board, users, savefolder));
         }
         boardRepository.saveAll(boards1);
         users.setFolderCnt(users.getFolderCnt() + 1);
-        users.setBoardCnt(users.getBoardCnt() + folder2.getBoardCnt());
+        users.setBoardCnt(users.getBoardCnt() + savefolder.getBoardCnt());
     }
 
     @Transactional
@@ -323,8 +322,7 @@ public class FolderService {
         PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("createdDate").descending());
         Page<Folder> folders = folderRepository.findAllByNameContaining1(
                 "%" + keyword + "%", DisclosureStatus.PUBLIC, pageRequest);
-        int foldersCnt = folderRepository.findAllByNameContaining1("%" + keyword + "%", DisclosureStatus.PUBLIC).size();
-        return new FolderResponseDto(folders, foldersCnt);
+        return new FolderResponseDto(folders, folders.getTotalElements());
     }
 
     private List<Long> listToId(List<Share> List) {

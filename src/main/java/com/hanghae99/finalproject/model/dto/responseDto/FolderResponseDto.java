@@ -14,10 +14,10 @@ import java.util.List;
 @NoArgsConstructor
 public class FolderResponseDto {
 
-    private int foldersCnt;
+    private Long foldersCnt;
     private List<Folder> folders = new ArrayList<>();
 
-    public FolderResponseDto(Page<Folder> folders, int foldersCnt){
+    public FolderResponseDto(Page<Folder> folders, Long foldersCnt){
         this.foldersCnt = foldersCnt;
         this.folders = folders.getContent();
     }

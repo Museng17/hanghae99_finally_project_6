@@ -13,10 +13,10 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class BoardResponseDto {
-    private int boardsCnt;
+    private Long boardsCnt;
     private List<Board> boards = new ArrayList<>();
 
-    public BoardResponseDto(Page<Board> boards, int boardsCnt){
+    public BoardResponseDto(Page<Board> boards, Long boardsCnt){
         this.boardsCnt = boardsCnt;
         this.boards = boards.getContent();
     }
