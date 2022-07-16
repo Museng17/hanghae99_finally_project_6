@@ -190,6 +190,7 @@ public class FolderService {
                 -> new RuntimeException("원하는 폴더를 찾지 못했습니다."));
     }
 
+    @Transactional
     public void cloneFolder(Long folderId, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
         Folder folder = findShareFolder(folderId, request);
