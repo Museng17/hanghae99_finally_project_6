@@ -79,7 +79,7 @@ public class UserService {
         return Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$", s);
     }
 
-    public UserRegisterRespDto registerUser(UserRequestDto Dto) throws NoSuchAlgorithmException {
+    public UserRegisterRespDto registerUser(UserRequestDto Dto) {
         Boolean result = true;
         String err_msg = "회원가입 성공";
         String username = Dto.getUsername();

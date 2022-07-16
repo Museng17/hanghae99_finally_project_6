@@ -155,7 +155,7 @@ public class BoardService {
     }
 
     public OgResponseDto thumbnailLoad(String url) {
-        OgResponseDto ogResponseDto = new OgResponseDto();
+        OgResponseDto ogResponseDto;
         try {
             Document doc = Jsoup.connect(url).get();
             String title = doc.select("meta[property=og:title]").attr("content");

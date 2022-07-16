@@ -22,8 +22,6 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
     @Query("select count(id) from Folder where users.id = ?1")
     Long findFolderCount(Long id);
 
-    List<Folder> findByUsers(Users userFindByToken);
-
     @Query("select distinct(f) from Folder f, Board b where f.users = ?2 and  f.name LIKE case when ?1 = '%all%' then '%%' else ?1 end and f.name not like case when ?3 = false then '무제' else '' end and f.status in ?4 and f.id = b.folder.id and b.category in ?5")
     Page<Folder> findByNameContaining(String keyword,
                                       Users users,
@@ -43,9 +41,6 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
 
     @Query("select f from Folder f where   f.name LIKE case when ?1 = '%all%' then '%%' else ?1 end and f.name not like '무제'   and f.status in ?2")
     Page<Folder> findAllByNameContaining1(String keyword, DisclosureStatus disclosureStatuses, Pageable pageable);
-
-    @Query("select f from Folder f where   f.name LIKE case when ?1 = '%all%' then '%%' else ?1 end and f.name not like '무제'   and f.status in ?2")
-    List<Folder> findAllByNameContaining1(String keyword, DisclosureStatus disclosureStatuses);
 
     Optional<List<Folder>> findAllByIdInAndUsersId(List<Long> folderId, Long id);
 
