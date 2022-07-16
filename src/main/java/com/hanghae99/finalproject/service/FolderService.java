@@ -133,7 +133,7 @@ public class FolderService {
                 request
         );
 
-        if (!folder.getName().equals("무제")) {
+        if (folder.getName().equals("무제")) {
             throw new RuntimeException("무제 폴더는 이름을 수정할 수 없습니다.");
         }
 
