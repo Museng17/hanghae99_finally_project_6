@@ -134,16 +134,15 @@ public class UserService {
 
     @Transactional
     public UserProfileDto getProfile(long id, HttpServletRequest request) {
-        UserProfileDto userProfileDto = new UserProfileDto();
+
         Users user = userFindById(id);
         Users loginUser = userFindById(findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId());
-        userProfileDto = new UserProfileDto(
+        return new UserProfileDto(
                 user,
                 followRepository.findFollowerCountById(id),
                 followRepository.findFollowingCountById(id),
                 followRepository.findByFollowingIdAndFollowerId(loginUser.getId(), id) != null
         );
-        return userProfileDto;
     }
 
     @Transactional

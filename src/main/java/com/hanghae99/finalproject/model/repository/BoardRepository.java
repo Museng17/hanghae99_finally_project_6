@@ -29,7 +29,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     List<Board> findByFolder(Folder folder);
 
-    List<Board> findByUsersId(Long id);
 
     @Query("SELECT DISTINCT(B.category) FROM Board B WHERE B.users.id = :id")
     List<CategoryType> findAllCategoryByUsersId(@Param("id") Long id);

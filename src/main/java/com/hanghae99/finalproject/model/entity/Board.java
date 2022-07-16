@@ -95,7 +95,7 @@ public class Board extends TimeStamp {
         return category;
     }
 
-    public Board(BoardRequestDto boardRequestDto, Users user) {
+    public Board(BoardRequestDto boardRequestDto, Users user,Folder folder) {
         this.title = boardRequestDto.getTitle();
         this.explanation = boardRequestDto.getExplanation();
         this.imgPath = boardRequestDto.getImgPath();
@@ -103,11 +103,12 @@ public class Board extends TimeStamp {
         this.status = boardRequestDto.getStatus();
         this.boardType = boardRequestDto.getBoardType();
         this.category = boardRequestDto.getCategory();
-        this.boardOrder = user.getBoardCnt() + 1;
+        this.boardOrder = folder.getBoardCnt() + 1;
         this.users = user;
+        this.folder = folder;
     }
 
-    public Board(Board board, Users users, Folder folder, Long cnt) {
+    public Board(Board board, Users users, Folder folder) {
         this.title = board.getTitle();
         this.link = board.getLink();
         this.explanation = board.getExplanation();
@@ -116,7 +117,7 @@ public class Board extends TimeStamp {
         this.status = board.getStatus();
         this.boardType = board.getBoardType();
         this.category = board.getCategory();
-        this.boardOrder = users.getBoardCnt() + cnt;
+        this.boardOrder = board.getBoardOrder();
         this.users = users;
         this.folder = folder;
     }
@@ -138,10 +139,6 @@ public class Board extends TimeStamp {
 
     public void addFolderId(Folder folder) {
         this.folder = folder;
-    }
-
-    public void removeFolderId() {
-        this.folder = null;
     }
 
     public void updateStatus(FolderRequestDto folderRequestDto) {
