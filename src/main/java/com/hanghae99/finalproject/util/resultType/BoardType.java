@@ -1,5 +1,10 @@
 package com.hanghae99.finalproject.util.resultType;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
 public enum BoardType {
     MEMO("memo"),
     LINK("link");
@@ -10,12 +15,5 @@ public enum BoardType {
         this.boardType = boardType;
     }
 
-    public String getBoardType() {
-        return boardType;
-    }
 
-    public BoardType setBoardType(String boardType) {
-        this.boardType = boardType;
-        return this;
-    }
 }
