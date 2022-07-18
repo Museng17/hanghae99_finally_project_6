@@ -155,7 +155,7 @@ public class BoardService {
     }
 
     public OgResponseDto thumbnailLoad(String url) {
-        OgResponseDto ogResponseDto = new OgResponseDto();
+        OgResponseDto ogResponseDto;
         try {
             Document doc = Jsoup.connect(url).get();
             String title = doc.select("meta[property=og:title]").attr("content");
@@ -266,18 +266,14 @@ public class BoardService {
         Optional<FolderRequestDto> all = folderRequestDtos.stream()
                 .filter(categoryType -> categoryType.getCategory() == ALL)
                 .findFirst();
-        int boardsCnt;
         Page<Board> boards;
         PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("createdDate").descending());
         if (all.isPresent()) {
             boards = boardRepository.findAllByStatusAndTitleContaining(DisclosureStatus.PUBLIC, "%" + keyword + "%", pageRequest);
-            boardsCnt = boardRepository.findAllByStatusAndTitleContaining(DisclosureStatus.PUBLIC, "%" + keyword + "%").size();
         } else {
             boards = boardRepository.findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatus.PUBLIC, "%" + keyword + "%", FolderRequestDtoToCategoryTypeList(folderRequestDtos), pageRequest);
-            boardsCnt = boardRepository.findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatus.PUBLIC, "%" + keyword + "%", FolderRequestDtoToCategoryTypeList(folderRequestDtos))
-                    .size();
         }
-        return new BoardResponseDto(boards, boardsCnt);
+        return new BoardResponseDto(boards, boards.getTotalElements());
     }
 
     @Transactional(readOnly = true)

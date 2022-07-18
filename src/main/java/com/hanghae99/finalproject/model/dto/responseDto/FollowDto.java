@@ -10,7 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class FollowDto {
 
-
     private  Long followerCnt;
     private  String information;
     private  String imgPath;
