@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
 import static com.hanghae99.finalproject.config.WebConfig.SOCIAL_HEADER_KEY;
 import static com.hanghae99.finalproject.jwt.JwtTokenProvider.REFRESH_TOKEN;

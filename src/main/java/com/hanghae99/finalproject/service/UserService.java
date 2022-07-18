@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
