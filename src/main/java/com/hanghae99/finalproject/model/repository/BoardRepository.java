@@ -1,10 +1,7 @@
 package com.hanghae99.finalproject.model.repository;
 
-import com.hanghae99.finalproject.controller.MailController;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.resultType.*;
-import com.hanghae99.finalproject.service.MailService;
-import com.hanghae99.finalproject.util.mail.MailUtils;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
