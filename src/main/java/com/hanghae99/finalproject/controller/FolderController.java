@@ -102,7 +102,10 @@ public class FolderController {
     }
 
     @PostMapping("/allfolders/{keyword}/{page}")
-    public FolderResponseDto allFolders(@PathVariable String keyword, @PathVariable int page,HttpServletRequest request) {
-        return folderService.allFolders(keyword, page,request);
+    public FolderResponseDto allFolders(@PathVariable String keyword,
+                                        @PathVariable int page,
+                                        HttpServletRequest request,
+                                        @PageableDefault(size = 8, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
+        return folderService.allFolders(keyword, page,request,pageable);
     }
 }
