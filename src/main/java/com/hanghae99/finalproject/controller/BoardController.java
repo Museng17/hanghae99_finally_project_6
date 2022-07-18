@@ -89,7 +89,7 @@ public class BoardController {
     }
 
     @PostMapping("/allboards/{keyword}/{page}")
-    public BoardResponseDto allBoards(@PathVariable String keyword, @PathVariable int page, @RequestBody List<FolderRequestDto> folderRequestDtos) {
-        return boardService.allBoards(keyword, page, folderRequestDtos);
+    public BoardResponseDto allBoards(@PathVariable String keyword, @PathVariable int page, @RequestBody List<FolderRequestDto> folderRequestDtos,HttpServletRequest request) {
+        return boardService.allBoards(keyword, page, folderRequestDtos,request);
     }
 }

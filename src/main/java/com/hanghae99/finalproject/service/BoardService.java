@@ -169,11 +169,10 @@ public class BoardService {
 
     }
 
-    public Board findShareBoard(Long boardId, HttpServletRequest request) {
-        return boardRepository.findByIdAndUsersIdNot(boardId, userinfoHttpRequest.userFindByToken(request).getId()).orElseThrow(()
-                -> new RuntimeException("원하는 폴더를 찾지 못했습니다."));
-    }
-
+//    public Board findShareBoard(Long boardId, HttpServletRequest request) {
+//        return boardRepository.findByIdAndUsersIdNot(boardId, userinfoHttpRequest.userFindByToken(request).getId()).orElseThrow(()
+//                -> new RuntimeException("원하는 폴더를 찾지 못했습니다."));
+//    }
     //    @Transactional
     //    public void cloneBoard(Long boardId, HttpServletRequest request) {
     //        Users users = userinfoHttpRequest.userFindByToken(request);
@@ -202,6 +201,8 @@ public class BoardService {
         for (Board board : boardList) {
 
             boardRepository.save(new Board(board, users, folder));
+            folder.setBoardCnt(folder.getBoardCnt()+1);
+            users.setBoardCnt(users.getBoardCnt()+1);
         }
     }
 
@@ -280,14 +281,19 @@ public class BoardService {
         );
     }
 
-    public BoardResponseDto allBoards(String keyword, int page, List<FolderRequestDto> folderRequestDtos) {
+    public BoardResponseDto allBoards(String keyword, int page, List<FolderRequestDto> folderRequestDtos, HttpServletRequest request) {
+        Users users = userinfoHttpRequest.userFindByToken(request);
         Optional<FolderRequestDto> all = folderRequestDtos.stream()
                 .filter(categoryType -> categoryType.getCategory() == ALL)
                 .findFirst();
         Page<Board> boards;
         PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("createdDate").descending());
         if (all.isPresent()) {
-            boards = boardRepository.findAllByStatusAndTitleContaining(DisclosureStatus.PUBLIC, "%" + keyword + "%", pageRequest);
+            boards = boardRepository.findAllByStatusAndTitleContaining(DisclosureStatus.PUBLIC,
+                    "%" + keyword + "%",
+                    users.getId(),
+                    pageRequest
+            );
         } else {
             boards = boardRepository.findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatus.PUBLIC, "%" + keyword + "%", FolderRequestDtoToCategoryTypeList(folderRequestDtos), pageRequest);
         }

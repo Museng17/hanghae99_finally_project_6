@@ -117,7 +117,7 @@ public class Board extends TimeStamp {
         this.status = board.getStatus();
         this.boardType = board.getBoardType();
         this.category = board.getCategory();
-        this.boardOrder = board.getBoardOrder();
+        this.boardOrder = folder.getBoardCnt()+1;
         this.users = users;
         this.folder = folder;
     }

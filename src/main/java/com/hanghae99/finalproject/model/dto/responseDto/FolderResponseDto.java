@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Getter
 @Setter
@@ -18,8 +17,8 @@ public class FolderResponseDto {
     private Long foldersCnt;
     private List<Folder> folders = new ArrayList<>();
 
-    public FolderResponseDto(Optional<Page<Folder>> folders, Long foldersCnt){
+    public FolderResponseDto(Page<Folder> folders, Long foldersCnt){
         this.foldersCnt = foldersCnt;
-        this.folders = folders.get().getContent();
+        this.folders = folders.getContent();
     }
 }

@@ -35,8 +35,8 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("select b from Board b where  b.status = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and b.category in ?3")
     Page<Board> findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatus status, String keyword, List<CategoryType> categoryTypeList, Pageable pageable);
 
-    @Query("select b from Board b where  b.status = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end")
-    Page<Board> findAllByStatusAndTitleContaining(DisclosureStatus status, String keyword, Pageable pageable);
+    @Query("select b from Board b where  b.status = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and not b.users.id = ?3")
+    Page<Board> findAllByStatusAndTitleContaining(DisclosureStatus status, String keyword,Long usersId ,Pageable pageable);
 
     List<Board> deleteAllByFolderIdIn(List<Long> folderIdList);
 

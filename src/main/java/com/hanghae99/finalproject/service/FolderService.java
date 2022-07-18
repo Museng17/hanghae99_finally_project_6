@@ -328,10 +328,7 @@ public class FolderService {
                 users.getId(),
                 pageRequest
         );
-
-        Optional<Page<Folder>> folders1 = folderRepository.findAllByUsersIdNot(folders.getContent().get().getId(), users.getId());
-
-        return new FolderResponseDto(folders1, folders.getTotalElements());
+        return new FolderResponseDto(folders, folders.getTotalElements());
     }
 
     private List<Long> listToId(List<Share> List) {
