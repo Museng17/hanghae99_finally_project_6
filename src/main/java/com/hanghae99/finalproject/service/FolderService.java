@@ -328,7 +328,20 @@ public class FolderService {
                 users.getId(),
                 pageRequest
         );
-        return new FolderResponseDto(folders, folders.getTotalElements());
+
+
+        return new FolderResponseDto(getFolder(folders.getContent()), folders.getTotalElements());
+    }
+
+    public List<FolderRequestDto> getFolder(List<Folder> folders){
+        List<FolderRequestDto> folderRequestDtos = new ArrayList<>();
+
+        for (Folder folder : folders) {
+            FolderRequestDto folderRequestDto =  new FolderRequestDto(folder);
+            folderRequestDtos.add(folderRequestDto);
+        }
+
+        return folderRequestDtos;
     }
 
     private List<Long> listToId(List<Share> List) {
