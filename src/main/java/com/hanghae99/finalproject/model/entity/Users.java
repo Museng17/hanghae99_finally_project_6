@@ -35,6 +35,8 @@ public class Users extends TimeStamp {
     @Column(nullable = true)
     private String password;
 
+    
+
     @Column(nullable = false)
     private Long folderCnt;
 
