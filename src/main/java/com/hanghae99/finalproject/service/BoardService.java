@@ -191,7 +191,7 @@ public class BoardService {
         Users users = userinfoHttpRequest.userFindByToken(request);
 
         Folder folder = folderRepository.findByUsersAndName(users, "무제");
-
+        for(BoardRequestDto board boards)
         for (BoardRequestDto board : boards) {
             boardRepository.save(new Board(board, users, folder));
         }
