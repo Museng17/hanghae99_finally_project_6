@@ -52,9 +52,13 @@ public class BoardController {
         boardService.boardOrderChange(orderRequestDto, request);
     }
 
-    @PostMapping("/myshare/board/{boardId}")
-    public void cloneBoard(@PathVariable Long boardId, HttpServletRequest request) {
-        boardService.cloneBoard(boardId, request);
+//    @PostMapping("/myshare/board/{boardId}")
+//    public void cloneBoard(@PathVariable Long boardId, HttpServletRequest request) {
+//        boardService.cloneBoard(boardId, request);
+//    }
+    @PostMapping("/myshare/boards")
+    public void cloneBoards(@RequestBody List<Board> boards,HttpServletRequest request) {
+        boardService.cloneBoards(boards,request);
     }
 
     @PostMapping("/board/image")

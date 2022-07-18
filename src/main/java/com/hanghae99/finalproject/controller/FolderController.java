@@ -68,10 +68,10 @@ public class FolderController {
         folderService.shareFolder(folderId, request);
     }
 
-    @PostMapping("/myshare/folder/{folderId}")
-    public void cloneFolder(@PathVariable Long folderId, HttpServletRequest request) {
-        folderService.cloneFolder(folderId, request);
-    }
+//    @PostMapping("/myshare/folder/{folderId}")
+//    public void cloneFolder(@PathVariable Long folderId, HttpServletRequest request) {
+//        folderService.cloneFolder(folderId, request);
+//    }
 
     @GetMapping("/BestFolders/{page}/{size}")
     public Page<Folder> findBestFolders(@PathVariable int page, @PathVariable int size) {
@@ -102,7 +102,7 @@ public class FolderController {
     }
 
     @PostMapping("/allfolders/{keyword}/{page}")
-    public FolderResponseDto allFolders(@PathVariable String keyword, @PathVariable int page) {
-        return folderService.allFolders(keyword, page);
+    public FolderResponseDto allFolders(@PathVariable String keyword, @PathVariable int page,HttpServletRequest request) {
+        return folderService.allFolders(keyword, page,request);
     }
 }
