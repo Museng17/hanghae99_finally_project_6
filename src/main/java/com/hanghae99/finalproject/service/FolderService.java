@@ -35,6 +35,10 @@ public class FolderService {
 
     @Transactional
     public Folder folderSave(FolderRequestDto folderRequestDto, HttpServletRequest request) {
+        if (folderRequestDto.getName().trim().equals("무제")) {
+            throw new RuntimeException("무제라는 이름은 추가할 수 없습니다.");
+        }
+
         Users user = userinfoHttpRequest.userFindByToken(request);
         user.setFolderCnt(user.getFolderCnt() + 1);
         return folderRepository.save(
@@ -318,7 +322,7 @@ public class FolderService {
         ).getContent();
     }
 
-    public FolderResponseDto allFolders(String keyword, HttpServletRequest request,Pageable pageable) {
+    public FolderResponseDto allFolders(String keyword, HttpServletRequest request, Pageable pageable) {
         Users users = userinfoHttpRequest.userFindByToken(request);
 
         Page<Folder> folders = folderRepository.findAllByNameContaining1(
