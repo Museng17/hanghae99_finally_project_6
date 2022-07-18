@@ -52,6 +52,7 @@ public class WebConfig implements WebMvcConfigurer {
         configuration.addAllowedOrigin("http://localhost:3000");
         configuration.addAllowedOrigin("http://spartastatic.s3-website.ap-northeast-2.amazonaws.com");
         configuration.addAllowedOrigin("http://ec2-13-125-137-133.ap-northeast-2.compute.amazonaws.com");
+        configuration.addAllowedOrigin("https://moum.cloud");
         configuration.addAllowedHeader("Content-Type");
         configuration.addAllowedHeader("Custom-Header");
         configuration.addAllowedMethod(HttpMethod.POST);
