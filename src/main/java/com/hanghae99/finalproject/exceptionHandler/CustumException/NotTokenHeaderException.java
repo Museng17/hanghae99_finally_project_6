@@ -1,4 +1,4 @@
-package com.hanghae99.finalproject.util.exceptionHandler.CustumException;
+package com.hanghae99.finalproject.exceptionHandler.CustumException;
 
 import lombok.*;
 

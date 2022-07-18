@@ -1,7 +1,7 @@
 package com.hanghae99.finalproject.model.dto.responseDto;
 
 import com.hanghae99.finalproject.model.entity.Users;
-import com.hanghae99.finalproject.util.resultType.CategoryType;
+import com.hanghae99.finalproject.model.resultType.CategoryType;
 import lombok.*;
 
 import java.util.*;

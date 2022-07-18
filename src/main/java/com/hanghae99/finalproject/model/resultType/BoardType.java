@@ -1,7 +1,6 @@
-package com.hanghae99.finalproject.util.resultType;
+package com.hanghae99.finalproject.model.resultType;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
@@ -14,6 +13,5 @@ public enum BoardType {
     BoardType(String boardType) {
         this.boardType = boardType;
     }
-
 
 }

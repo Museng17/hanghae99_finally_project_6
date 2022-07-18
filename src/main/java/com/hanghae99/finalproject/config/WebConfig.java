@@ -28,7 +28,8 @@ public class WebConfig implements WebMvcConfigurer {
             "/user/social",
             "/image/og/**",
             "/user/refresh",
-            "/"
+            "/email/**"
+
     };
     public final static String SOCIAL_HEADER_KEY = "Code";
 

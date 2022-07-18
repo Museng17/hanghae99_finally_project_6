@@ -2,8 +2,7 @@ package com.hanghae99.finalproject.model.dto.requestDto;
 
 import com.hanghae99.finalproject.model.dto.responseDto.OgResponseDto;
 import com.hanghae99.finalproject.model.entity.Board;
-import com.hanghae99.finalproject.util.DisclosureStatus;
-import com.hanghae99.finalproject.util.resultType.*;
+import com.hanghae99.finalproject.model.resultType.*;
 import lombok.*;
 
 @Getter
@@ -16,7 +15,7 @@ public class BoardRequestDto {
     private String explanation;
     private String imgPath;
     private String content;
-    private DisclosureStatus status;
+    private DisclosureStatusType status;
     private BoardType boardType;
     private Long folderId;
     private CategoryType category;

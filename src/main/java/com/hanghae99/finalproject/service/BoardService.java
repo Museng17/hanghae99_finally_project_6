@@ -5,8 +5,8 @@ import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
-import com.hanghae99.finalproject.util.*;
-import com.hanghae99.finalproject.util.resultType.*;
+import com.hanghae99.finalproject.model.resultType.*;
+import com.hanghae99.finalproject.util.UserinfoHttpRequest;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,8 +21,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.hanghae99.finalproject.util.resultType.CategoryType.*;
-import static com.hanghae99.finalproject.util.resultType.FileUploadType.BOARD;
+import static com.hanghae99.finalproject.model.resultType.CategoryType.*;
+import static com.hanghae99.finalproject.model.resultType.FileUploadType.BOARD;
 
 @Service
 @RequiredArgsConstructor
@@ -234,7 +234,7 @@ public class BoardService {
     @Transactional
     public Page<Board> findNewBoard(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        return boardRepository.findAllByStatus(DisclosureStatus.PUBLIC, pageRequest);
+        return boardRepository.findAllByStatus(DisclosureStatusType.PUBLIC, pageRequest);
     }
 
     public List<CategoryType> FolderRequestDtoToCategoryTypeList(List<FolderRequestDto> folderRequestDtos) {
@@ -256,13 +256,13 @@ public class BoardService {
                                  Pageable pageable,
                                  Long folderId,
                                  Long userId) {
-        List<DisclosureStatus> disclosureStatuses = new ArrayList<>();
-        disclosureStatuses.add(DisclosureStatus.PUBLIC);
+        List<DisclosureStatusType> disclosureStatusTypes = new ArrayList<>();
+        disclosureStatusTypes.add(DisclosureStatusType.PUBLIC);
 
         Users user = userRepository.findById(userId)
                 .orElseGet(() -> {
                     if (userId == 0L) {
-                        disclosureStatuses.add(DisclosureStatus.PRIVATE);
+                        disclosureStatusTypes.add(DisclosureStatusType.PRIVATE);
                         return userinfoHttpRequest.userFindByToken(request);
                     }
                     throw new RuntimeException("회원을 찾을 수 없습니다.");
@@ -274,7 +274,7 @@ public class BoardService {
                         "%" + keyword + "%",
                         findSelectCategory(folderRequestDtos),
                         user.getId(),
-                        disclosureStatuses,
+                        disclosureStatusTypes,
                         pageable
                 ),
                 folderRepository.findById(folderId).get()
@@ -289,13 +289,13 @@ public class BoardService {
         Page<Board> boards;
         PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("createdDate").descending());
         if (all.isPresent()) {
-            boards = boardRepository.findAllByStatusAndTitleContaining(DisclosureStatus.PUBLIC,
+            boards = boardRepository.findAllByStatusAndTitleContaining(DisclosureStatusType.PUBLIC,
                     "%" + keyword + "%",
                     users.getId(),
                     pageRequest
             );
         } else {
-            boards = boardRepository.findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatus.PUBLIC, "%" + keyword + "%", FolderRequestDtoToCategoryTypeList(folderRequestDtos), pageRequest);
+            boards = boardRepository.findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatusType.PUBLIC, "%" + keyword + "%", FolderRequestDtoToCategoryTypeList(folderRequestDtos), pageRequest);
         }
         return new BoardResponseDto(boards, boards.getTotalElements());
     }

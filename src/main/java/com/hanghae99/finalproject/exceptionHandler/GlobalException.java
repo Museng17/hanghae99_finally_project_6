@@ -1,7 +1,7 @@
-package com.hanghae99.finalproject.util.exceptionHandler;
+package com.hanghae99.finalproject.exceptionHandler;
 
+import com.hanghae99.finalproject.exceptionHandler.CustumException.NotTokenHeaderException;
 import com.hanghae99.finalproject.model.dto.responseDto.ErrorMassageResponseDto;
-import com.hanghae99.finalproject.util.exceptionHandler.CustumException.NotTokenHeaderException;
 import io.jsonwebtoken.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
