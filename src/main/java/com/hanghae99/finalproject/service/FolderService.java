@@ -328,7 +328,26 @@ public class FolderService {
                 users.getId(),
                 pageRequest
         );
-        return new FolderResponseDto(folders, folders.getTotalElements());
+
+
+        return new FolderResponseDto(test(folders.getContent()), folders.getTotalElements());
+    }
+
+    public List<FolderRequestDto> test(List<Folder> folders){
+        List<FolderRequestDto> folderRequestDtos = new ArrayList<>();
+
+        for (Folder folder : folders) {
+            FolderRequestDto folderRequestDto =  new FolderRequestDto(folder);
+            folderRequestDto.setNickname(getNickname(folderRequestDto.getUserId()));
+            folderRequestDtos.add(folderRequestDto);
+        }
+
+        return folderRequestDtos;
+    }
+
+
+    public String getNickname(Long id){
+        return userRepository.findById(id).get().getNickname();
     }
 
     private List<Long> listToId(List<Share> List) {

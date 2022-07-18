@@ -12,6 +12,7 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 public class FolderRequestDto {
+
     private Long id;
     private String name;
     private DisclosureStatus status;
@@ -19,6 +20,8 @@ public class FolderRequestDto {
     private Long folderOrder;
     private CategoryType category;
     private Long boardCnt;
+    private String nickname;
+    private Long userId;
     private List<Board> boardList = new ArrayList<>();
 
     public FolderRequestDto(Page<Board> boards, Folder folder) {
@@ -35,8 +38,8 @@ public class FolderRequestDto {
         this.id = folder.getId();
         this.name = folder.getName();
         this.status = folder.getStatus();
-        this.folderOrder = folder.getFolderOrder();
         this.sharedCount = folder.getSharedCount();
         this.boardCnt = folder.getBoardCnt();
+        this.userId = folder.getUsers().getId();
     }
 }
