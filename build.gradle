@@ -36,6 +36,8 @@ dependencies {
     implementation  'org.springframework.cloud:spring-cloud-starter-aws:2.0.1.RELEASE'
     //mail
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.6.3'
+    //타임리프
+    implementation group: 'org.thymeleaf', name: 'thymeleaf-spring5', version: '3.0.11.RELEASE'
 
     configurations {
         compileOnly {

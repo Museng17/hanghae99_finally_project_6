@@ -21,13 +21,13 @@ public class MailService {
         String massage = mailUtils.makeRandomUUID(6);
 
         try {
-            mailUtils.sendEmail(mailUtils.makeMassageText("인증번호 : " + massage, "이메일 인증", mailRequestDto.getEmail()));
+            mailUtils.sendEmail(mailUtils.makeMassageHtml("인증번호 : " + massage, "이메일 인증", mailRequestDto.getEmail()));
         } catch (Exception e) {
-            log.info("MailSecvice : " + e.getMessage());
+            log.info(e.getMessage());
             return new MassageResponseDto(501, "전송실패 : " + e.getMessage());
         }
 
-        log.info("MailSecvice : " + "이메일 전송 완료");
+        log.info("이메일 전송 완료");
         certificationMap.put(mailRequestDto.getEmail(), massage);
         return new MassageResponseDto(200, "전송완료");
     }
