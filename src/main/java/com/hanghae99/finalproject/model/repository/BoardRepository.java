@@ -56,4 +56,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query("select b.folder.id from Board b where b.id = ?1")
     Optional<Long> findFolderIdById(Long id);
+
+    List<Board> findAllByIdIn(List<Long> longList);
 }
