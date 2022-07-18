@@ -14,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 
 import static com.hanghae99.finalproject.config.WebConfig.SOCIAL_HEADER_KEY;
 import static com.hanghae99.finalproject.jwt.JwtTokenProvider.REFRESH_TOKEN;
@@ -55,7 +54,7 @@ public class UserController {
     }
 
     @PostMapping("/user/signup")
-    public UserRegisterRespDto registerUser(@RequestBody UserRequestDto Dto) throws NoSuchAlgorithmException {
+    public UserRegisterRespDto registerUser(@RequestBody UserRequestDto Dto) {
         return userService.registerUser(Dto);
     }
 
