@@ -3,8 +3,8 @@ package com.hanghae99.finalproject.controller;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.FolderResponseDto;
 import com.hanghae99.finalproject.model.entity.*;
+import com.hanghae99.finalproject.model.resultType.CategoryType;
 import com.hanghae99.finalproject.service.FolderService;
-import com.hanghae99.finalproject.util.resultType.CategoryType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
@@ -101,8 +101,10 @@ public class FolderController {
         return folderService.shareList(keyword, request, pageable, userId);
     }
 
-    @PostMapping("/allfolders/{keyword}/{page}")
-    public FolderResponseDto allFolders(@PathVariable String keyword, @PathVariable int page,HttpServletRequest request) {
-        return folderService.allFolders(keyword, page,request);
+    @PostMapping("/allfolders/{keyword}")
+    public FolderResponseDto allFolders(@PathVariable String keyword,
+                                        HttpServletRequest request,
+                                        @PageableDefault(size = 8, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
+        return folderService.allFolders(keyword,request,pageable);
     }
 }

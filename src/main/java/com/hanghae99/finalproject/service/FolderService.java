@@ -318,15 +318,14 @@ public class FolderService {
         ).getContent();
     }
 
-    public FolderResponseDto allFolders(String keyword, int page, HttpServletRequest request) {
+    public FolderResponseDto allFolders(String keyword, int page, HttpServletRequest request,Pageable pageable) {
         Users users = userinfoHttpRequest.userFindByToken(request);
-        PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("createdDate").descending());
 
         Page<Folder> folders = folderRepository.findAllByNameContaining1(
                 "%" + keyword + "%",
                 DisclosureStatus.PUBLIC,
                 users.getId(),
-                pageRequest
+                pageable
         );
 
 
