@@ -101,10 +101,12 @@ public class FolderController {
         return folderService.shareList(keyword, request, pageable, userId);
     }
 
+
     @PostMapping("/allfolders/{keyword}")
     public FolderResponseDto allFolders(@PathVariable String keyword,
                                         HttpServletRequest request,
                                         @PageableDefault(size = 8, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
         return folderService.allFolders(keyword,request,pageable);
+
     }
 }

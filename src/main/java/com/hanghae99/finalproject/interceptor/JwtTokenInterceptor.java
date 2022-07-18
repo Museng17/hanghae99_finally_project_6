@@ -1,7 +1,7 @@
 package com.hanghae99.finalproject.interceptor;
 
+import com.hanghae99.finalproject.exceptionHandler.CustumException.NotTokenHeaderException;
 import com.hanghae99.finalproject.jwt.*;
-import com.hanghae99.finalproject.util.exceptionHandler.CustumException.NotTokenHeaderException;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

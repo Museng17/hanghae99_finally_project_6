@@ -2,7 +2,7 @@ package com.hanghae99.finalproject.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae99.finalproject.model.dto.requestDto.FolderRequestDto;
-import com.hanghae99.finalproject.util.*;
+import com.hanghae99.finalproject.model.resultType.*;
 import lombok.*;
 
 import javax.persistence.*;
@@ -23,7 +23,7 @@ public class Folder extends TimeStamp {
     private String name;
 
     @Column(nullable = false)
-    private DisclosureStatus status;
+    private DisclosureStatusType status;
 
     @Column(nullable = false)
     private Long sharedCount = 0L;
@@ -44,7 +44,7 @@ public class Folder extends TimeStamp {
     @OneToMany
     private List<Board> boardList = new ArrayList<>();
 
-    public Folder(Long id, String name, DisclosureStatus status) {
+    public Folder(Long id, String name, DisclosureStatusType status) {
         this.id = id;
         this.name = name;
         this.status = status;
@@ -52,7 +52,7 @@ public class Folder extends TimeStamp {
 
     public Folder(Users users) {
         this.name = "무제";
-        this.status = DisclosureStatus.PUBLIC;
+        this.status = DisclosureStatusType.PUBLIC;
         this.folderOrder = 1L;
         this.users = users;
         this.BoardCnt = 0L;

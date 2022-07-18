@@ -1,8 +1,10 @@
 package com.hanghae99.finalproject.model.repository;
 
+import com.hanghae99.finalproject.controller.MailController;
 import com.hanghae99.finalproject.model.entity.*;
-import com.hanghae99.finalproject.util.DisclosureStatus;
-import com.hanghae99.finalproject.util.resultType.CategoryType;
+import com.hanghae99.finalproject.model.resultType.*;
+import com.hanghae99.finalproject.service.MailService;
+import com.hanghae99.finalproject.util.mail.MailUtils;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
@@ -13,7 +15,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     Optional<Board> findByFolderId(Long folderId);
 
-    Page<Board> findAllByStatus(DisclosureStatus status, Pageable pageable);
+    Page<Board> findAllByStatus(DisclosureStatusType status, Pageable pageable);
 
     void deleteAllByUsers(Users user);
 
@@ -24,7 +26,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
                                                               String keyword,
                                                               List<CategoryType> categoryTypeList,
                                                               Long userId,
-                                                              List<DisclosureStatus> disclosureStatuses,
+                                                              List<DisclosureStatusType> disclosureStatusTypes,
                                                               Pageable pageable);
 
     List<Board> findByFolder(Folder folder);
@@ -33,10 +35,10 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     List<CategoryType> findAllCategoryByUsersId(@Param("id") Long id);
 
     @Query("select b from Board b where  b.status = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and b.category in ?3")
-    Page<Board> findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatus status, String keyword, List<CategoryType> categoryTypeList, Pageable pageable);
+    Page<Board> findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatusType status, String keyword, List<CategoryType> categoryTypeList, Pageable pageable);
 
     @Query("select b from Board b where  b.status = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and not b.users.id = ?3")
-    Page<Board> findAllByStatusAndTitleContaining(DisclosureStatus status, String keyword,Long usersId ,Pageable pageable);
+    Page<Board> findAllByStatusAndTitleContaining(DisclosureStatusType status, String keyword,Long usersId ,Pageable pageable);
 
     List<Board> deleteAllByFolderIdIn(List<Long> folderIdList);
 

@@ -1,4 +1,4 @@
-package com.hanghae99.finalproject.util.resultType;
+package com.hanghae99.finalproject.model.resultType;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;

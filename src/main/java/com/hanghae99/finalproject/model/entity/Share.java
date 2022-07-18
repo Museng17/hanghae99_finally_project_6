@@ -1,9 +1,7 @@
 package com.hanghae99.finalproject.model.entity;
 
-import com.hanghae99.finalproject.util.TimeStamp;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.hanghae99.finalproject.model.resultType.TimeStamp;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -13,7 +11,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class Share extends TimeStamp {
 
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
@@ -26,7 +24,7 @@ public class Share extends TimeStamp {
     @OneToOne
     private Board board;
 
-    public  Share(Folder folder,Users users){
+    public Share(Folder folder, Users users) {
         this.folder = folder;
         this.users = users;
     }

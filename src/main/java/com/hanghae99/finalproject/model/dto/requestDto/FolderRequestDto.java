@@ -1,8 +1,7 @@
 package com.hanghae99.finalproject.model.dto.requestDto;
 
 import com.hanghae99.finalproject.model.entity.*;
-import com.hanghae99.finalproject.util.DisclosureStatus;
-import com.hanghae99.finalproject.util.resultType.CategoryType;
+import com.hanghae99.finalproject.model.resultType.*;
 import lombok.*;
 import org.springframework.data.domain.Page;
 
@@ -15,7 +14,7 @@ public class FolderRequestDto {
 
     private Long id;
     private String name;
-    private DisclosureStatus status;
+    private DisclosureStatusType status;
     private Long sharedCount;
     private Long folderOrder;
     private CategoryType category;
@@ -34,7 +33,7 @@ public class FolderRequestDto {
         this.boardList = boards.getContent();
     }
 
-    public FolderRequestDto(Folder folder){
+    public FolderRequestDto(Folder folder) {
         this.id = folder.getId();
         this.name = folder.getName();
         this.status = folder.getStatus();

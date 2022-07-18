@@ -2,8 +2,7 @@ package com.hanghae99.finalproject.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
-import com.hanghae99.finalproject.util.*;
-import com.hanghae99.finalproject.util.resultType.*;
+import com.hanghae99.finalproject.model.resultType.*;
 import lombok.*;
 
 import javax.persistence.*;
@@ -36,7 +35,7 @@ public class Board extends TimeStamp {
     private String content;
 
     @Column(nullable = false)
-    private DisclosureStatus status;
+    private DisclosureStatusType status;
 
     @Column(nullable = false)
     private BoardType boardType;
@@ -66,7 +65,7 @@ public class Board extends TimeStamp {
         this.explanation = boardRequestDto.getExplanation();
         this.imgPath = boardRequestDto.getImgPath();
         this.content = boardRequestDto.getContent();
-        this.status = DisclosureStatus.PRIVATE;
+        this.status = DisclosureStatusType.PRIVATE;
         this.boardType = boardRequestDto.getBoardType();
         this.category = inNullCheck(boardRequestDto.getCategory());
         this.boardOrder = totalCont + 1;
@@ -80,7 +79,7 @@ public class Board extends TimeStamp {
         this.explanation = boardRequestDto.getExplanation();
         this.imgPath = boardRequestDto.getImgPath();
         this.content = boardRequestDto.getContent();
-        this.status = DisclosureStatus.PRIVATE;
+        this.status = DisclosureStatusType.PRIVATE;
         this.boardType = boardRequestDto.getBoardType();
         this.category = inNullCheck(boardRequestDto.getCategory());
         this.boardOrder = boardOrder;
@@ -95,7 +94,7 @@ public class Board extends TimeStamp {
         return category;
     }
 
-    public Board(BoardRequestDto boardRequestDto, Users user,Folder folder) {
+    public Board(BoardRequestDto boardRequestDto, Users user, Folder folder) {
         this.title = boardRequestDto.getTitle();
         this.explanation = boardRequestDto.getExplanation();
         this.imgPath = boardRequestDto.getImgPath();
