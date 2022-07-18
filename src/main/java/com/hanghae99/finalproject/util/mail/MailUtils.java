@@ -1,20 +1,41 @@
 package com.hanghae99.finalproject.util.mail;
 
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Component;
+import org.springframework.mail.javamail.*;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
-import java.util.UUID;
+import javax.annotation.PostConstruct;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 
-@RequiredArgsConstructor
-@Component
+import java.util.*;
+
+@Slf4j
+@Configuration
 public class MailUtils {
 
-    private final JavaMailSender javaMailSender;
+    private JavaMailSender javaMailSender;
+    private final TemplateEngine templateEngine;
+
+    private final String PASSWORD;
+
+    public MailUtils(TemplateEngine templateEngine,
+                     @Value("${spring.mail.password}") String password) {
+        this.templateEngine = templateEngine;
+        this.PASSWORD = password;
+    }
+
+    @PostConstruct
+    public void init() {
+        javaMailSender = setJavaMailSender();
+    }
 
     /*
-     * 이메일 메세지와 제목 그리고 누구에게 보낼지 설정하는 메소드
+     * 이메일 메세지와 제목 그리고 누구에게 보낼지 설정하는 메소드 (Text)
      * massage : 전송할 메세지
      * subject : 전송할 메세지의 제목
      * toUser : 보낼 이메일
@@ -28,9 +49,37 @@ public class MailUtils {
     }
 
     /*
-     * 이메일 전송하는 메소드
+     * 이메일 메세지와 제목 그리고 누구에게 보낼지 설정하는 메소드 (HTML)
+     * massage : 전송할 메세지
+     * subject : 전송할 메세지의 제목
+     * toUser : 보낼 이메일
+     * */
+    public MimeMessage makeMassageHtml(String massage, String subject, String toUser) throws MessagingException {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+
+        Context context = new Context();
+        context.setVariable("massage", massage);
+
+        mimeMessage.addRecipients(MimeMessage.RecipientType.TO, toUser);
+        mimeMessage.setSubject(subject);
+        mimeMessage.setText(templateEngine.process("mail", context), "utf-8", "html");
+
+        return mimeMessage;
+    }
+
+    /*
+     * text 이메일 전송하는 메소드
+     * makeMassageText() 에서 만들어진 객체를 인자로 주면된다.
      * */
     public void sendEmail(SimpleMailMessage simpleMailMessage) {
+        javaMailSender.send(simpleMailMessage);
+    }
+
+    /*
+     * html 이메일 전송하는 메소드
+     * makeMassageHtml() 에서 만들어진 객체를 인자로 주면된다.
+     * */
+    public void sendEmail(MimeMessage simpleMailMessage) {
         javaMailSender.send(simpleMailMessage);
     }
 
@@ -41,5 +90,26 @@ public class MailUtils {
      * */
     public String makeRandomUUID(int size) {
         return UUID.randomUUID().toString().replaceAll("-", "").substring(0, size);
+    }
+
+    /*
+     *  javaMailSender 설정
+     * */
+    public JavaMailSenderImpl setJavaMailSender() {
+        JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
+        javaMailSender.setHost("smtp.gmail.com");
+        javaMailSender.setPort(587);
+        javaMailSender.setUsername("whitewise95@gmail.com");
+        log.info(PASSWORD + "==================================================");
+        javaMailSender.setPassword(PASSWORD);
+
+        Properties prop = new Properties();
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.debug", "true");
+        prop.put("mail.smtp.starttls.enable", "true");
+        prop.put("mail.smtp.EnableSSL.enable", "true");
+
+        javaMailSender.setJavaMailProperties(prop);
+        return javaMailSender;
     }
 }

@@ -17,7 +17,6 @@ import static com.hanghae99.finalproject.jwt.JwtTokenProvider.REFRESH_TOKEN;
 
 @RequiredArgsConstructor
 @Configuration
-@EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {
 
     private final String[] JWT_INTERCEPTOR_URI = {
@@ -93,4 +92,5 @@ public class WebConfig implements WebMvcConfigurer {
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         return builder.build();
     }
+
 }
