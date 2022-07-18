@@ -40,6 +40,6 @@ public class FolderRequestDto {
         this.status = folder.getStatus();
         this.sharedCount = folder.getSharedCount();
         this.boardCnt = folder.getBoardCnt();
-        this.userId = folder.getUsers().getId();
+        this.nickname = folder.getUsers().getNickname();
     }
 }
