@@ -57,7 +57,7 @@ public class BoardController {
 //        boardService.cloneBoard(boardId, request);
 //    }
     @PostMapping("/myshare/boards")
-    public void cloneBoards(@RequestBody List<Board> boards,HttpServletRequest request) {
+    public void cloneBoards(@RequestBody List<BoardRequestDto>  boards,HttpServletRequest request) {
         boardService.cloneBoards(boards,request);
     }
 

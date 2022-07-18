@@ -174,24 +174,26 @@ public class BoardService {
                 -> new RuntimeException("원하는 폴더를 찾지 못했습니다."));
     }
 
-//    @Transactional
-//    public void cloneBoard(Long boardId, HttpServletRequest request) {
-//        Users users = userinfoHttpRequest.userFindByToken(request);
-//        Board board = findShareBoard(boardId, request);
-//        BoardRequestDto boardRequestDto = new BoardRequestDto(board);
-//        Folder folder = folderRepository.findByUsersAndName(users , "무제");
-//        Board board1 = new Board(boardRequestDto, users,folder);
-//        boardRepository.save(board1);
-//        folder.setBoardCnt(folder.getBoardCnt() + 1);
-//        users.setBoardCnt(users.getBoardCnt() + 1);
-//    }
-    @Transactional
-    public void cloneBoards(List<BoardRequestDto> boards ,HttpServletRequest request){
-        Users users = userinfoHttpRequest.userFindByToken(request);
-        Folder folder = users.getFolderList().get(0);
+    //    @Transactional
+    //    public void cloneBoard(Long boardId, HttpServletRequest request) {
+    //        Users users = userinfoHttpRequest.userFindByToken(request);
+    //        Board board = findShareBoard(boardId, request);
+    //        BoardRequestDto boardRequestDto = new BoardRequestDto(board);
+    //        Folder folder = folderRepository.findByUsersAndName(users , "무제");
+    //        Board board1 = new Board(boardRequestDto, users,folder);
+    //        boardRepository.save(board1);
+    //        folder.setBoardCnt(folder.getBoardCnt() + 1);
+    //        users.setBoardCnt(users.getBoardCnt() + 1);
+    //    }
 
-        for(BoardRequestDto board : boards){
-            boardRepository.save(new Board(board,users,folder));
+    @Transactional
+    public void cloneBoards(List<BoardRequestDto> boards, HttpServletRequest request) {
+        Users users = userinfoHttpRequest.userFindByToken(request);
+
+        Folder folder = folderRepository.findByUsersAndName(users, "무제");
+
+        for (BoardRequestDto board : boards) {
+            boardRepository.save(new Board(board, users, folder));
         }
     }
 
@@ -237,7 +239,6 @@ public class BoardService {
     public List<Board> findByFolder(Folder folder) {
         return boardRepository.findByFolder(folder);
     }
-
 
     @Transactional(readOnly = true)
     public FolderRequestDto moum(List<FolderRequestDto> folderRequestDtos,
