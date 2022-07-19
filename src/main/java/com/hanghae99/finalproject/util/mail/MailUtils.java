@@ -50,18 +50,16 @@ public class MailUtils {
 
     /*
      * 이메일 메세지와 제목 그리고 누구에게 보낼지 설정하는 메소드 (HTML)
-     * massage : 전송할 메세지
      * subject : 전송할 메세지의 제목
      * email : 보낼 이메일
      * htmlName : 보내줄 html name (/templates 하위에 넣어야함)
      * context : Thymeleaf 변수
      * */
-    public MimeMessage makeMassageHtml(String massage, String subject, String email, String htmlName, Context context) throws MessagingException {
+    public MimeMessage makeMassageHtml(String subject, String email, String htmlName, Context context) throws MessagingException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         mimeMessage.addRecipients(MimeMessage.RecipientType.TO, email);
         mimeMessage.setSubject(subject);
         mimeMessage.setText(templateEngine.process(htmlName, context), "utf-8", "html");
-
         return mimeMessage;
     }
 
