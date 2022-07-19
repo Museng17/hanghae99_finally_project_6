@@ -4,7 +4,7 @@ import java.util.*;
 
 public class CertificationMap {
 
-    private static Map<String, String> certificationList = new HashMap<>();
+    private Map<String, String> certificationList = new HashMap<>();
 
     private CertificationMap() {
     }

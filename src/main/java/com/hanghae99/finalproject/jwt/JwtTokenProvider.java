@@ -1,5 +1,6 @@
 package com.hanghae99.finalproject.jwt;
 
+import com.hanghae99.finalproject.exceptionHandler.CustumException.CustomException;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +11,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import java.util.*;
 
+import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.*;
 import static com.hanghae99.finalproject.interceptor.JwtTokenInterceptor.BEARER;
 
 @RequiredArgsConstructor
@@ -83,8 +85,33 @@ public class JwtTokenProvider {
 
     //AccessToken 유효성 검사
     public boolean isValidAccessToken(String token) {
-        getClaimsFormToken(token);
+        System.out.println("isValidToken is : " + token);
+        try {
+            getClaimsFormToken(token);
+        } catch (ExpiredJwtException exception) {
+            throw new CustomException(EXPIRATION_ACCESS_TOKEN);
+        } catch (JwtException exception) {
+            throw new CustomException(NOT_ACCESS_TOKEN);
+        }
         return true;
+    }
+
+    public boolean isValidRefreshToken(String token) {
+        String accessToken = token.substring(7);
+        try {
+            getClaimsFormToken(accessToken);
+        } catch (ExpiredJwtException exception) {
+            throw new CustomException(EXPIRATION_REFRESH_TOKEN);
+        } catch (JwtException exception) {
+            throw new CustomException(NOT_REFRESH_TOKEN);
+        }
+        return true;
+    }
+
+    public void isHeaderToken(String token) {
+        if (token.equals("noToken")) {
+            throw new CustomException(NOT_HEADER_REFRESH_TOKEN);
+        }
     }
 
     //JWT 구문분석 함수
@@ -95,7 +122,7 @@ public class JwtTokenProvider {
                 .getBody();
     }
 
-    public boolean validToken(String authorization) {
+    public boolean isBearerToken(String authorization) {
 
         String accessToken = authorization.substring(7);
 
