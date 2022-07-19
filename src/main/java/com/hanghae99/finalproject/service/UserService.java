@@ -101,6 +101,15 @@ public class UserService {
         return new UserRegisterRespDto(true, "회원가입 성공");
     }
 
+    public String findUsername(UserRequestDto userRequestDto) {
+        Users user = userRepository.findByEmail(userRequestDto.getEmail())
+                .orElseThrow(() -> new RuntimeException("UserService 38에러 회원가입되지 않은 이메일입니다."));
+
+        return user.getUsername();
+    }
+
+
+
     @Transactional
     public UserProfileDto getProfile(long id, HttpServletRequest request) {
 
