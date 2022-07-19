@@ -210,10 +210,10 @@ public class UserService {
 
         if ((Optional.ofNullable(decodeRefresh).isPresent())) {
             if (!decodeRefresh.equals(REFRESH_TOKEN)) {
-                throw new RuntimeException(refreshToken + "는 " + REFRESH_TOKEN + "이 아닙니다.  UserService + 163에러 ");
+                throw new RuntimeException(refreshToken + "는 " + REFRESH_TOKEN + "이 아닙니다");
             }
         } else {
-            throw new RuntimeException(REFRESH_TOKEN + "이 아닙니다. UserService 166에러 ");
+            throw new RuntimeException(REFRESH_TOKEN + "이 아닙니다");
         }
 
         return createTokens(findUser((String) decodeToken.get(CLAIMS_KEY)).getUsername());
