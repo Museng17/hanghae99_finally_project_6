@@ -1,6 +1,6 @@
 package com.hanghae99.finalproject.interceptor;
 
-import com.hanghae99.finalproject.exceptionHandler.CustumException.NotTokenHeaderException;
+import com.hanghae99.finalproject.exceptionHandler.CustumException.CustomException;
 import com.hanghae99.finalproject.jwt.*;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +11,7 @@ import javax.servlet.http.*;
 
 import java.util.Optional;
 
+import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.*;
 import static com.hanghae99.finalproject.jwt.JwtTokenProvider.*;
 
 @Component
@@ -24,21 +25,21 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
     private final UserInfoInJwt userInfoInJwt;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws NotTokenHeaderException {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws CustomException {
 
         String authorization = request.getHeader(JWT_HEADER_KEY);
 
         if (authorization == null) {
-            throw new NotTokenHeaderException("헤더에 토큰이 없습니다.");
+            throw new CustomException(NOT_HEADER_ACCESS_TOKEN);
         }
 
-        Claims decodeToken = userInfoInJwt.getRefreshToken(authorization);
+        jwtTokenProvider.isBearerToken(authorization);
+
+        Claims decodeToken = userInfoInJwt.getToken(authorization);
 
         if (Optional.ofNullable((String) decodeToken.get(REFRESH_TOKEN)).isPresent()) {
-            throw new IllegalArgumentException("AccessToken이 아닙니다.");
+            throw new CustomException(NOT_ACCESS_TOKEN);
         }
-
-        jwtTokenProvider.validToken(authorization);
 
         request.setAttribute(JWT_HEADER_KEY, decodeToken.get(CLAIMS_KEY).toString());
         return true;

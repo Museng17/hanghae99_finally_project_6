@@ -1,5 +1,6 @@
 package com.hanghae99.finalproject.service;
 
+import com.hanghae99.finalproject.exceptionHandler.CustumException.CustomException;
 import com.hanghae99.finalproject.jwt.*;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.NOT_REFRESH_TOKEN;
 import static com.hanghae99.finalproject.interceptor.JwtTokenInterceptor.JWT_HEADER_KEY;
 import static com.hanghae99.finalproject.jwt.JwtTokenProvider.*;
 
@@ -203,36 +205,42 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public TokenResponseDto refreshToken(String refreshToken) {
-        jwtTokenProvider.validToken(refreshToken);
-        Claims decodeToken = userInfoInJwt.getRefreshToken(refreshToken);
+        jwtTokenProvider.isHeaderToken(refreshToken);
+        jwtTokenProvider.isValidRefreshToken(refreshToken);
 
-        String decodeRefresh = (String) decodeToken.get(REFRESH_TOKEN);
+        Claims claims = userInfoInJwt.getToken(refreshToken);
 
-        if ((Optional.ofNullable(decodeRefresh).isPresent())) {
-            if (!decodeRefresh.equals(REFRESH_TOKEN)) {
-                throw new RuntimeException(refreshToken + "는 " + REFRESH_TOKEN + "이 아닙니다");
+        String decodeRefreshToken = (String) claims.get(REFRESH_TOKEN);
+
+        if ((Optional.ofNullable(decodeRefreshToken).isPresent())) {
+            if (!decodeRefreshToken.equals(REFRESH_TOKEN)) {
+                throw new CustomException(NOT_REFRESH_TOKEN);
             }
         } else {
-            throw new RuntimeException(REFRESH_TOKEN + "이 아닙니다");
+            throw new CustomException(NOT_REFRESH_TOKEN);
         }
 
-        return createTokens(findUser((String) decodeToken.get(CLAIMS_KEY)).getUsername());
+        Users user = findUser((String) claims.get(CLAIMS_KEY));
+        return createTokens(user.getUsername());
     }
 
     @Transactional(readOnly = true)
     public TokenResponseDto refreshToken2(String refreshToken) {
-        jwtTokenProvider.validToken(refreshToken);
-        Claims decodeToken = userInfoInJwt.getRefreshToken(refreshToken);
+        jwtTokenProvider.isHeaderToken(refreshToken);
+        jwtTokenProvider.isValidRefreshToken(refreshToken);
+
+        Claims decodeToken = userInfoInJwt.getToken(refreshToken);
 
         String decodeRefresh = (String) decodeToken.get(REFRESH_TOKEN);
 
         if ((Optional.ofNullable(decodeRefresh).isPresent())) {
             if (!decodeRefresh.equals(REFRESH_TOKEN)) {
-                throw new RuntimeException(refreshToken + "는 " + REFRESH_TOKEN + "이 아닙니다.  UserService + 163에러 ");
+                throw new CustomException(NOT_REFRESH_TOKEN);
             }
         } else {
-            throw new RuntimeException(REFRESH_TOKEN + "이 아닙니다. UserService 166에러 ");
+            throw new CustomException(NOT_REFRESH_TOKEN);
         }
+        Users user = findUser((String) decodeToken.get(CLAIMS_KEY));
         return createTokens2(findUser((String) decodeToken.get(CLAIMS_KEY)).getUsername());
     }
 
@@ -330,9 +338,9 @@ public class UserService {
         if (!Pattern.matches("^[a-zA-Z0-9]{4,11}$", dto.getUsername())) {
             return new UserRegisterRespDto(false, "아이디를 다시 확인해주세요");
         }
-//        if (!Pattern.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", dto.getEmail())) {
-//            return new UserRegisterRespDto(false, "이메일을 다시 확인해주세요");
-//        }
+        //        if (!Pattern.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", dto.getEmail())) {
+        //            return new UserRegisterRespDto(false, "이메일을 다시 확인해주세요");
+        //        }
         if (!Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$", dto.getPassword())) {
             return new UserRegisterRespDto(false, "패스워드를 다시 확인해주세요");
         }

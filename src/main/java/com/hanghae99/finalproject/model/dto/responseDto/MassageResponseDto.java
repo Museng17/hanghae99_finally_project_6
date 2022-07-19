@@ -5,15 +5,14 @@ import lombok.*;
 import java.util.List;
 
 @Getter
-
 @NoArgsConstructor
 public class MassageResponseDto<T> {
-    private Integer statusCode;
+    private int statusCode;
     private String massage;
     private T content;
     private List<T> contentList;
 
-    public MassageResponseDto(Integer statusCode, String massage, T content) {
+    public MassageResponseDto(int statusCode, String massage, T content) {
         this.statusCode = statusCode;
         this.massage = massage;
         this.content = content;

@@ -44,12 +44,12 @@ public class UserController {
     }
 
     @PostMapping("/user/refresh2")
-    public TokenResponseDto refreshToken2(@RequestHeader(REFRESH_TOKEN) String refresh) {
+    public TokenResponseDto refreshToken2(@RequestHeader(value = REFRESH_TOKEN, defaultValue = "noToken") String refresh) {
         return userService.refreshToken2(refresh);
     }
 
     @PostMapping("/user/refresh")
-    public TokenResponseDto refreshToken(@RequestHeader(REFRESH_TOKEN) String refresh) {
+    public TokenResponseDto refreshToken(@RequestHeader(value = REFRESH_TOKEN, defaultValue = "noToken") String refresh) {
         return userService.refreshToken(refresh);
     }
 
