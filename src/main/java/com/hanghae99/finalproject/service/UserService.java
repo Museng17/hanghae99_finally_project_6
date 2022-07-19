@@ -330,9 +330,9 @@ public class UserService {
         if (!Pattern.matches("^[a-zA-Z0-9]{4,11}$", dto.getUsername())) {
             return new UserRegisterRespDto(false, "아이디를 다시 확인해주세요");
         }
-        if (!Pattern.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", dto.getEmail())) {
-            return new UserRegisterRespDto(false, "이메일을 다시 확인해주세요");
-        }
+//        if (!Pattern.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", dto.getEmail())) {
+//            return new UserRegisterRespDto(false, "이메일을 다시 확인해주세요");
+//        }
         if (!Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$", dto.getPassword())) {
             return new UserRegisterRespDto(false, "패스워드를 다시 확인해주세요");
         }
