@@ -25,8 +25,10 @@ public class WebConfig implements WebMvcConfigurer {
             "/user/nameDupCheck/**",
             "/user/login",
             "/user/social",
+            "/user/social2",
             "/image/og/**",
             "/user/refresh",
+            "/user/refresh2",
             "/email/**"
 
     };
