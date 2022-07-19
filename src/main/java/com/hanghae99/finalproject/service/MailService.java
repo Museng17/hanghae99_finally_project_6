@@ -24,8 +24,7 @@ public class MailService {
         try {
             Context context = new Context();
             context.setVariable("massage", massage);
-
-            mailUtils.sendEmail(mailUtils.makeMassageHtml("인증번호 : " + massage, "이메일 인증", mailRequestDto.getEmail(), "mail", context));
+            mailUtils.sendEmail(mailUtils.makeMassageHtml("이메일 인증", mailRequestDto.getEmail(), "mail", context));
         } catch (Exception e) {
             log.info(e.getMessage());
             return new MassageResponseDto(501, "전송실패 : " + e.getMessage());
