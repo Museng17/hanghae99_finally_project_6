@@ -54,12 +54,8 @@ public class MailUtils {
      * subject : 전송할 메세지의 제목
      * toUser : 보낼 이메일
      * */
-    public MimeMessage makeMassageHtml(String massage, String subject, String toUser) throws MessagingException {
+    public MimeMessage makeMassageHtml(String massage, String subject, String toUser, Context context) throws MessagingException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-
-        Context context = new Context();
-        context.setVariable("massage", massage);
-
         mimeMessage.addRecipients(MimeMessage.RecipientType.TO, toUser);
         mimeMessage.setSubject(subject);
         mimeMessage.setText(templateEngine.process("mail", context), "utf-8", "html");
@@ -100,7 +96,6 @@ public class MailUtils {
         javaMailSender.setHost("smtp.gmail.com");
         javaMailSender.setPort(587);
         javaMailSender.setUsername("whitewise95@gmail.com");
-        log.info(PASSWORD + "==================================================");
         javaMailSender.setPassword(PASSWORD);
 
         Properties prop = new Properties();
