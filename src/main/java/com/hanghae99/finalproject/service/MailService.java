@@ -7,6 +7,7 @@ import com.hanghae99.finalproject.util.mail.MailUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
 @Slf4j
 @Service
@@ -21,7 +22,10 @@ public class MailService {
         String massage = mailUtils.makeRandomUUID(6);
 
         try {
-            mailUtils.sendEmail(mailUtils.makeMassageHtml("인증번호 : " + massage, "이메일 인증", mailRequestDto.getEmail()));
+            Context context = new Context();
+            context.setVariable("massage", massage);
+
+            mailUtils.sendEmail(mailUtils.makeMassageHtml("인증번호 : " + massage, "이메일 인증", mailRequestDto.getEmail(), context));
         } catch (Exception e) {
             log.info(e.getMessage());
             return new MassageResponseDto(501, "전송실패 : " + e.getMessage());
