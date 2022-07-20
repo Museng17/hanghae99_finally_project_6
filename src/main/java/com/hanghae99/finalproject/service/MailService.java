@@ -122,13 +122,15 @@ public class MailService {
         Users user = userRepository.findByUsername(userRequestDto.getUsername())
                 .orElseThrow(() -> new CustomException(NOT_FIND_USER));
 
+        if (user.getLoginType() == LoginType.GOOGLE || user.getLoginType() == LoginType.KAKAO) {
+
+            return new MassageResponseDto(501, "소셜 로그인 유저");
+        }
+
         if (user.getEmail().equals(userRequestDto.getEmail())) {
             sendEmailCertification(mailRequestDto);
 
             return new MassageResponseDto(200, "이메일 전송 완료");
-        } else if (user.getLoginType() == LoginType.GOOGLE || user.getLoginType() == LoginType.KAKAO) {
-
-            return new MassageResponseDto(501, "소셜 로그인 유저");
         } else {
 
             return new MassageResponseDto(501, "회원 정보 불일치");
