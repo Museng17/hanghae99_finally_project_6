@@ -1,7 +1,9 @@
 package com.hanghae99.finalproject.service;
 
-import com.hanghae99.finalproject.model.dto.requestDto.MailRequestDto;
+import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.MassageResponseDto;
+import com.hanghae99.finalproject.model.entity.Users;
+import com.hanghae99.finalproject.model.repository.UserRepository;
 import com.hanghae99.finalproject.singleton.CertificationMap;
 import com.hanghae99.finalproject.util.mail.MailUtils;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +12,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
+<<<<<<< HEAD
 import java.util.ListIterator;
+=======
+import java.util.Optional;
+>>>>>>> 82766c6 (controller 단 로직 service단으로 이동 작업)
 
 @Slf4j
 @Service
@@ -20,6 +26,7 @@ public class MailService {
     private CertificationMap certificationMap = CertificationMap.getInstance();
 
     private final MailUtils mailUtils;
+    private final UserRepository userRepository;
 
     public MassageResponseDto sendEmailCertification(MailRequestDto mailRequestDto) {
         String massage = mailUtils.makeRandomUUID(6);
@@ -45,6 +52,7 @@ public class MailService {
         return new MassageResponseDto(200, "일치");
     }
 
+    
     @Scheduled(cron = "00 08 20 * * *")
     private void singletonRemove2() {
         log.info("스케쥴러 작동");
@@ -66,6 +74,39 @@ public class MailService {
             log.info("스케쥴러 작동 실패 에러 메세지 : ");
             log.info(e.toString());
         }
+    }
 
+    public MassageResponseDto sendEmailForResetPassword(UserRequestDto userRequestDto) {
+        MailRequestDto mailRequestDto = new MailRequestDto(userRequestDto);
+
+        Users user = userRepository.findByUsername(userRequestDto.getUsername())
+                .orElseThrow(() -> new RuntimeException("UserService 38에러 회원가입 되지 않은 이메일입니다."));
+
+        /*
+        *
+        *  민주님 56~57번 코드를 에러를 내지않고 리턴주는 방법 66 ~ 71번에 한번 짜 보았는데  의도하신 내용이 아니라면 지우셔도 됩니당.
+        *
+        *
+        *  *설명
+        *  DB에서 유저를 찾고 없다면  orElseGet() 을 사용해 user에 null를 대입해준다.
+        *  다음 if문으로 null라면 유저를 찾지 못한 것로 간주해 200ok로 리턴해주는 로직
+
+            Users user = userRepository.findByUsername(userRequestDto.getUsername())
+                    .orElseGet(() -> null);
+
+            if(!Optional.ofNullable(user).isPresent()){
+                return new MassageResponseDto(500, "회원가입 되지 않은 이메일 입니다.");
+            }
+        */
+
+
+        if (user.getEmail().equals(userRequestDto.getEmail())) {
+            sendEmailCertification(mailRequestDto);
+
+            return new MassageResponseDto(200, "이메일 전송 완료");
+        } else {
+
+            return new MassageResponseDto(501, "회원 정보 불일치");
+        }
     }
 }
