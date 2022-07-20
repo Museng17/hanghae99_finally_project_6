@@ -109,4 +109,9 @@ public class FolderController {
         return folderService.allFolders(keyword,request,pageable);
 
     }
+    @PostMapping("/report/{folderid}")
+    public void reportFolder(@PathVariable Long folderId,
+                             HttpServletRequest request){
+        folderService.reportFolder(folderId,request);
+    }
 }

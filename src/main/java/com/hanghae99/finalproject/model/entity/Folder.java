@@ -34,6 +34,9 @@ public class Folder extends TimeStamp {
     @Column(nullable = false)
     private Long BoardCnt;
 
+    @Column(nullable = false)
+    private Long reportCnt = 0L;
+
     @JsonIgnore
     @ManyToOne
     private Users users;

@@ -44,6 +44,9 @@ public class Users extends TimeStamp {
     private Long boardCnt;
 
     @Column(nullable = false)
+    private Long reportCnt = 0L;
+
+    @Column(nullable = false)
     private LoginType loginType;
 
     @OneToMany

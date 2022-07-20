@@ -30,6 +30,7 @@ public class FolderService {
     private final ShareRepository shareRepository;
     private final UserRepository userRepository;
     private final S3Uploader s3Uploader;
+    private final ReportRepository reportRepository;
 
     private final BoardRepository boardRepository;
 
@@ -348,5 +349,15 @@ public class FolderService {
 
     private List<Long> listToId(List<Share> List) {
         return List.stream().map(Share::getId).collect(Collectors.toList());
+    }
+    @Transactional
+    public void reportFolder(Long folderId,HttpServletRequest request){
+        Users users = userinfoHttpRequest.userFindByToken(request);
+        Folder folder = folderRepository.findById(folderId)
+                .orElseThrow(() -> new RuntimeException());
+        Users baduser = folder.getUsers();
+        reportRepository.save(new Report(users,folder));
+        folder.setReportCnt(folder.getReportCnt()+1);
+        baduser.setReportCnt(baduser.getReportCnt()+1);
     }
 }
