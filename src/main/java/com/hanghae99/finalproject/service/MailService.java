@@ -123,12 +123,26 @@ public class MailService {
                 .orElseThrow(() -> new CustomException(NOT_FIND_USER));
 
         if (user.getEmail().equals(userRequestDto.getEmail()) || user.getLoginType() == LoginType.USER) {
-            sendEmailAndUpdatePassword(mailRequestDto);
+            sendEmailCertification(mailRequestDto);
 
             return new MassageResponseDto(200, "이메일 전송 완료");
+        } else if (user.getLoginType() == LoginType.GOOGLE || user.getLoginType() == LoginType.KAKAO) {
+
+            return new MassageResponseDto(501, "소셜 로그인 유저");
         } else {
 
             return new MassageResponseDto(501, "회원 정보 불일치");
         }
+    }
+
+    public MassageResponseDto sendRandomNewPassword(MailRequestDto mailRequestDto) {
+
+        if (!certificationMap.match(mailRequestDto.getEmail(), mailRequestDto.getCertification())) {
+            log.info("인증번호 요청 불일치");
+            return new MassageResponseDto(404, "인증번호 불일치");
+        }
+        sendEmailAndUpdatePassword(mailRequestDto);
+        certificationMap.remove(mailRequestDto.getEmail());
+        return new MassageResponseDto(200, "임시 비밀번호 발급 성공");
     }
 }

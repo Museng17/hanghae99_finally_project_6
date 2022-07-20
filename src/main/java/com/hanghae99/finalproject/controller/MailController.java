@@ -22,8 +22,15 @@ public class MailController {
         return mailService.emailCheck(mailRequestDto);
     }
 
-    @PostMapping("/email/sendResetPw")
+    @PostMapping("/email/sendResetPwCode")
     public MassageResponseDto sendEmailForResetPassword(@RequestBody UserRequestDto userRequestDto) {
+
         return mailService.sendEmailForResetPassword(userRequestDto);
+    }
+
+    @PostMapping("/email/sendNewPw")
+    public MassageResponseDto sendRandomNewPassword(@RequestBody MailRequestDto mailRequestDto) {
+
+        return mailService.sendRandomNewPassword(mailRequestDto);
     }
 }
