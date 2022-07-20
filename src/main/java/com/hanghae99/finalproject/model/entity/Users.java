@@ -97,6 +97,11 @@ public class Users extends TimeStamp {
         this.password = newPassword;
     }
 
+    public void resetPw(String password) {
+
+        this.password = password;
+    }
+
     public void updateImg(String url) {
         this.imgPath = url;
     }
