@@ -5,6 +5,7 @@ import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.MassageResponseDto;
 import com.hanghae99.finalproject.model.entity.Users;
 import com.hanghae99.finalproject.model.repository.UserRepository;
+import com.hanghae99.finalproject.model.resultType.LoginType;
 import com.hanghae99.finalproject.singleton.CertificationMap;
 import com.hanghae99.finalproject.util.mail.MailUtils;
 import lombok.RequiredArgsConstructor;
@@ -121,7 +122,7 @@ public class MailService {
         Users user = userRepository.findByUsername(userRequestDto.getUsername())
                 .orElseThrow(() -> new CustomException(NOT_FIND_USER));
 
-        if (user.getEmail().equals(userRequestDto.getEmail())) {
+        if (user.getEmail().equals(userRequestDto.getEmail()) || user.getLoginType() == LoginType.USER) {
             sendEmailAndUpdatePassword(mailRequestDto);
 
             return new MassageResponseDto(200, "이메일 전송 완료");
