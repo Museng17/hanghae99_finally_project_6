@@ -108,8 +108,6 @@ public class UserService {
         return user.getUsername();
     }
 
-
-
     @Transactional
     public UserProfileDto getProfile(long id, HttpServletRequest request) {
 
