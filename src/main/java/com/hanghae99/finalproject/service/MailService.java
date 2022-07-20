@@ -122,7 +122,7 @@ public class MailService {
         Users user = userRepository.findByUsername(userRequestDto.getUsername())
                 .orElseThrow(() -> new CustomException(NOT_FIND_USER));
 
-        if (user.getEmail().equals(userRequestDto.getEmail()) || user.getLoginType() == LoginType.USER) {
+        if (user.getEmail().equals(userRequestDto.getEmail())) {
             sendEmailCertification(mailRequestDto);
 
             return new MassageResponseDto(200, "이메일 전송 완료");
