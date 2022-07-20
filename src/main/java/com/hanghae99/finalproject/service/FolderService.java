@@ -18,7 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.NOT_FIND_Folder;
+import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.NOT_FIND_FOLDER;
 import static com.hanghae99.finalproject.model.resultType.CategoryType.ALL;
 import static com.hanghae99.finalproject.model.resultType.FileUploadType.BOARD;
 
@@ -358,7 +358,7 @@ public class FolderService {
 
 
         Folder folder = folderRepository.findById(folderId)
-                .orElseThrow(() -> new CustomException(NOT_FIND_Folder));
+                .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
 
         Users baduser = folder.getUsers();
         reportRepository.save(new Report(users,folder));
