@@ -41,7 +41,7 @@ public class MailController {
             return new MassageResponseDto(200, "이메일 전송 완료");
         } else {
 
-            return new MassageResponseDto(502, "회원 정보 불일치");
+            return new MassageResponseDto(501, "회원 정보 불일치");
         }
     }
 }
