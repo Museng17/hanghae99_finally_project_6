@@ -39,14 +39,15 @@ public class MailService {
     public MassageResponseDto emailCheck(MailRequestDto mailRequestDto) {
         if (!certificationMap.match(mailRequestDto.getEmail(), mailRequestDto.getCertification())) {
             log.info("인증번호 요청 불일치");
+            certificationMap.remove(mailRequestDto.getEmail());
             return new MassageResponseDto(404, "불일치");
         }
         certificationMap.remove(mailRequestDto.getEmail());
         return new MassageResponseDto(200, "일치");
     }
 
-    @Scheduled(cron = "00 08 20 * * *")
-    private void singletonRemove2() {
+    @Scheduled(cron = "00 00 10 * * *")
+    private void singletonRemove() {
         log.info("스케쥴러 작동");
         log.info("삭제되기전 인증요청 카운트 : " + certificationMap.getCertificationMapSize());
         int checkCnt = 0;
@@ -66,6 +67,5 @@ public class MailService {
             log.info("스케쥴러 작동 실패 에러 메세지 : ");
             log.info(e.toString());
         }
-
     }
 }
