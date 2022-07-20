@@ -12,7 +12,7 @@ public class GlobalException {
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<CustomException> customException(CustomException e) {
         CustomException response = new CustomException(e.getMassage(), e.getStatusCode());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(e.getStatusCode()));
+        return new ResponseEntity<>(response, HttpStatus.valueOf(e.getRealStatusCode()));
     }
 
     @ExceptionHandler(RuntimeException.class)
