@@ -71,6 +71,12 @@ public class UserController {
         return userService.checkNameDuplicate(nickname);
     }
 
+    @PostMapping("/find/username")
+    public String findUsername(@RequestBody UserRequestDto userRequestDto) {
+
+        return userService.findUsername(userRequestDto);
+    }
+
     @DeleteMapping("/user/getout")
     public Boolean userDelete(HttpServletRequest request) {
 

@@ -7,4 +7,8 @@ import lombok.*;
 public class MailRequestDto {
     private String email;
     private String certification;
+
+    public MailRequestDto(UserRequestDto userRequestDto) {
+        this.email = userRequestDto.getEmail();
+    }
 }
