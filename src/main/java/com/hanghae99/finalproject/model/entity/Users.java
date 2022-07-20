@@ -72,6 +72,7 @@ public class Users extends TimeStamp {
         this.nickname = "USER(" + UUID.randomUUID().toString().replaceAll("-", "").substring(5, 9) + allCount + ")";
         this.folderCnt = 0L;
         this.boardCnt = 0L;
+        this.email = socialLoginRequestDto.getEmail();
         this.loginType = LoginType.GOOGLE;
     }
 
