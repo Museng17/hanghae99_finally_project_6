@@ -1,5 +1,6 @@
 package com.hanghae99.finalproject.service;
 
+import com.hanghae99.finalproject.exceptionHandler.CustumException.CustomException;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.MassageResponseDto;
 import com.hanghae99.finalproject.model.entity.Users;
@@ -17,6 +18,8 @@ import java.util.ListIterator;
 =======
 import java.util.Optional;
 >>>>>>> 82766c6 (controller 단 로직 service단으로 이동 작업)
+
+import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.NOT_FIND_USER;
 
 @Slf4j
 @Service
@@ -77,14 +80,11 @@ public class MailService {
     }
 
     public MassageResponseDto sendEmailForResetPassword(UserRequestDto userRequestDto) {
+
         MailRequestDto mailRequestDto = new MailRequestDto(userRequestDto);
 
         Users user = userRepository.findByUsername(userRequestDto.getUsername())
-                    .orElseGet(() -> null);
-
-        if(!Optional.ofNullable(user).isPresent()){
-            return new MassageResponseDto(500, "회원가입 되지 않은 이메일 입니다.");
-        }
+                .orElseThrow(() -> new CustomException(NOT_FIND_USER));
 
         if (user.getEmail().equals(userRequestDto.getEmail())) {
             sendEmailCertification(mailRequestDto);
