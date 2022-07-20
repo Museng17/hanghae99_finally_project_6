@@ -80,25 +80,11 @@ public class MailService {
         MailRequestDto mailRequestDto = new MailRequestDto(userRequestDto);
 
         Users user = userRepository.findByUsername(userRequestDto.getUsername())
-                .orElseThrow(() -> new RuntimeException("UserService 38에러 회원가입 되지 않은 이메일입니다."));
-
-        /*
-        *
-        *  민주님 56~57번 코드를 에러를 내지않고 리턴주는 방법 66 ~ 71번에 한번 짜 보았는데  의도하신 내용이 아니라면 지우셔도 됩니당.
-        *
-        *
-        *  *설명
-        *  DB에서 유저를 찾고 없다면  orElseGet() 을 사용해 user에 null를 대입해준다.
-        *  다음 if문으로 null라면 유저를 찾지 못한 것로 간주해 200ok로 리턴해주는 로직
-
-            Users user = userRepository.findByUsername(userRequestDto.getUsername())
                     .orElseGet(() -> null);
 
-            if(!Optional.ofNullable(user).isPresent()){
-                return new MassageResponseDto(500, "회원가입 되지 않은 이메일 입니다.");
-            }
-        */
-
+        if(!Optional.ofNullable(user).isPresent()){
+            return new MassageResponseDto(500, "회원가입 되지 않은 이메일 입니다.");
+        }
 
         if (user.getEmail().equals(userRequestDto.getEmail())) {
             sendEmailCertification(mailRequestDto);
