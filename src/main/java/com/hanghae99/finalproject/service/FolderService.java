@@ -1,5 +1,6 @@
 package com.hanghae99.finalproject.service;
 
+import com.hanghae99.finalproject.exceptionHandler.CustumException.CustomException;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.FolderResponseDto;
 import com.hanghae99.finalproject.model.entity.*;
@@ -17,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.NOT_FIND_Folder;
 import static com.hanghae99.finalproject.model.resultType.CategoryType.ALL;
 import static com.hanghae99.finalproject.model.resultType.FileUploadType.BOARD;
 
@@ -353,8 +355,11 @@ public class FolderService {
     @Transactional
     public void reportFolder(Long folderId,HttpServletRequest request){
         Users users = userinfoHttpRequest.userFindByToken(request);
+
+
         Folder folder = folderRepository.findById(folderId)
-                .orElseThrow(() -> new RuntimeException());
+                .orElseThrow(() -> new CustomException(NOT_FIND_Folder));
+
         Users baduser = folder.getUsers();
         reportRepository.save(new Report(users,folder));
         folder.setReportCnt(folder.getReportCnt()+1);
