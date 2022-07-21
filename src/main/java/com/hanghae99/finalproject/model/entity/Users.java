@@ -49,6 +49,9 @@ public class Users extends TimeStamp {
     @Column(nullable = false)
     private LoginType loginType;
 
+    @OneToOne
+    private Image image;
+
     @OneToMany
     @JoinColumn(name = "folder_id")
     private List<Folder> folderList;
@@ -72,6 +75,7 @@ public class Users extends TimeStamp {
         this.nickname = "USER(" + UUID.randomUUID().toString().replaceAll("-", "").substring(5, 9) + allCount + ")";
         this.folderCnt = 0L;
         this.boardCnt = 0L;
+        this.email = socialLoginRequestDto.getEmail();
         this.loginType = LoginType.GOOGLE;
     }
 
@@ -94,6 +98,11 @@ public class Users extends TimeStamp {
     public void updatePw(String newPassword) {
 
         this.password = newPassword;
+    }
+
+    public void resetPw(String password) {
+
+        this.password = password;
     }
 
     public void updateImg(String url) {
