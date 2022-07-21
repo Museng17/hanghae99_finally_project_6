@@ -58,6 +58,18 @@ public class UserService {
         }
         return true;
     }
+    public Boolean checkEmailDuplicate(String email) {
+        Users user = userRepository.findByEmail(email).orElse(null);
+
+        try {
+            if (user.getEmail().equals(email)) {
+                return false;
+            }
+        } catch (NullPointerException e) {
+            return true;
+        }
+        return true;
+    }
 
     public Boolean checkNameDuplicate(String nickname) {
         Users user = userRepository.findByNickname(nickname).orElse(null);
