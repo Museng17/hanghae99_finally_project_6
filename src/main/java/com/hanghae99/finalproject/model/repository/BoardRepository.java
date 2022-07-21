@@ -16,7 +16,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     void deleteAllByUsers(Users user);
 
-//    Optional<Board> findByIdAndUsersIdNot(Long boardId, Long id);
+    //    Optional<Board> findByIdAndUsersIdNot(Long boardId, Long id);
 
     @Query("select b from Board b where  b.folder.id = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and b.category in ?3 and b.users.id = ?4 and b.status IN ?5")
     Page<Board> findByFolderIdAndTitleContainingAndCategoryIn(Long folderId,
@@ -32,10 +32,13 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     List<CategoryType> findAllCategoryByUsersId(@Param("id") Long id);
 
     @Query("select b from Board b where  b.status = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and b.category in ?3")
-    Page<Board> findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatusType status, String keyword, List<CategoryType> categoryTypeList, Pageable pageable);
+    Page<Board> findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatusType status,
+                                                               String keyword,
+                                                               List<CategoryType> categoryTypeList,
+                                                               Pageable pageable);
 
     @Query("select b from Board b where  b.status = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and not b.users.id = ?3")
-    Page<Board> findAllByStatusAndTitleContaining(DisclosureStatusType status, String keyword,Long usersId ,Pageable pageable);
+    Page<Board> findAllByStatusAndTitleContaining(DisclosureStatusType status, String keyword, Long usersId, Pageable pageable);
 
     List<Board> deleteAllByFolderIdIn(List<Long> folderIdList);
 
@@ -57,4 +60,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     Optional<Long> findFolderIdById(Long id);
 
     List<Board> findAllByIdIn(List<Long> longList);
+
+    Optional<Board> findByIdAndUsers(Long boardId, Users userFindByToken);
 }

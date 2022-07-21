@@ -22,6 +22,12 @@ public class BoardController {
 
     private final BoardService boardService;
 
+    @GetMapping("/board/{boardId}")
+    public MassageResponseDto findBoard(HttpServletRequest request,
+                                        @PathVariable Long boardId) {
+        return boardService.findBoard(request, boardId);
+    }
+
     @PostMapping("/board")
     public MassageResponseDto boardSave(@RequestBody BoardRequestDto boardRequestDto,
                                         HttpServletRequest request) {
@@ -102,5 +108,12 @@ public class BoardController {
                                             @RequestBody List<FolderRequestDto> folderRequestDtos,
                                             HttpServletRequest request) {
         return boardService.allBoards(keyword, page, folderRequestDtos, request);
+    }
+
+    @PostMapping("/folder/{folderId}")
+    public void boardInFolder(@PathVariable Long folderId,
+                              @RequestBody FolderRequestDto folderRequestDto,
+                              HttpServletRequest request) {
+        boardService.boardInFolder(folderId, folderRequestDto, request);
     }
 }

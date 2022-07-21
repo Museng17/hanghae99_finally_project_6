@@ -90,6 +90,10 @@ public class Board extends TimeStamp {
         this.folder = folder;
     }
 
+    public Board(Long id) {
+        this.id = id;
+    }
+
     private CategoryType inNullCheck(CategoryType category) {
         if (!Optional.ofNullable(category).isPresent()) {
             return CategoryType.NO_CATEGORY;

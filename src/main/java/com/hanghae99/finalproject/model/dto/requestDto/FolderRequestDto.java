@@ -41,4 +41,8 @@ public class FolderRequestDto {
         this.boardCnt = folder.getBoardCnt();
         this.nickname = folder.getUsers().getNickname();
     }
+
+    public FolderRequestDto(BoardRequestDto boardRequestDto) {
+        this.boardList.add(new Board(boardRequestDto.getId()));
+    }
 }

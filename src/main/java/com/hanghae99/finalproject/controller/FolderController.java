@@ -26,13 +26,6 @@ public class FolderController {
         return folderService.folderSave(folderRequestDto, request);
     }
 
-    @PostMapping("/folder/{folderId}")
-    public void boardInFolder(@PathVariable Long folderId,
-                              @RequestBody FolderRequestDto folderRequestDto,
-                              HttpServletRequest request) {
-        folderService.boardInFolder(folderId, folderRequestDto, request);
-    }
-
     @DeleteMapping("/folders")
     public void folderDelete(@RequestBody List<FolderRequestDto> folderRequestDto,
                              HttpServletRequest request) {
@@ -68,10 +61,10 @@ public class FolderController {
         folderService.shareFolder(folderId, request);
     }
 
-//    @PostMapping("/myshare/folder/{folderId}")
-//    public void cloneFolder(@PathVariable Long folderId, HttpServletRequest request) {
-//        folderService.cloneFolder(folderId, request);
-//    }
+    //    @PostMapping("/myshare/folder/{folderId}")
+    //    public void cloneFolder(@PathVariable Long folderId, HttpServletRequest request) {
+    //        folderService.cloneFolder(folderId, request);
+    //    }
 
     @GetMapping("/BestFolders/{page}/{size}")
     public Page<Folder> findBestFolders(@PathVariable int page, @PathVariable int size) {
@@ -101,17 +94,17 @@ public class FolderController {
         return folderService.shareList(keyword, request, pageable, userId);
     }
 
-
     @PostMapping("/allfolders/{keyword}")
     public FolderResponseDto allFolders(@PathVariable String keyword,
                                         HttpServletRequest request,
                                         @PageableDefault(size = 8, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
-        return folderService.allFolders(keyword,request,pageable);
+        return folderService.allFolders(keyword, request, pageable);
 
     }
+
     @PostMapping("/report/{folderId}")
     public void reportFolder(@PathVariable Long folderId,
-                             HttpServletRequest request){
-        folderService.reportFolder(folderId,request);
+                             HttpServletRequest request) {
+        folderService.reportFolder(folderId, request);
     }
 }
