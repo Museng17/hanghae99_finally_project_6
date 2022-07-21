@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -22,8 +21,8 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping("/board")
-    public Board boardSave(@RequestBody BoardRequestDto boardRequestDto,
-                           HttpServletRequest request) {
+    public MassageResponseDto boardSave(@RequestBody BoardRequestDto boardRequestDto,
+                                        HttpServletRequest request) {
         return boardService.boardSave(boardRequestDto, request);
     }
 
@@ -52,18 +51,13 @@ public class BoardController {
         boardService.boardOrderChange(orderRequestDto, request);
     }
 
-//    @PostMapping("/myshare/board/{boardId}")
-//    public void cloneBoard(@PathVariable Long boardId, HttpServletRequest request) {
-//        boardService.cloneBoard(boardId, request);
-//    }
+    //    @PostMapping("/myshare/board/{boardId}")
+    //    public void cloneBoard(@PathVariable Long boardId, HttpServletRequest request) {
+    //        boardService.cloneBoard(boardId, request);
+    //    }
     @PostMapping("/myshare/boards")
-    public void cloneBoards(@RequestBody List<BoardRequestDto>  boards,HttpServletRequest request) {
-        boardService.cloneBoards(boards,request);
-    }
-
-    @PostMapping("/board/image")
-    public FileUploadResponse boardImageUpload(@RequestParam("boardImage") MultipartFile imageFile) {
-        return boardService.boardImageUpload(imageFile);
+    public void cloneBoards(@RequestBody List<BoardRequestDto> boards, HttpServletRequest request) {
+        boardService.cloneBoards(boards, request);
     }
 
     @GetMapping("/newboards/{page}/{size}")
@@ -89,7 +83,10 @@ public class BoardController {
     }
 
     @PostMapping("/allboards/{keyword}/{page}")
-    public BoardResponseDto allBoards(@PathVariable String keyword, @PathVariable int page, @RequestBody List<FolderRequestDto> folderRequestDtos,HttpServletRequest request) {
-        return boardService.allBoards(keyword, page, folderRequestDtos,request);
+    public BoardAndCntResponseDto allBoards(@PathVariable String keyword,
+                                            @PathVariable int page,
+                                            @RequestBody List<FolderRequestDto> folderRequestDtos,
+                                            HttpServletRequest request) {
+        return boardService.allBoards(keyword, page, folderRequestDtos, request);
     }
 }

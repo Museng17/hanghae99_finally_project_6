@@ -11,6 +11,7 @@ import javax.persistence.*;
 public class Image {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -21,4 +22,10 @@ public class Image {
 
     @ManyToOne
     private Board board;
+
+    public Image(Board board, ImageType imageType) {
+        this.imageType = imageType;
+        this.imgPath = board.getImgPath();
+        this.board = board;
+    }
 }

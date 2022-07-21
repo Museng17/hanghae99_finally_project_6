@@ -1,12 +1,10 @@
 package com.hanghae99.finalproject.model.dto.requestDto;
 
 import com.hanghae99.finalproject.model.dto.responseDto.OgResponseDto;
-import com.hanghae99.finalproject.model.entity.Board;
 import com.hanghae99.finalproject.model.resultType.*;
 import lombok.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 public class BoardRequestDto {
     private Long id;
@@ -21,19 +19,6 @@ public class BoardRequestDto {
     private CategoryType category;
     private Long boardOrder;
 
-    public BoardRequestDto(Board board) {
-        this.id = board.getId();
-        this.link = board.getLink();
-        this.title = board.getTitle();
-        this.explanation = board.getExplanation();
-        this.imgPath = board.getImgPath();
-        this.content = board.getContent();
-        this.status = board.getStatus();
-        this.boardType = board.getBoardType();
-        this.category = board.getCategory();
-        this.boardOrder = board.getBoardOrder();
-    }
-
     public void ogTagToBoardRequestDto(OgResponseDto ogResponseDto, String link) {
         if (ogResponseDto.getTitle().equals("")) {
             this.title = link;
@@ -42,5 +27,13 @@ public class BoardRequestDto {
         }
         this.explanation = ogResponseDto.getDescription();
         this.imgPath = ogResponseDto.getImage();
+    }
+
+    public void updateTitle(String format) {
+        this.title = format;
+    }
+
+    public void updateImagePath(String url) {
+        this.imgPath = url;
     }
 }

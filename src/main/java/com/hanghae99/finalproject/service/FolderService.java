@@ -167,11 +167,11 @@ public class FolderService {
             );
 
             if (!boardRequestDto.getImgPath().equals("") && boardRequestDto.getImgPath() != null) {
-                boardRequestDto.setImgPath(s3Uploader.upload(BOARD.getPath(), boardRequestDto.getImgPath()).getUrl());
+                boardRequestDto.updateImagePath(s3Uploader.upload(BOARD.getPath(), boardRequestDto.getImgPath()).getUrl());
             }
 
         } else if (boardRequestDto.getBoardType() == BoardType.MEMO) {
-            boardRequestDto.setTitle(new SimpleDateFormat(DateType.YEAR_MONTH_DAY.getPattern()).format(new Date()));
+            boardRequestDto.updateTitle(new SimpleDateFormat(DateType.YEAR_MONTH_DAY.getPattern()).format(new Date()));
         }
 
         Users user = userinfoHttpRequest.userFindByToken(request);
@@ -352,17 +352,17 @@ public class FolderService {
     private List<Long> listToId(List<Share> List) {
         return List.stream().map(Share::getId).collect(Collectors.toList());
     }
-    @Transactional
-    public void reportFolder(Long folderId,HttpServletRequest request){
-        Users users = userinfoHttpRequest.userFindByToken(request);
 
+    @Transactional
+    public void reportFolder(Long folderId, HttpServletRequest request) {
+        Users users = userinfoHttpRequest.userFindByToken(request);
 
         Folder folder = folderRepository.findById(folderId)
                 .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
 
         Users baduser = folder.getUsers();
-        reportRepository.save(new Report(users,folder));
-        folder.setReportCnt(folder.getReportCnt()+1);
-        baduser.setReportCnt(baduser.getReportCnt()+1);
+        reportRepository.save(new Report(users, folder));
+        folder.setReportCnt(folder.getReportCnt() + 1);
+        baduser.setReportCnt(baduser.getReportCnt() + 1);
     }
 }

@@ -1,12 +1,9 @@
 package com.hanghae99.finalproject.model.dto.responseDto;
 
 import com.hanghae99.finalproject.model.dto.requestDto.FolderRequestDto;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Getter
 @Setter
@@ -14,10 +11,9 @@ import java.util.List;
 public class FolderResponseDto {
 
     private Long foldersCnt;
-//    private List<Folder> folders = new ArrayList<>();
     private List<FolderRequestDto> folders = new ArrayList<>();
 
-    public FolderResponseDto(List<FolderRequestDto> folders, Long foldersCnt){
+    public FolderResponseDto(List<FolderRequestDto> folders, Long foldersCnt) {
         this.foldersCnt = foldersCnt;
         this.folders = folders;
     }
