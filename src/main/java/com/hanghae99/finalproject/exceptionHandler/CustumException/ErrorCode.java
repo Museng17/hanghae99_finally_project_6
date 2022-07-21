@@ -6,8 +6,9 @@ import lombok.*;
 @RequiredArgsConstructor
 public enum ErrorCode {
 
-    NOT_FIND_USER(500,200,"유저를 찾을 수 없습니다."),
-    NOT_FIND_FOLDER(500,200,"폴더를 찾을 수 없습니다"),
+    NOT_FIND_USER(500, 200, "유저를 찾을 수 없습니다."),
+    NOT_FIND_FOLDER(500, 200, "폴더를 찾을 수 없습니다"),
+    NOT_FIND_CHOICE_IMAGE(501, 200, "선택된 이미지를 찾을 수 없습니다."),
 
     //엑세스 토큰
     NOT_HEADER_ACCESS_TOKEN(402, 402, "헤더에 엑세스 토큰이 없습니다."),

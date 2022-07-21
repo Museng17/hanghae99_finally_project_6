@@ -2,7 +2,6 @@ package com.hanghae99.finalproject.service;
 
 import com.amazonaws.services.s3.model.S3Object;
 import com.hanghae99.finalproject.exceptionHandler.CustumException.CustomException;
-import com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.*;
@@ -23,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.NOT_FIND_FOLDER;
+import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.*;
 import static com.hanghae99.finalproject.model.resultType.CategoryType.*;
 import static com.hanghae99.finalproject.model.resultType.FileUploadType.BOARD;
 
@@ -98,24 +97,48 @@ public class BoardService {
     @Transactional
     public void boardUpdate(Long id, BoardRequestDto boardRequestDto, HttpServletRequest request) {
         Board board = boardFindById(id);
+        List<Image> images = imageRepository.findByBoard(board);
 
         userinfoHttpRequest.userAndWriterMatches(
                 board.getUsers().getId(),
                 userinfoHttpRequest.userFindByToken(request).getId()
         );
-        if(!board.getFolder().getId().equals(boardRequestDto.getFolderId())){
+
+        if (!board.getFolder().getId().equals(boardRequestDto.getFolderId())) {
             board.addFolderId(folderRepository.findById(boardRequestDto.getFolderId())
                     .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER)));
         }
-        if (boardRequestDto.getBoardType() == BoardType.LINK) {
-            if (!board.getImgPath().equals(boardRequestDto.getImgPath())) {
-                S3Object removeImageUrl = s3Uploader.selectImage(BOARD.getPath(), board.getImgPath());
+        if (!board.getFolder().getId().equals(boardRequestDto.getFolderId())) {
+            boardInFolder(boardRequestDto.getFolderId(), new FolderRequestDto(boardRequestDto), request);
+        }
+
+        if (boardRequestDto.getBoardType() == BoardType.LINK && boardRequestDto.getImage().getImageType() == ImageType.OG) {
+            if (!board.getImgPath().equals(boardRequestDto.getImage().getImgPath())) {
+                S3Object removeImageUrl = s3Uploader.selectImage(
+                        BOARD.getPath(),
+                        board.getImgPath()
+                );
                 if (Optional.ofNullable(removeImageUrl).isPresent()) {
                     s3Uploader.fileDelete(removeImageUrl.getKey());
                 }
                 S3Object addImageUrl = s3Uploader.selectImage(BOARD.getPath(), boardRequestDto.getImgPath());
                 if (!Optional.ofNullable(addImageUrl).isPresent()) {
-                    boardRequestDto.updateImagePath(s3Uploader.upload(BOARD.getPath(), boardRequestDto.getImgPath()).getUrl());
+                    boardRequestDto.updateImagePath(
+                            s3Uploader.upload(
+                                    BOARD.getPath(),
+                                    boardRequestDto.getImage().getImgPath()
+                            ).getUrl());
+                }
+                findImageEqualsDtoImage(images, boardRequestDto, board);
+            }
+        } else if (boardRequestDto.getBoardType() == BoardType.LINK && boardRequestDto.getImage().getImageType() != ImageType.OG) {
+            if (!board.getImgPath().equals(boardRequestDto.getImage().getImgPath())) {
+                if (!imageRepository.existsByImageTypeAndBoard(boardRequestDto.getImage().getImageType(), board)) {
+                    imageRepository.save(new Image(board, boardRequestDto.getImage()));
+                    boardRequestDto.updateImagePath(boardRequestDto.getImage().getImgPath());
+                } else {
+                    boardRequestDto.updateImagePath(boardRequestDto.getImage().getImgPath());
+                    findImageEqualsDtoImage(images, boardRequestDto, board);
                 }
             }
         }
@@ -153,7 +176,7 @@ public class BoardService {
 
     public Board boardFindById(Long id) {
         return boardRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("BoardService 74 에러, 해당 글을 찾지 못했습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 글을 찾지 못했습니다."));
     }
 
     public List<Board> boardFindByUsersIdOrderByBoardOrderAsc(Long userId, Long folderId) {
@@ -167,10 +190,6 @@ public class BoardService {
 
     public List<Board> findAllById(List<Long> longs) {
         return boardRepository.findAllById(longs);
-    }
-
-    public List<Board> findAllById(Folder folder) {
-        return boardRepository.findByFolder(folder);
     }
 
     public List<Board> boardDeleteByFolderId(List<Long> folderIdList) {
@@ -377,5 +396,75 @@ public class BoardService {
             categoryTypeList = FolderRequestDtoToCategoryTypeList(folderRequestDtos);
         }
         return categoryTypeList;
+    }
+
+    @Transactional
+    public void boardInFolder(Long folderId, FolderRequestDto folderRequestDto, HttpServletRequest request) {
+
+        Folder afterFolder = findByIdAndUsersId(folderId, request);
+
+        List<Board> afterBoard = findAllById(
+                folderRequestDto.getBoardList().stream()
+                        .map(Board::getId)
+                        .collect(Collectors.toList())
+        );
+
+        Long beforeBoardId = boardRepository.findFolderIdById(folderRequestDto.getBoardList().get(0).getId())
+                .orElseThrow(() -> new RuntimeException("없는 글입니다."));
+
+        Long afterCnt = 1L;
+        for (Board board : afterBoard) {
+            board.addFolderId(afterFolder);
+            board.updateOrder(afterFolder.getBoardCnt() + afterCnt);
+            afterCnt++;
+        }
+        afterFolder.setBoardCnt(afterFolder.getBoardCnt() + afterBoard.size());
+
+        Folder beforeFolder = findByIdAndUsersId(beforeBoardId, request);
+        List<Board> beforeBoardList = boardRepository.findByFolder(beforeFolder);
+
+        Long beforeCnt = 1L;
+        for (Board folder : beforeBoardList) {
+            folder.setBoardOrder(beforeCnt);
+            beforeCnt++;
+        }
+        beforeFolder.setBoardCnt(beforeFolder.getBoardCnt() - afterBoard.size());
+    }
+
+    private Folder findByIdAndUsersId(Long folderId, HttpServletRequest request) {
+        return folderRepository.findByIdAndUsersId(
+                        folderId,
+                        userinfoHttpRequest.userFindByToken(request).getId()
+                )
+                .orElseThrow(() -> new RuntimeException("FolderService 45 에러, 찾는 폴더가 없습니다."));
+    }
+
+    private void findImageEqualsDtoImage(List<Image> images, BoardRequestDto boardRequestDto, Board board) {
+        for (Image image : images) {
+            if (image.getImageType() == boardRequestDto.getImage().getImageType() && image.getBoard().getId().equals(board.getId())) {
+                image.imagePathUpdate(boardRequestDto);
+                break;
+            }
+        }
+    }
+
+    public MassageResponseDto findBoard(HttpServletRequest request, Long boardId) {
+        Board board = boardRepository.findByIdAndUsers(
+                        boardId,
+                        userinfoHttpRequest.userFindByToken(request)
+                )
+                .orElseThrow(() ->
+                        new CustomException(NOT_FIND_USER)
+                );
+
+        return new MassageResponseDto(
+                200,
+                "조회완료되었습니다.",
+                new BoardResponseDto(
+                        board,
+                        imageRepository.findByBoard(board)
+                )
+        );
+
     }
 }

@@ -72,39 +72,6 @@ public class FolderService {
     }
 
     @Transactional
-    public void boardInFolder(Long folderId, FolderRequestDto folderRequestDto, HttpServletRequest request) {
-
-        Folder afterFolder = findFolder(folderId, request);
-
-        List<Board> afterBoard = boardService.findAllById(
-                folderRequestDto.getBoardList().stream()
-                        .map(Board::getId)
-                        .collect(Collectors.toList())
-        );
-
-        Long beforeBoardId = boardRepository.findFolderIdById(folderRequestDto.getBoardList().get(0).getId())
-                .orElseThrow(() -> new RuntimeException("없는 글입니다."));
-
-        Long afterCnt = 1L;
-        for (Board board : afterBoard) {
-            board.addFolderId(afterFolder);
-            board.updateOrder(afterFolder.getBoardCnt() + afterCnt);
-            afterCnt++;
-        }
-        afterFolder.setBoardCnt(afterFolder.getBoardCnt() + afterBoard.size());
-
-        Folder beforeFolder = findFolder(beforeBoardId, request);
-        List<Board> beforeBoardList = boardRepository.findByFolder(beforeFolder);
-
-        Long beforeCnt = 1L;
-        for (Board folder : beforeBoardList) {
-            folder.setBoardOrder(beforeCnt);
-            beforeCnt++;
-        }
-        beforeFolder.setBoardCnt(beforeFolder.getBoardCnt() - afterBoard.size());
-    }
-
-    @Transactional
     public void folderDelete(List<FolderRequestDto> folderRequestDto, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
         List<Long> longs = folderRequestDto.stream()
