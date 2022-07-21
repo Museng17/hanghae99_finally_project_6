@@ -36,9 +36,12 @@ public class BoardService {
     private final UserinfoHttpRequest userinfoHttpRequest;
     private final S3Uploader s3Uploader;
     private final UserRepository userRepository;
+    private final ImageRepository imageRepository;
 
     @Transactional
-    public Board boardSave(BoardRequestDto boardRequestDto, HttpServletRequest request) {
+    public MassageResponseDto boardSave(BoardRequestDto boardRequestDto, HttpServletRequest request) {
+        Image saveImage = new Image();
+
         if (boardRequestDto.getBoardType() == BoardType.LINK) {
             boardRequestDto.ogTagToBoardRequestDto(
                     thumbnailLoad(boardRequestDto.getLink()),
@@ -46,28 +49,50 @@ public class BoardService {
             );
 
             if (!boardRequestDto.getImgPath().equals("") && boardRequestDto.getImgPath() != null) {
-                boardRequestDto.setImgPath(s3Uploader.upload(BOARD.getPath(), boardRequestDto.getImgPath()).getUrl());
+                boardRequestDto.updateImagePath(
+                        s3Uploader.upload(
+                                BOARD.getPath(),
+                                boardRequestDto.getImgPath()
+                        ).getUrl()
+                );
             }
 
         } else if (boardRequestDto.getBoardType() == BoardType.MEMO) {
-            boardRequestDto.setTitle(new SimpleDateFormat(DateType.YEAR_MONTH_DAY.getPattern()).format(new Date()));
+            boardRequestDto.updateTitle(new SimpleDateFormat(DateType.YEAR_MONTH_DAY.getPattern()).format(new Date()));
         }
 
-        Users user = userinfoHttpRequest.userFindByToken(request);
+        Users findUser = userinfoHttpRequest.userFindByToken(request);
+        Folder findFolder = folderRepository.findByUsersAndName(findUser, "무제");
 
-        Folder folder = folderRepository.findByUsersAndName(user, "무제");
-
-        Board board = boardRepository.save(
+        Board saveBoard = boardRepository.save(
                 new Board(
-                        folder.getBoardCnt(),
+                        findFolder.getBoardCnt(),
                         boardRequestDto,
-                        user,
-                        folder
+                        findUser,
+                        findFolder
                 )
         );
-        folder.setBoardCnt(folder.getBoardCnt() + 1);
-        user.setBoardCnt(user.getBoardCnt() + 1);
-        return board;
+        if (boardRequestDto.getBoardType() == BoardType.LINK) {
+            saveImage = imageRepository.save(
+                    new Image(
+                            saveBoard,
+                            ImageType.OG
+                    )
+            );
+        }
+
+        findFolder.updateBoardCnt(findFolder.getBoardCnt() + 1);
+        findUser.updateBoardCnt(findUser.getBoardCnt() + 1);
+
+        return new MassageResponseDto(
+                200,
+                "저장이 완료 되었습니다.",
+                new BoardResponseDto(
+                        saveBoard,
+                        findFolder,
+                        new ImageRequestDto(saveImage)
+                )
+        );
     }
 
     @Transactional
@@ -90,7 +115,7 @@ public class BoardService {
                 }
                 S3Object addImageUrl = s3Uploader.selectImage(BOARD.getPath(), boardRequestDto.getImgPath());
                 if (!Optional.ofNullable(addImageUrl).isPresent()) {
-                    boardRequestDto.setImgPath(s3Uploader.upload(BOARD.getPath(), boardRequestDto.getImgPath()).getUrl());
+                    boardRequestDto.updateImagePath(s3Uploader.upload(BOARD.getPath(), boardRequestDto.getImgPath()).getUrl());
                 }
             }
         }
@@ -176,10 +201,10 @@ public class BoardService {
 
     }
 
-//    public Board findShareBoard(Long boardId, HttpServletRequest request) {
-//        return boardRepository.findByIdAndUsersIdNot(boardId, userinfoHttpRequest.userFindByToken(request).getId()).orElseThrow(()
-//                -> new RuntimeException("원하는 폴더를 찾지 못했습니다."));
-//    }
+    //    public Board findShareBoard(Long boardId, HttpServletRequest request) {
+    //        return boardRepository.findByIdAndUsersIdNot(boardId, userinfoHttpRequest.userFindByToken(request).getId()).orElseThrow(()
+    //                -> new RuntimeException("원하는 폴더를 찾지 못했습니다."));
+    //    }
     //    @Transactional
     //    public void cloneBoard(Long boardId, HttpServletRequest request) {
     //        Users users = userinfoHttpRequest.userFindByToken(request);
@@ -198,7 +223,6 @@ public class BoardService {
 
         Folder folder = folderRepository.findByUsersAndName(users, "무제");
 
-
         List<Long> LongList = boards.stream()
                 .map(BoardRequestDto::getId)
                 .collect(Collectors.toList());
@@ -208,8 +232,8 @@ public class BoardService {
         for (Board board : boardList) {
 
             boardRepository.save(new Board(board, users, folder));
-            folder.setBoardCnt(folder.getBoardCnt()+1);
-            users.setBoardCnt(users.getBoardCnt()+1);
+            folder.setBoardCnt(folder.getBoardCnt() + 1);
+            users.setBoardCnt(users.getBoardCnt() + 1);
         }
     }
 
@@ -288,7 +312,7 @@ public class BoardService {
         );
     }
 
-    public BoardResponseDto allBoards(String keyword, int page, List<FolderRequestDto> folderRequestDtos, HttpServletRequest request) {
+    public BoardAndCntResponseDto allBoards(String keyword, int page, List<FolderRequestDto> folderRequestDtos, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
         Optional<FolderRequestDto> all = folderRequestDtos.stream()
                 .filter(categoryType -> categoryType.getCategory() == ALL)
@@ -304,7 +328,7 @@ public class BoardService {
         } else {
             boards = boardRepository.findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatusType.PUBLIC, "%" + keyword + "%", FolderRequestDtoToCategoryTypeList(folderRequestDtos), pageRequest);
         }
-        return new BoardResponseDto(boards, boards.getTotalElements());
+        return new BoardAndCntResponseDto(boards, boards.getTotalElements());
     }
 
     @Transactional(readOnly = true)

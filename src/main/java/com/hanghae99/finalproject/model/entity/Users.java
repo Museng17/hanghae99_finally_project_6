@@ -108,4 +108,8 @@ public class Users extends TimeStamp {
     public void updateImg(String url) {
         this.imgPath = url;
     }
+
+    public void updateBoardCnt(long boardCnt) {
+        this.boardCnt = boardCnt;
+    }
 }

@@ -70,7 +70,6 @@ public class MailService {
                 }
             }
             log.info("스케쥴러 작동 완료 삭제된 데이터 카운트 : " + checkCnt);
-            throw new RuntimeException();
         } catch (Exception e) {
             log.info("스케쥴러 작동 실패 에러 메세지 : ");
             log.info(e.toString());
