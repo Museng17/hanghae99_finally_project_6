@@ -4,16 +4,18 @@ import com.hanghae99.finalproject.exceptionHandler.CustumException.CustomExcepti
 import com.hanghae99.finalproject.jwt.*;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.*;
 
-import java.util.Optional;
+import java.util.*;
 
 import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.*;
 import static com.hanghae99.finalproject.jwt.JwtTokenProvider.*;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtTokenInterceptor implements HandlerInterceptor {
@@ -26,6 +28,7 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws CustomException {
+        logSave(request);
 
         String authorization = request.getHeader(JWT_HEADER_KEY);
 
@@ -43,5 +46,16 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
 
         request.setAttribute(JWT_HEADER_KEY, decodeToken.get(CLAIMS_KEY).toString());
         return true;
+    }
+
+    private void logSave(HttpServletRequest request){
+        log.info("요청한 Method : "+request.getMethod());
+        log.info("요청한 URL : "+request.getRequestURI());
+
+        Enumeration<String> headers = request.getHeaderNames();
+        while (headers.hasMoreElements()){
+            String thisHeader = headers.nextElement();
+            log.info("요청한 request Header 키값 "+thisHeader);
+        }
     }
 }
