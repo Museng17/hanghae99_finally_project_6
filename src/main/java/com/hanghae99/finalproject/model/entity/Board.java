@@ -7,7 +7,7 @@ import lombok.*;
 
 import javax.persistence.*;
 
-import java.util.Optional;
+import java.util.*;
 
 @Entity
 @Getter
@@ -45,6 +45,9 @@ public class Board extends TimeStamp {
 
     @Column(nullable = false)
     private Long boardOrder;
+
+    @OneToMany
+    private List<Image> imageList;
 
     @ManyToOne
     @JsonIgnore
@@ -116,7 +119,7 @@ public class Board extends TimeStamp {
         this.status = board.getStatus();
         this.boardType = board.getBoardType();
         this.category = board.getCategory();
-        this.boardOrder = folder.getBoardCnt()+1;
+        this.boardOrder = folder.getBoardCnt() + 1;
         this.users = users;
         this.folder = folder;
     }
