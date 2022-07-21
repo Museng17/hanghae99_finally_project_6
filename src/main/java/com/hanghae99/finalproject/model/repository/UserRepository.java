@@ -20,7 +20,6 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     int findAllCount();
 
     Users findFollowerById(Long id);
-    Optional<Users> findByEmail(String email);
 
     Users findFollowingById(Long id);
 

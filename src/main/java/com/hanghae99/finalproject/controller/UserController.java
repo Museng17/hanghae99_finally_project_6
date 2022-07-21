@@ -6,6 +6,7 @@ import com.hanghae99.finalproject.model.entity.Users;
 import com.hanghae99.finalproject.service.*;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import static com.hanghae99.finalproject.config.WebConfig.SOCIAL_HEADER_KEY;
 import static com.hanghae99.finalproject.jwt.JwtTokenProvider.REFRESH_TOKEN;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -44,12 +46,18 @@ public class UserController {
     }
 
     @PostMapping("/user/refresh2")
-    public TokenResponseDto refreshToken2(@RequestHeader(value = REFRESH_TOKEN, defaultValue = "noToken") String refresh) {
+    public TokenResponseDto refreshToken2(HttpServletRequest request,
+                                          @RequestHeader(value = REFRESH_TOKEN, defaultValue = "noToken") String refresh) {
+        log.info("요청한 Method : " + request.getMethod());
+        log.info("요청한 URL : " + request.getRequestURI());
         return userService.refreshToken2(refresh);
     }
 
     @PostMapping("/user/refresh")
-    public TokenResponseDto refreshToken(@RequestHeader(value = REFRESH_TOKEN, defaultValue = "noToken") String refresh) {
+    public TokenResponseDto refreshToken(HttpServletRequest request,
+                                         @RequestHeader(value = REFRESH_TOKEN, defaultValue = "noToken") String refresh) {
+        log.info("요청한 Method : " + request.getMethod());
+        log.info("요청한 URL : " + request.getRequestURI());
         return userService.refreshToken(refresh);
     }
 
