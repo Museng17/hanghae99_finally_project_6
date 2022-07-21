@@ -1,6 +1,8 @@
 package com.hanghae99.finalproject.service;
 
 import com.amazonaws.services.s3.model.S3Object;
+import com.hanghae99.finalproject.exceptionHandler.CustumException.CustomException;
+import com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.*;
@@ -21,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.NOT_FIND_FOLDER;
 import static com.hanghae99.finalproject.model.resultType.CategoryType.*;
 import static com.hanghae99.finalproject.model.resultType.FileUploadType.BOARD;
 
@@ -75,6 +78,10 @@ public class BoardService {
                 board.getUsers().getId(),
                 userinfoHttpRequest.userFindByToken(request).getId()
         );
+        if(!board.getFolder().getId().equals(boardRequestDto.getFolderId())){
+            board.addFolderId(folderRepository.findById(boardRequestDto.getFolderId())
+                    .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER)));
+        }
         if (boardRequestDto.getBoardType() == BoardType.LINK) {
             if (!board.getImgPath().equals(boardRequestDto.getImgPath())) {
                 S3Object removeImageUrl = s3Uploader.selectImage(BOARD.getPath(), board.getImgPath());
