@@ -49,6 +49,9 @@ public class Users extends TimeStamp {
     @Column(nullable = false)
     private LoginType loginType;
 
+    @OneToOne
+    private Image image;
+
     @OneToMany
     @JoinColumn(name = "folder_id")
     private List<Folder> folderList;
