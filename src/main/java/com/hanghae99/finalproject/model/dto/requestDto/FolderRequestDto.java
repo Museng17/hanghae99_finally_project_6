@@ -42,7 +42,7 @@ public class FolderRequestDto {
         this.nickname = folder.getUsers().getNickname();
     }
 
-    public FolderRequestDto(BoardRequestDto boardRequestDto) {
-        this.boardList.add(new Board(boardRequestDto.getId()));
+    public FolderRequestDto(Long boardId) {
+        this.boardList.add(new Board(boardId));
     }
 }

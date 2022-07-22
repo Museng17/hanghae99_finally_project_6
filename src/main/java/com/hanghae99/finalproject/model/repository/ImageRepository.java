@@ -10,4 +10,6 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     boolean existsByImageTypeAndBoard(ImageType imageType, Board board);
 
     List<Image> findByBoard(Board board);
+
+    void deleteAllByBoardIdIn(List<Long> longs);
 }

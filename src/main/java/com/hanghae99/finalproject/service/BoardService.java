@@ -106,11 +106,7 @@ public class BoardService {
         );
 
         if (!board.getFolder().getId().equals(boardRequestDto.getFolderId())) {
-            board.addFolderId(folderRepository.findById(boardRequestDto.getFolderId())
-                    .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER)));
-        }
-        if (!board.getFolder().getId().equals(boardRequestDto.getFolderId())) {
-            boardInFolder(boardRequestDto.getFolderId(), new FolderRequestDto(boardRequestDto), request);
+            boardInFolder(boardRequestDto.getFolderId(), new FolderRequestDto(id), request);
         }
 
         if (boardRequestDto.getBoardType() == BoardType.LINK && boardRequestDto.getImage().getImageType() == ImageType.OG) {
@@ -159,7 +155,9 @@ public class BoardService {
             userinfoHttpRequest.userAndWriterMatches(board.getUsers().getId(), users.getId());
         }
 
+        imageRepository.deleteAllByBoardIdIn(longs);
         boardRepository.deleteAllById(longs);
+
         users.setBoardCnt(users.getBoardCnt() - boardList.size());
 
         List<Board> removeAfterBoardList = boardFindByUsersIdOrderByBoardOrderAsc(users.getId(), folderId);
