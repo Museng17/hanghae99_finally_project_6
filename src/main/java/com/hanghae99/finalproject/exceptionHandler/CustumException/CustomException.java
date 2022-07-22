@@ -14,7 +14,7 @@ public class CustomException extends RuntimeException {
     private int realStatusCode;
 
     public CustomException(ErrorCode errorCode) {
-        this.message = errorCode.getMassage();
+        this.message = errorCode.getMessage();
         this.statusCode = errorCode.getStatusCode();
         this.realStatusCode = errorCode.getRealStatusCode();
     }

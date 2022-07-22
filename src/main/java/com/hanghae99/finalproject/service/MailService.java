@@ -13,11 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 
-import java.util.ListIterator;
+import java.util.*;
 
-import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.NOT_FIND_USER;
+import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.*;
 
 @Slf4j
 @Service
@@ -28,21 +29,6 @@ public class MailService {
     private final MailUtils mailUtils;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    public MessageResponseDto sendEmailCertification(MailRequestDto mailRequestDto) {
-        String massage = mailUtils.makeRandomUUID(6);
-
-        try {
-            Context context = new Context();
-            context.setVariable("massage", massage);
-            mailUtils.sendEmail(mailUtils.makeMassageHtml("이메일 인증", mailRequestDto.getEmail(), "mail", context));
-        } catch (Exception e) {
-            log.info("이메일 전송 실패");
-            return new MessageResponseDto(501, "전송실패 : " + e.getMessage());
-        }
-        certificationMap.put(mailRequestDto.getEmail(), massage);
-        return new MessageResponseDto(200, "전송완료");
-    }
 
     public MessageResponseDto emailCheck(MailRequestDto mailRequestDto) {
         if (!certificationMap.match(mailRequestDto.getEmail(), mailRequestDto.getCertification())) {
@@ -128,7 +114,7 @@ public class MailService {
         }
 
         if (user.getEmail().equals(userRequestDto.getEmail())) {
-            sendEmailCertification(mailRequestDto);
+            sendEmailCertification(mailRequestDto, "mail");
 
             return new MessageResponseDto(200, "이메일 전송 완료");
         } else {
@@ -137,6 +123,7 @@ public class MailService {
         }
     }
 
+    @Transactional
     public MessageResponseDto sendRandomNewPassword(MailRequestDto mailRequestDto) {
 
         if (!certificationMap.match(mailRequestDto.getEmail(), mailRequestDto.getCertification())) {
@@ -147,5 +134,29 @@ public class MailService {
         certificationMap.remove(mailRequestDto.getEmail());
 
         return new MessageResponseDto(200, "임시 비밀번호 발급 성공");
+    }
+
+    private MessageResponseDto sendEmailCertification(MailRequestDto mailRequestDto, String htmlFileName) {
+        String massage = mailUtils.makeRandomUUID(6);
+
+        try {
+            Context context = new Context();
+            context.setVariable("massage", massage);
+            mailUtils.sendEmail(mailUtils.makeMassageHtml("이메일 인증", mailRequestDto.getEmail(), htmlFileName, context));
+        } catch (Exception e) {
+            log.info("이메일 전송 실패");
+            return new MessageResponseDto(501, "전송실패 : " + e.getMessage());
+        }
+        certificationMap.put(mailRequestDto.getEmail(), massage);
+        return new MessageResponseDto(200, "전송완료");
+    }
+
+    @Transactional(readOnly = true)
+    public MessageResponseDto sendEmail(MailRequestDto mailRequestDto) {
+        Optional<Users> user = userRepository.findByEmail(mailRequestDto.getEmail());
+        if (user.isPresent()) {
+            throw new CustomException(OVERLAP_EMAIL);
+        }
+        return sendEmailCertification(mailRequestDto, "mail");
     }
 }

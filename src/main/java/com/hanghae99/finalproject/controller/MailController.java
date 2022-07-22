@@ -13,8 +13,8 @@ public class MailController {
     private final MailService mailService;
 
     @PostMapping("/email")
-    public MessageResponseDto sendEmailCertification(@RequestBody MailRequestDto mailRequestDto) {
-        return mailService.sendEmailCertification(mailRequestDto);
+    public MessageResponseDto sendEmail(@RequestBody MailRequestDto mailRequestDto) {
+        return mailService.sendEmail(mailRequestDto);
     }
 
     @PostMapping("/email/check")
