@@ -33,6 +33,7 @@ public class FolderService {
     private final UserRepository userRepository;
     private final S3Uploader s3Uploader;
     private final ReportRepository reportRepository;
+    private final ImageRepository imageRepository;
 
     private final BoardRepository boardRepository;
 
@@ -121,7 +122,9 @@ public class FolderService {
     }
 
     @Transactional
-    public Board crateBoardInFolder(BoardRequestDto boardRequestDto, HttpServletRequest request) {
+    public MessageResponseDto crateBoardInFolder(BoardRequestDto boardRequestDto, HttpServletRequest request) {
+        Image saveImage = new Image();
+
         Folder folder = findFolder(
                 boardRequestDto.getFolderId(),
                 request
@@ -143,9 +146,28 @@ public class FolderService {
 
         Users user = userinfoHttpRequest.userFindByToken(request);
         Board board = boardRepository.save(new Board(boardRequestDto, folder.getBoardCnt() + 1, user, folder));
+
+        if (boardRequestDto.getBoardType() == BoardType.LINK) {
+            saveImage = imageRepository.save(
+                    new Image(
+                            board,
+                            ImageType.OG
+                    )
+            );
+        }
+
         folder.setBoardCnt(folder.getBoardCnt() + 1);
         user.setBoardCnt(user.getBoardCnt() + 1);
-        return board;
+
+        return new MessageResponseDto(
+                200,
+                "저장이 완료 되었습니다.",
+                new BoardResponseDto(
+                        board,
+                        boardRequestDto,
+                        new ImageRequestDto(saveImage)
+                )
+        );
     }
 
     @Transactional

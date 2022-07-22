@@ -1,6 +1,7 @@
 package com.hanghae99.finalproject.model.dto.responseDto;
 
 import com.hanghae99.finalproject.exceptionHandler.CustumException.*;
+import com.hanghae99.finalproject.model.dto.requestDto.BoardRequestDto;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.resultType.*;
 import lombok.*;
@@ -55,6 +56,22 @@ public class BoardResponseDto {
         this.folderId = board.getFolder().getId();
         this.imageId = findChoiceImage(images);
         this.imageList = entityToDto(images);
+    }
+
+    public BoardResponseDto(Board board, BoardRequestDto boardRequestDto, ImageRequestDto saveImage) {
+        this.id = board.getId();
+        this.title = board.getTitle();
+        this.link = board.getLink();
+        this.explanation = board.getExplanation();
+        this.imgPath = board.getImgPath();
+        this.content = board.getContent();
+        this.status = board.getStatus();
+        this.boardType = board.getBoardType();
+        this.category = board.getCategory();
+        this.boardOrder = board.getBoardOrder();
+        this.folderId = boardRequestDto.getFolderId();
+        this.imageId = saveImage.getId();
+        this.imageList.add(saveImage);
     }
 
     private Long findChoiceImage(List<Image> images) {

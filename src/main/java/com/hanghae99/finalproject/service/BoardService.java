@@ -71,6 +71,7 @@ public class BoardService {
                         findFolder
                 )
         );
+
         if (boardRequestDto.getBoardType() == BoardType.LINK) {
             saveImage = imageRepository.save(
                     new Image(
