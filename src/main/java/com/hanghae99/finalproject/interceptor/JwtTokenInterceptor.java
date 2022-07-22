@@ -29,6 +29,7 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws CustomException {
         logSave(request);
+        log.info(getClientIpAddr(request));
 
         String authorization = request.getHeader(JWT_HEADER_KEY);
 
@@ -48,14 +49,37 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    private void logSave(HttpServletRequest request){
-        log.info("요청한 Method : "+request.getMethod());
-        log.info("요청한 URL : "+request.getRequestURI());
+    private void logSave(HttpServletRequest request) {
+        log.info("요청한 Method : " + request.getMethod());
+        log.info("요청한 URL : " + request.getRequestURI());
 
         Enumeration<String> headers = request.getHeaderNames();
-        while (headers.hasMoreElements()){
+        while (headers.hasMoreElements()) {
             String thisHeader = headers.nextElement();
-            log.info("요청한 request Header 키값 "+thisHeader);
+            log.info("요청한 request Header 키값 " + thisHeader);
         }
     }
+
+    public static String getClientIpAddr(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+
+        return ip;
+    }
+
 }
