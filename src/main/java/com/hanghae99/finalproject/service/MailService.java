@@ -2,7 +2,7 @@ package com.hanghae99.finalproject.service;
 
 import com.hanghae99.finalproject.exceptionHandler.CustumException.CustomException;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
-import com.hanghae99.finalproject.model.dto.responseDto.MassageResponseDto;
+import com.hanghae99.finalproject.model.dto.responseDto.MessageResponseDto;
 import com.hanghae99.finalproject.model.entity.Users;
 import com.hanghae99.finalproject.model.repository.UserRepository;
 import com.hanghae99.finalproject.model.resultType.LoginType;
@@ -29,7 +29,7 @@ public class MailService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public MassageResponseDto sendEmailCertification(MailRequestDto mailRequestDto) {
+    public MessageResponseDto sendEmailCertification(MailRequestDto mailRequestDto) {
         String massage = mailUtils.makeRandomUUID(6);
 
         try {
@@ -38,20 +38,20 @@ public class MailService {
             mailUtils.sendEmail(mailUtils.makeMassageHtml("이메일 인증", mailRequestDto.getEmail(), "mail", context));
         } catch (Exception e) {
             log.info("이메일 전송 실패");
-            return new MassageResponseDto(501, "전송실패 : " + e.getMessage());
+            return new MessageResponseDto(501, "전송실패 : " + e.getMessage());
         }
         certificationMap.put(mailRequestDto.getEmail(), massage);
-        return new MassageResponseDto(200, "전송완료");
+        return new MessageResponseDto(200, "전송완료");
     }
 
-    public MassageResponseDto emailCheck(MailRequestDto mailRequestDto) {
+    public MessageResponseDto emailCheck(MailRequestDto mailRequestDto) {
         if (!certificationMap.match(mailRequestDto.getEmail(), mailRequestDto.getCertification())) {
             log.info("인증번호 요청 불일치");
             certificationMap.remove(mailRequestDto.getEmail());
-            return new MassageResponseDto(404, "불일치");
+            return new MessageResponseDto(404, "불일치");
         }
         certificationMap.remove(mailRequestDto.getEmail());
-        return new MassageResponseDto(200, "일치");
+        return new MessageResponseDto(200, "일치");
     }
 
     @Scheduled(cron = "00 00 10 * * *")
@@ -76,7 +76,7 @@ public class MailService {
         }
     }
 
-    public MassageResponseDto sendEmailAndUpdatePassword(MailRequestDto mailRequestDto) {
+    public MessageResponseDto sendEmailAndUpdatePassword(MailRequestDto mailRequestDto) {
         String str = getTempPassword();
 
         try {
@@ -85,12 +85,12 @@ public class MailService {
             mailUtils.sendEmail(mailUtils.makeMassageHtml("임시 비밀번호 안내 이메일입니다.", mailRequestDto.getEmail(), "mail", context));
         } catch (Exception e) {
             log.info(e.getMessage());
-            return new MassageResponseDto(501, "전송실패 : " + e.getMessage());
+            return new MessageResponseDto(501, "전송실패 : " + e.getMessage());
         }
 
         log.info("임시 비밀번호 발급 완료");
         updatePassword(str, mailRequestDto.getEmail());
-        return new MassageResponseDto(200, "전송완료");
+        return new MessageResponseDto(200, "전송완료");
     }
 
     public void updatePassword(String str, String email) {
@@ -115,7 +115,7 @@ public class MailService {
         return str;
     }
 
-    public MassageResponseDto sendEmailForResetPassword(UserRequestDto userRequestDto) {
+    public MessageResponseDto sendEmailForResetPassword(UserRequestDto userRequestDto) {
 
         MailRequestDto mailRequestDto = new MailRequestDto(userRequestDto);
 
@@ -124,28 +124,28 @@ public class MailService {
 
         if (user.getLoginType() == LoginType.GOOGLE || user.getLoginType() == LoginType.KAKAO) {
 
-            return new MassageResponseDto(501, "소셜 로그인 유저");
+            return new MessageResponseDto(501, "소셜 로그인 유저");
         }
 
         if (user.getEmail().equals(userRequestDto.getEmail())) {
             sendEmailCertification(mailRequestDto);
 
-            return new MassageResponseDto(200, "이메일 전송 완료");
+            return new MessageResponseDto(200, "이메일 전송 완료");
         } else {
 
-            return new MassageResponseDto(501, "회원 정보 불일치");
+            return new MessageResponseDto(501, "회원 정보 불일치");
         }
     }
 
-    public MassageResponseDto sendRandomNewPassword(MailRequestDto mailRequestDto) {
+    public MessageResponseDto sendRandomNewPassword(MailRequestDto mailRequestDto) {
 
         if (!certificationMap.match(mailRequestDto.getEmail(), mailRequestDto.getCertification())) {
             log.info("인증번호 요청 불일치");
-            return new MassageResponseDto(404, "인증번호 불일치");
+            return new MessageResponseDto(404, "인증번호 불일치");
         }
         sendEmailAndUpdatePassword(mailRequestDto);
         certificationMap.remove(mailRequestDto.getEmail());
 
-        return new MassageResponseDto(200, "임시 비밀번호 발급 성공");
+        return new MessageResponseDto(200, "임시 비밀번호 발급 성공");
     }
 }

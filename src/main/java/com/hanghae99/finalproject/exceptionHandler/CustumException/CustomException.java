@@ -7,20 +7,20 @@ import lombok.*;
 @NoArgsConstructor
 public class CustomException extends RuntimeException {
 
-    private String massage;
+    private String message;
     private int statusCode;
 
     @JsonIgnore
     private int realStatusCode;
 
     public CustomException(ErrorCode errorCode) {
-        this.massage = errorCode.getMassage();
+        this.message = errorCode.getMassage();
         this.statusCode = errorCode.getStatusCode();
         this.realStatusCode = errorCode.getRealStatusCode();
     }
 
     public CustomException(String message, int statusCode) {
-        this.massage = message;
+        this.message = message;
         this.statusCode = statusCode;
     }
 }

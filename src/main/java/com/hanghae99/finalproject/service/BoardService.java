@@ -38,7 +38,7 @@ public class BoardService {
     private final ImageRepository imageRepository;
 
     @Transactional
-    public MassageResponseDto boardSave(BoardRequestDto boardRequestDto, HttpServletRequest request) {
+    public MessageResponseDto boardSave(BoardRequestDto boardRequestDto, HttpServletRequest request) {
         Image saveImage = new Image();
 
         if (boardRequestDto.getBoardType() == BoardType.LINK) {
@@ -83,7 +83,7 @@ public class BoardService {
         findFolder.updateBoardCnt(findFolder.getBoardCnt() + 1);
         findUser.updateBoardCnt(findUser.getBoardCnt() + 1);
 
-        return new MassageResponseDto(
+        return new MessageResponseDto(
                 200,
                 "저장이 완료 되었습니다.",
                 new BoardResponseDto(
@@ -448,7 +448,7 @@ public class BoardService {
         }
     }
 
-    public MassageResponseDto findBoard(HttpServletRequest request, Long boardId) {
+    public MessageResponseDto findBoard(HttpServletRequest request, Long boardId) {
         Board board = boardRepository.findByIdAndUsers(
                         boardId,
                         userinfoHttpRequest.userFindByToken(request)
@@ -457,7 +457,7 @@ public class BoardService {
                         new CustomException(NOT_FIND_USER)
                 );
 
-        return new MassageResponseDto(
+        return new MessageResponseDto(
                 200,
                 "조회완료되었습니다.",
                 new BoardResponseDto(

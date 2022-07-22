@@ -23,13 +23,13 @@ public class BoardController {
     private final BoardService boardService;
 
     @GetMapping("/board/{boardId}")
-    public MassageResponseDto findBoard(HttpServletRequest request,
+    public MessageResponseDto findBoard(HttpServletRequest request,
                                         @PathVariable Long boardId) {
         return boardService.findBoard(request, boardId);
     }
 
     @PostMapping("/board")
-    public MassageResponseDto boardSave(@RequestBody BoardRequestDto boardRequestDto,
+    public MessageResponseDto boardSave(@RequestBody BoardRequestDto boardRequestDto,
                                         HttpServletRequest request) {
         log.info("요청한 Method : " + request.getMethod());
         log.info("요청한 URL : " + request.getRequestURI());
