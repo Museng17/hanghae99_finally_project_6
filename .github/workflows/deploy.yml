@@ -66,7 +66,7 @@ jobs:
         run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://hanghae99-final/$PROJECT_NAME/$GITHUB_SHA.zip
 
       - name: Code Deploy #애플리케이션 배포그룹에 배포 생성
-        run: aws deploy create-deployment --application-name moum
+        run: aws deploy create-deployment --application-name moumCD
           --deployment-config-name CodeDeployDefault.OneAtATime
           --deployment-group-name moum
           --s3-location bucket=hanghae99-final,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip
