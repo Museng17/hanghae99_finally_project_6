@@ -2,7 +2,7 @@ package com.hanghae99.finalproject.service;
 
 import com.hanghae99.finalproject.exceptionHandler.CustumException.CustomException;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
-import com.hanghae99.finalproject.model.dto.responseDto.FolderResponseDto;
+import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.model.resultType.*;
@@ -272,7 +272,7 @@ public class FolderService {
     }
 
     @Transactional(readOnly = true)
-    public List<Folder> shareList(String keyword, HttpServletRequest request, Pageable pageable, Long userId) {
+    public List<FolderResponseDto> shareList(String keyword, HttpServletRequest request, Pageable pageable, Long userId) {
         List<DisclosureStatusType> disclosureStatusTypes = new ArrayList<>();
         disclosureStatusTypes.add(DisclosureStatusType.PUBLIC);
 
@@ -285,14 +285,25 @@ public class FolderService {
                     throw new RuntimeException("회원을 찾을 수 없습니다.");
                 });
 
-        return folderRepository.findAllByIdAndNameLike(
-                listToId(shareRepository.findAllByUsersId(users.getId())),
-                "%" + keyword + "%",
-                pageable
-        ).getContent();
+        return entityListToDtoListForFolder(folderRepository.findAllByIdAndNameLike(
+                        listToId(shareRepository.findAllByUsersId(users.getId())),
+                        "%" + keyword + "%",
+                        pageable
+                ).getContent()
+        );
+
     }
 
-    public FolderResponseDto allFolders(String keyword, HttpServletRequest request, Pageable pageable) {
+    private List<FolderResponseDto> entityListToDtoListForFolder(List<Folder> content) {
+        List<FolderResponseDto> folderResponseDtos = new ArrayList<>();
+
+        for (Folder folder : content) {
+            folderResponseDtos.add(new FolderResponseDto(folder));
+        }
+        return folderResponseDtos;
+    }
+
+    public FolderListResponseDto allFolders(String keyword, HttpServletRequest request, Pageable pageable) {
         Users users = userinfoHttpRequest.userFindByToken(request);
 
         Page<Folder> folders = folderRepository.findAllByNameContaining1(
@@ -302,7 +313,7 @@ public class FolderService {
                 pageable
         );
 
-        return new FolderResponseDto(getFolder(folders.getContent()), folders.getTotalElements());
+        return new FolderListResponseDto(getFolder(folders.getContent()), folders.getTotalElements());
     }
 
     public List<FolderRequestDto> getFolder(List<Folder> folders) {
