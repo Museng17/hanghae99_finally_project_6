@@ -29,7 +29,7 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws CustomException {
         logSave(request);
-        log.info(getClientIpAddr(request));
+        log.info("요청한 아이피 : "+getClientIpAddr(request));
 
         String authorization = request.getHeader(JWT_HEADER_KEY);
 
