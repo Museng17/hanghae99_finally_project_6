@@ -34,7 +34,7 @@ public class Users extends TimeStamp {
     @Column(nullable = true)
     private String password;
 
-    @Column(nullable = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
