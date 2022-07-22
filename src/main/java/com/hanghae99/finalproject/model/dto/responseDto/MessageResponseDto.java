@@ -6,20 +6,20 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
-public class MassageResponseDto<T> {
+public class MessageResponseDto<T> {
     private int statusCode;
-    private String massage;
+    private String message;
     private T content;
     private List<T> contentList;
 
-    public MassageResponseDto(int statusCode, String massage, T content) {
+    public MessageResponseDto(int statusCode, String message, T content) {
         this.statusCode = statusCode;
-        this.massage = massage;
+        this.message = message;
         this.content = content;
     }
 
-    public MassageResponseDto(int statusCode, String massage) {
+    public MessageResponseDto(int statusCode, String message) {
         this.statusCode = statusCode;
-        this.massage = massage;
+        this.message = message;
     }
 }
