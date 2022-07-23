@@ -230,9 +230,14 @@ public class FolderService {
     }
 
     @Transactional
-    public Page<Folder> findBestFolder(int page, int size) {
+    public List<FolderResponseDto> findBestFolder(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("sharedCount").descending());
-        return folderRepository.findAllBystatus(DisclosureStatusType.PUBLIC, pageRequest);
+        List<Folder> folders = folderRepository.findAllBystatus(DisclosureStatusType.PUBLIC, pageRequest).getContent();
+        List<FolderResponseDto> folderResponseDtos = new ArrayList<>();
+        for(Folder folder : folders){
+            folderResponseDtos.add(new FolderResponseDto(folder));
+        }
+        return folderResponseDtos;
     }
 
     public Folder findByBasicFolder(Users users) {
@@ -338,15 +343,15 @@ public class FolderService {
         return new FolderListResponseDto(getFolder(folders.getContent()), folders.getTotalElements());
     }
 
-    public List<FolderRequestDto> getFolder(List<Folder> folders) {
-        List<FolderRequestDto> folderRequestDtos = new ArrayList<>();
+    public List<FolderResponseDto> getFolder(List<Folder> folders) {
+        List<FolderResponseDto> folderResponseDtos = new ArrayList<>();
 
         for (Folder folder : folders) {
-            FolderRequestDto folderRequestDto = new FolderRequestDto(folder);
-            folderRequestDtos.add(folderRequestDto);
+            FolderResponseDto folderResponseDto = new FolderResponseDto(folder);
+            folderResponseDtos.add(folderResponseDto);
         }
 
-        return folderRequestDtos;
+        return folderResponseDtos;
     }
 
     private List<Long> listToId(List<Share> List) {

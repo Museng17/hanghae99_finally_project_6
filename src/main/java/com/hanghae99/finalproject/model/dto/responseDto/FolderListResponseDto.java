@@ -11,9 +11,9 @@ import java.util.*;
 public class FolderListResponseDto {
 
     private Long foldersCnt;
-    private List<FolderRequestDto> folders = new ArrayList<>();
+    private List<FolderResponseDto> folders = new ArrayList<>();
 
-    public FolderListResponseDto(List<FolderRequestDto> folders, Long foldersCnt) {
+    public FolderListResponseDto(List<FolderResponseDto> folders, Long foldersCnt) {
         this.foldersCnt = foldersCnt;
         this.folders = folders;
     }

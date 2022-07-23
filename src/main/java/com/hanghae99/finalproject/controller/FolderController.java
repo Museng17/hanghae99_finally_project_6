@@ -67,7 +67,7 @@ public class FolderController {
     //    }
 
     @GetMapping("/BestFolders/{page}/{size}")
-    public Page<Folder> findBestFolders(@PathVariable int page, @PathVariable int size) {
+    public List<FolderResponseDto> findBestFolders(@PathVariable int page, @PathVariable int size) {
         return folderService.findBestFolder(page, size);
     }
 
