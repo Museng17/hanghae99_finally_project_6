@@ -21,7 +21,7 @@ public class MailScheduled {
             for (ListIterator<String> iterator = listIterator; iterator.hasNext(); ) {
                 String key = iterator.next();
                 if (certificationMap.isTimeOver(key)) {
-                    certificationMap.remove(key);
+                    certificationMap.remove(key, true);
                     iterator.remove();
                     checkCnt++;
                 }

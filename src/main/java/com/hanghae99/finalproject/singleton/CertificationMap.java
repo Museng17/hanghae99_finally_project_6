@@ -7,6 +7,7 @@ public class CertificationMap {
 
     private Map<String, String> certificationMap = new HashMap<>();
     private Map<String, LocalDateTime> timeMap = new HashMap<>();
+    private Map<String, Boolean> isCertification = new HashMap<>();
     private List<String> usedList = new ArrayList<>();
 
     private CertificationMap() {
@@ -28,11 +29,24 @@ public class CertificationMap {
     }
 
     /*
-     *  Map에 key로 등록한 값은 인자로 주면 map에서 삭제된다.
+     *
+     *  비밀번호 인증이 성공했을 때 isCertification 에 true 넣는 행위
      * */
-    public void remove(String key) {
+    public void put(String key, boolean value) {
+        isCertification.put(key, value);
+    }
+
+
+    /*
+     *  첫번째 인자로는 Map에 key로 등록한 값은 인자로 주면 map에서 삭제된다.
+     *  두번째 인자로는 true이면  isCertification까지 삭제한다.
+     * */
+    public void remove(String key, boolean isTrue) {
         certificationMap.remove(key);
         timeMap.remove(key);
+        if (isTrue) {
+            isCertification.remove(key);
+        }
     }
 
     public int getCertificationMapSize() {
@@ -53,6 +67,15 @@ public class CertificationMap {
             return false;
         }
         return false;
+    }
+
+    /*
+     *
+     * 임시비밀번호 발송 하기 전 체크하는 로직
+     * Map에 key로 등록한 값을 첫번째 인자에 주고 두번째 인자에 값을 체크할 인자를 넣어주면된다.
+     * */
+    public boolean match(String key) {
+        return Optional.ofNullable(isCertification.get(key)).isPresent();
     }
 
     public List<String> getUsedList() {

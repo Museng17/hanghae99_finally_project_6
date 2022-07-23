@@ -10,13 +10,12 @@ import com.hanghae99.finalproject.singleton.CertificationMap;
 import com.hanghae99.finalproject.util.mail.MailUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 
-import java.util.*;
+import java.util.Optional;
 
 import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.*;
 
@@ -46,12 +45,20 @@ public class MailService {
     }
 
     public MessageResponseDto emailCheck(MailRequestDto mailRequestDto) {
-        if (!certificationMap.match(mailRequestDto.getEmail(), mailRequestDto.getCertification())) {
+        if (!certificationCheck(mailRequestDto.getEmail(), mailRequestDto.getCertification())) {
             log.info("인증번호 요청 불일치");
-            certificationMap.remove(mailRequestDto.getEmail());
             return new MessageResponseDto(404, "불일치");
         }
-        certificationMap.remove(mailRequestDto.getEmail());
+        certificationMap.remove(mailRequestDto.getEmail(), false);
+        return new MessageResponseDto(200, "일치");
+    }
+
+    public MessageResponseDto emailPasswordCheck(MailRequestDto mailRequestDto) {
+        if (!certificationCheck(mailRequestDto.getEmail(), mailRequestDto.getCertification())) {
+            log.info("인증번호 요청 불일치");
+            return new MessageResponseDto(404, "불일치");
+        }
+        certificationMap.put(mailRequestDto.getEmail(), true);
         return new MessageResponseDto(200, "일치");
     }
 
@@ -119,12 +126,12 @@ public class MailService {
     @Transactional
     public MessageResponseDto sendRandomNewPassword(MailRequestDto mailRequestDto) {
 
-        if (!certificationMap.match(mailRequestDto.getEmail(), mailRequestDto.getCertification())) {
-            log.info("인증번호 요청 불일치");
-            return new MessageResponseDto(404, "인증번호 불일치");
+        if (!certificationMap.match(mailRequestDto.getEmail())) {
+            log.info("인증이 되지 않은 회원");
+            return new MessageResponseDto(404, "인증을 하지 하지못한 회원입니다.");
         }
         sendEmailAndUpdatePassword(mailRequestDto);
-        certificationMap.remove(mailRequestDto.getEmail());
+        certificationMap.remove(mailRequestDto.getEmail(), true);
 
         return new MessageResponseDto(200, "임시 비밀번호 발급 성공");
     }
@@ -136,5 +143,9 @@ public class MailService {
             throw new CustomException(OVERLAP_EMAIL);
         }
         return sendEmailCertification(mailRequestDto, "mail");
+    }
+
+    private boolean certificationCheck(String email, String certification) {
+        return certificationMap.match(email, certification);
     }
 }
