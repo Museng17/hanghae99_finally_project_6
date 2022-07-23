@@ -1,11 +1,12 @@
 package com.hanghae99.finalproject.service;
 
-import com.hanghae99.finalproject.exceptionHandler.CustumException.CustomException;
+import com.hanghae99.finalproject.exceptionHandler.CustumException.*;
 import com.hanghae99.finalproject.jwt.*;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
+import com.hanghae99.finalproject.singleton.CertificationMap;
 import com.hanghae99.finalproject.util.restTemplates.SocialLoginRestTemplate;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,8 @@ import static com.hanghae99.finalproject.jwt.JwtTokenProvider.*;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    private CertificationMap certificationMap = CertificationMap.getInstance();
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -87,6 +90,13 @@ public class UserService {
 
     @Transactional
     public UserRegisterRespDto registerUser(UserRequestDto Dto) {
+
+        if (!certificationMap.match(Dto.getEmail())) {
+            throw new CustomException(ErrorCode.NOT_EMAIL_CERTIFICATION_CHECK);
+        }
+
+        certificationMap.remove(Dto.getEmail(), true);
+
         //회원가입 정규식 체크
         UserRegisterRespDto valid = joinValid(Dto);
         if (Optional.ofNullable(valid).isPresent()) {
@@ -111,7 +121,7 @@ public class UserService {
                 )
         );
 
-        return new UserRegisterRespDto(true, "회원가입 성공");
+        return new UserRegisterRespDto(200, true, "회원가입 성공");
     }
 
     public String findUsername(UserRequestDto userRequestDto) {
@@ -368,23 +378,27 @@ public class UserService {
 
     private UserRegisterRespDto joinValid(UserRequestDto dto) {
         if (!Pattern.matches("^[a-zA-Z0-9]{4,11}$", dto.getUsername())) {
-            return new UserRegisterRespDto(false, "아이디를 다시 확인해주세요");
+            return new UserRegisterRespDto(502, false, "아이디를 다시 확인해주세요");
         }
-        //        if (!Pattern.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", dto.getEmail())) {
-        //            return new UserRegisterRespDto(false, "이메일을 다시 확인해주세요");
-        //        }
+        if (!Pattern.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", dto.getEmail())) {
+            return new UserRegisterRespDto(502, false, "이메일을 다시 확인해주세요");
+        }
         if (!Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$", dto.getPassword())) {
-            return new UserRegisterRespDto(false, "패스워드를 다시 확인해주세요");
+            return new UserRegisterRespDto(502, false, "패스워드를 다시 확인해주세요");
         }
         return null;
     }
 
     private UserRegisterRespDto duplicateCheck(UserRequestDto dto) {
         if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
-            return new UserRegisterRespDto(false, "중복된 사용자 ID가 존재합니다.");
+            return new UserRegisterRespDto(501, false, "중복된 사용자 ID가 존재합니다.");
         }
         if (userRepository.findByNickname(dto.getNickname()).isPresent()) {
-            return new UserRegisterRespDto(false, "중복된 닉네임이 존재합니다.");
+            return new UserRegisterRespDto(501, false, "중복된 닉네임이 존재합니다.");
+        }
+
+        if (!checkEmailDuplicate(dto.getEmail())) {
+            return new UserRegisterRespDto(501, false, "중복된 이메일이 존재합니다.");
         }
         return null;
     }

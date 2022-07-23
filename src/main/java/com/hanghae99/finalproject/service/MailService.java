@@ -49,7 +49,7 @@ public class MailService {
             log.info("인증번호 요청 불일치");
             return new MessageResponseDto(404, "불일치");
         }
-        certificationMap.remove(mailRequestDto.getEmail(), false);
+        certificationMap.put(mailRequestDto.getEmail(), true);
         return new MessageResponseDto(200, "일치");
     }
 
