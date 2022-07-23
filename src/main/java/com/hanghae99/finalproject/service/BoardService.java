@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.*;
+import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.NOT_FIND_USER;
 import static com.hanghae99.finalproject.model.resultType.CategoryType.*;
 import static com.hanghae99.finalproject.model.resultType.FileUploadType.BOARD;
 
@@ -359,11 +359,18 @@ public class BoardService {
                     throw new RuntimeException("회원을 찾을 수 없습니다.");
                 });
 
-        return findCategoryByUsersIdAndFolderId(user.getId(), folderId);
+        List<DisclosureStatusType> disclosureStatusTypes = new ArrayList<>();
+        disclosureStatusTypes.add(DisclosureStatusType.PUBLIC);
+
+        if (userId.equals(0L)) {
+            disclosureStatusTypes.add(DisclosureStatusType.PRIVATE);
+        }
+
+        return findCategoryByUsersIdAndFolderId(user.getId(), folderId, disclosureStatusTypes);
     }
 
-    private List<Map<String, CategoryType>> findCategoryByUsersIdAndFolderId(Long id, Long folderId) {
-        return ListToListMap(boardRepository.findCategoryByUsersIdAndFolderId(id, folderId));
+    private List<Map<String, CategoryType>> findCategoryByUsersIdAndFolderId(Long id, Long folderId, List<DisclosureStatusType> disclosureStatusTypes) {
+        return ListToListMap(boardRepository.findCategoryByUsersIdAndFolderId(id, folderId, disclosureStatusTypes));
     }
 
     public List<Map<String, CategoryType>> findCategoryByUsersId(Long id) {
