@@ -61,7 +61,7 @@ public class MailService {
         try {
             Context context = new Context();
             context.setVariable("massage", str);
-            mailUtils.sendEmail(mailUtils.makeMassageHtml("임시 비밀번호 안내 이메일입니다.", mailRequestDto.getEmail(), "mail", context));
+            mailUtils.sendEmail(mailUtils.makeMassageHtml("임시 비밀번호 안내 이메일입니다.", mailRequestDto.getEmail(), "password", context));
         } catch (Exception e) {
             log.info(e.getMessage());
             return new MessageResponseDto(501, "전송실패 : " + e.getMessage());
