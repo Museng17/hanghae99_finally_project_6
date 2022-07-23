@@ -30,12 +30,11 @@ public class CertificationMap {
 
     /*
      *
-     *  비밀번호 인증이 성공했을 때 isCertification 에 true 넣는 행위
+     *  인증이 성공했을 때 isCertification 에 true 넣는 행위
      * */
     public void put(String key, boolean value) {
         isCertification.put(key, value);
     }
-
 
     /*
      *  첫번째 인자로는 Map에 key로 등록한 값은 인자로 주면 map에서 삭제된다.

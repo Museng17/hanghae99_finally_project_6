@@ -1,17 +1,17 @@
 package com.hanghae99.finalproject.model.dto.responseDto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @NoArgsConstructor
 @Getter
 @Setter
 public class UserRegisterRespDto {
+    int statusCode;
     boolean result;
     String errorMsg;
 
-    public UserRegisterRespDto(boolean result, String errorMsg) {
+    public UserRegisterRespDto(int statusCode, boolean result, String errorMsg) {
+        this.statusCode = statusCode;
         this.result = result;
         this.errorMsg = errorMsg;
     }
