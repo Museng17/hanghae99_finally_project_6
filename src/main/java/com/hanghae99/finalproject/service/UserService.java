@@ -58,6 +58,7 @@ public class UserService {
         }
         return true;
     }
+
     public Boolean checkEmailDuplicate(String email) {
         Users user = userRepository.findByEmail(email).orElse(null);
 
@@ -169,6 +170,18 @@ public class UserService {
                             return users;
                         }
                 );
+
+        Users users = userRepository.findByEmail(socialLoginRequestDto.getEmail())
+                .orElseGet(() ->
+                        userRepository.save(
+                                new Users(
+                                        socialLoginRequestDto,
+                                        userRepository.findAllCount()
+                                )
+                        )
+
+                );
+
         return createTokens(user.getUsername());
     }
 
