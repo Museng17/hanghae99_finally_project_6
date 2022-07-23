@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.*;
 
-import static com.hanghae99.finalproject.util.resultType.GoogleLoginType.*;
+import static com.hanghae99.finalproject.model.resultType.GoogleLoginType.*;
 
 @Component
 public class SocialLoginRestTemplate {
@@ -77,7 +77,7 @@ public class SocialLoginRestTemplate {
         return statusCheck(responseEntity);
     }
 
-    private SocialLoginRequestDto statusCheck(ResponseEntity<SocialLoginRequestDto> socialLoginRequestDtoResponseEntity){
+    private SocialLoginRequestDto statusCheck(ResponseEntity<SocialLoginRequestDto> socialLoginRequestDtoResponseEntity) {
         int statusCode = socialLoginRequestDtoResponseEntity.getStatusCode().value();
 
         if (statusCode != 200) {

@@ -1,11 +1,12 @@
 package com.hanghae99.finalproject.service;
 
+import com.hanghae99.finalproject.exceptionHandler.CustumException.CustomException;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
-import com.hanghae99.finalproject.model.dto.responseDto.FolderResponseDto;
+import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
-import com.hanghae99.finalproject.util.*;
-import com.hanghae99.finalproject.util.resultType.*;
+import com.hanghae99.finalproject.model.resultType.*;
+import com.hanghae99.finalproject.util.UserinfoHttpRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -17,8 +18,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.hanghae99.finalproject.util.resultType.CategoryType.ALL;
-import static com.hanghae99.finalproject.util.resultType.FileUploadType.BOARD;
+import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.NOT_FIND_FOLDER;
+import static com.hanghae99.finalproject.model.resultType.CategoryType.ALL;
+import static com.hanghae99.finalproject.model.resultType.FileUploadType.BOARD;
 
 @Service
 @RequiredArgsConstructor
@@ -30,11 +32,17 @@ public class FolderService {
     private final ShareRepository shareRepository;
     private final UserRepository userRepository;
     private final S3Uploader s3Uploader;
+    private final ReportRepository reportRepository;
+    private final ImageRepository imageRepository;
 
     private final BoardRepository boardRepository;
 
     @Transactional
     public Folder folderSave(FolderRequestDto folderRequestDto, HttpServletRequest request) {
+        if (folderRequestDto.getName().trim().equals("무제")) {
+            throw new RuntimeException("무제라는 이름은 추가할 수 없습니다.");
+        }
+
         Users user = userinfoHttpRequest.userFindByToken(request);
         user.setFolderCnt(user.getFolderCnt() + 1);
         return folderRepository.save(
@@ -65,39 +73,6 @@ public class FolderService {
     }
 
     @Transactional
-    public void boardInFolder(Long folderId, FolderRequestDto folderRequestDto, HttpServletRequest request) {
-
-        Folder afterFolder = findFolder(folderId, request);
-
-        List<Board> afterBoard = boardService.findAllById(
-                folderRequestDto.getBoardList().stream()
-                        .map(Board::getId)
-                        .collect(Collectors.toList())
-        );
-
-        Long beforeBoardId = boardRepository.findFolderIdById(folderRequestDto.getBoardList().get(0).getId())
-                .orElseThrow(() -> new RuntimeException("없는 글입니다."));
-
-        Long afterCnt = 1L;
-        for (Board board : afterBoard) {
-            board.addFolderId(afterFolder);
-            board.updateOrder(afterFolder.getBoardCnt() + afterCnt);
-            afterCnt++;
-        }
-        afterFolder.setBoardCnt(afterFolder.getBoardCnt() + afterBoard.size());
-
-        Folder beforeFolder = findFolder(beforeBoardId, request);
-        List<Board> beforeBoardList = boardRepository.findByFolder(beforeFolder);
-
-        Long beforeCnt = 1L;
-        for (Board folder : beforeBoardList) {
-            folder.setBoardOrder(beforeCnt);
-            beforeCnt++;
-        }
-        beforeFolder.setBoardCnt(beforeFolder.getBoardCnt() - afterBoard.size());
-    }
-
-    @Transactional
     public void folderDelete(List<FolderRequestDto> folderRequestDto, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
         List<Long> longs = folderRequestDto.stream()
@@ -111,7 +86,7 @@ public class FolderService {
                 .collect(Collectors.toList());
 
         for (Folder folder : folders) {
-            if (folder.getName().equals("무제")){
+            if (folder.getName().equals("무제")) {
                 throw new RuntimeException("무제폴더는 삭제할 수 없습니다.");
             }
             userinfoHttpRequest.userAndWriterMatches(
@@ -147,7 +122,9 @@ public class FolderService {
     }
 
     @Transactional
-    public Board crateBoardInFolder(BoardRequestDto boardRequestDto, HttpServletRequest request) {
+    public MessageResponseDto crateBoardInFolder(BoardRequestDto boardRequestDto, HttpServletRequest request) {
+        Image saveImage = new Image();
+
         Folder folder = findFolder(
                 boardRequestDto.getFolderId(),
                 request
@@ -160,18 +137,37 @@ public class FolderService {
             );
 
             if (!boardRequestDto.getImgPath().equals("") && boardRequestDto.getImgPath() != null) {
-                boardRequestDto.setImgPath(s3Uploader.upload(BOARD.getPath(), boardRequestDto.getImgPath()).getUrl());
+                boardRequestDto.updateImagePath(s3Uploader.upload(BOARD.getPath(), boardRequestDto.getImgPath()).getUrl());
             }
 
         } else if (boardRequestDto.getBoardType() == BoardType.MEMO) {
-            boardRequestDto.setTitle(new SimpleDateFormat(DateType.YEAR_MONTH_DAY.getPattern()).format(new Date()));
+            boardRequestDto.updateTitle(new SimpleDateFormat(DateType.YEAR_MONTH_DAY.getPattern()).format(new Date()));
         }
 
         Users user = userinfoHttpRequest.userFindByToken(request);
         Board board = boardRepository.save(new Board(boardRequestDto, folder.getBoardCnt() + 1, user, folder));
+
+        if (boardRequestDto.getBoardType() == BoardType.LINK) {
+            saveImage = imageRepository.save(
+                    new Image(
+                            board,
+                            ImageType.OG
+                    )
+            );
+        }
+
         folder.setBoardCnt(folder.getBoardCnt() + 1);
         user.setBoardCnt(user.getBoardCnt() + 1);
-        return board;
+
+        return new MessageResponseDto(
+                200,
+                "저장이 완료 되었습니다.",
+                new BoardResponseDto(
+                        board,
+                        boardRequestDto,
+                        new ImageRequestDto(saveImage)
+                )
+        );
     }
 
     @Transactional
@@ -190,22 +186,22 @@ public class FolderService {
                 -> new RuntimeException("원하는 폴더를 찾지 못했습니다."));
     }
 
-    public void cloneFolder(Long folderId, HttpServletRequest request) {
-        Users users = userinfoHttpRequest.userFindByToken(request);
-        Folder folder = findShareFolder(folderId, request);
-        List<Board> boards = boardService.findAllById(folder);
-        FolderRequestDto folderRequestDto = new FolderRequestDto(folder);
-        Folder folder1 = new Folder(folderRequestDto, users);
-
-        Folder folder2 = folderRepository.save(folder1);
-        List<Board> boards1 = new ArrayList<>();
-        for (Board board : boards) {
-            boards1.add(new Board(board, users, folder2));
-        }
-        boardRepository.saveAll(boards1);
-        users.setFolderCnt(users.getFolderCnt() + 1);
-        users.setBoardCnt(users.getBoardCnt() + folder2.getBoardCnt());
-    }
+    //    @Transactional
+    //    public void cloneFolder(Long folderId, HttpServletRequest request) {
+    //        Users users = userinfoHttpRequest.userFindByToken(request);
+    //        Folder folder = findShareFolder(folderId, request);
+    //        List<Board> boards = boardService.findAllById(folder);
+    //        FolderRequestDto folderRequestDto = new FolderRequestDto(folder);
+    //
+    //        Folder savefolder = folderRepository.save(new Folder(folderRequestDto, users));
+    //        List<Board> boards1 = new ArrayList<>();
+    //        for (Board board : boards) {
+    //            boards1.add(new Board(board, users, savefolder));
+    //        }
+    //        boardRepository.saveAll(boards1);
+    //        users.setFolderCnt(users.getFolderCnt() + 1);
+    //        users.setBoardCnt(users.getBoardCnt() + savefolder.getBoardCnt());
+    //    }
 
     @Transactional
     public void folderOrderChange(OrderRequestDto orderRequestDto, HttpServletRequest request) {
@@ -234,9 +230,14 @@ public class FolderService {
     }
 
     @Transactional
-    public Page<Folder> findBestFolder(int page, int size) {
+    public List<FolderResponseDto> findBestFolder(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("sharedCount").descending());
-        return folderRepository.findAllBystatus(DisclosureStatus.PUBLIC, pageRequest);
+        List<Folder> folders = folderRepository.findAllBystatus(DisclosureStatusType.PUBLIC, pageRequest).getContent();
+        List<FolderResponseDto> folderResponseDtos = new ArrayList<>();
+        for(Folder folder : folders){
+            folderResponseDtos.add(new FolderResponseDto(folder));
+        }
+        return folderResponseDtos;
     }
 
     public Folder findByBasicFolder(Users users) {
@@ -249,13 +250,13 @@ public class FolderService {
                              Pageable pageable,
                              Long userId,
                              List<FolderRequestDto> folderRequestDtos) {
-        List<DisclosureStatus> disclosureStatuses = new ArrayList<>();
-        disclosureStatuses.add(DisclosureStatus.PUBLIC);
+        List<DisclosureStatusType> disclosureStatusTypes = new ArrayList<>();
+        disclosureStatusTypes.add(DisclosureStatusType.PUBLIC);
 
         Users users = userRepository.findById(userId)
                 .orElseGet(() -> {
                     if (userId == 0L) {
-                        disclosureStatuses.add(DisclosureStatus.PRIVATE);
+                        disclosureStatusTypes.add(DisclosureStatusType.PRIVATE);
                         return userinfoHttpRequest.userFindByToken(request);
                     }
                     throw new RuntimeException("회원을 찾을 수 없습니다.");
@@ -270,7 +271,7 @@ public class FolderService {
                     "%" + keyword + "%",
                     users,
                     boardService.findByFolder(findByBasicFolder(users)).size() > 0,
-                    disclosureStatuses,
+                    disclosureStatusTypes,
                     pageable
             ).getContent();
         }
@@ -279,7 +280,7 @@ public class FolderService {
                 "%" + keyword + "%",
                 users,
                 boardService.findByFolder(findByBasicFolder(users)).size() > 0,
-                disclosureStatuses,
+                disclosureStatusTypes,
                 boardService.findSelectCategory(folderRequestDtos),
                 pageable
         ).getContent();
@@ -298,35 +299,75 @@ public class FolderService {
     }
 
     @Transactional(readOnly = true)
-    public List<Folder> shareList(String keyword, HttpServletRequest request, Pageable pageable, Long userId) {
-        List<DisclosureStatus> disclosureStatuses = new ArrayList<>();
-        disclosureStatuses.add(DisclosureStatus.PUBLIC);
+    public List<FolderResponseDto> shareList(String keyword, HttpServletRequest request, Pageable pageable, Long userId) {
+        List<DisclosureStatusType> disclosureStatusTypes = new ArrayList<>();
+        disclosureStatusTypes.add(DisclosureStatusType.PUBLIC);
 
         Users users = userRepository.findById(userId)
                 .orElseGet(() -> {
                     if (userId == 0L) {
-                        disclosureStatuses.add(DisclosureStatus.PRIVATE);
+                        disclosureStatusTypes.add(DisclosureStatusType.PRIVATE);
                         return userinfoHttpRequest.userFindByToken(request);
                     }
                     throw new RuntimeException("회원을 찾을 수 없습니다.");
                 });
 
-        return folderRepository.findAllByIdAndNameLike(
-                listToId(shareRepository.findAllByUsersId(users.getId())),
-                "%" + keyword + "%",
-                pageable
-        ).getContent();
+        return entityListToDtoListForFolder(folderRepository.findAllByIdAndNameLike(
+                        listToId(shareRepository.findAllByUsersId(users.getId())),
+                        "%" + keyword + "%",
+                        pageable
+                ).getContent()
+        );
+
     }
 
-    public FolderResponseDto allFolders(String keyword, int page) {
-        PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("createdDate").descending());
+    private List<FolderResponseDto> entityListToDtoListForFolder(List<Folder> content) {
+        List<FolderResponseDto> folderResponseDtos = new ArrayList<>();
+
+        for (Folder folder : content) {
+            folderResponseDtos.add(new FolderResponseDto(folder));
+        }
+        return folderResponseDtos;
+    }
+
+    public FolderListResponseDto allFolders(String keyword, HttpServletRequest request, Pageable pageable) {
+        Users users = userinfoHttpRequest.userFindByToken(request);
+
         Page<Folder> folders = folderRepository.findAllByNameContaining1(
-                "%" + keyword + "%", DisclosureStatus.PUBLIC, pageRequest);
-        int foldersCnt = folderRepository.findAllByNameContaining1("%" + keyword + "%", DisclosureStatus.PUBLIC).size();
-        return new FolderResponseDto(folders, foldersCnt);
+                "%" + keyword + "%",
+                DisclosureStatusType.PUBLIC,
+                users.getId(),
+                pageable
+        );
+
+        return new FolderListResponseDto(getFolder(folders.getContent()), folders.getTotalElements());
+    }
+
+    public List<FolderResponseDto> getFolder(List<Folder> folders) {
+        List<FolderResponseDto> folderResponseDtos = new ArrayList<>();
+
+        for (Folder folder : folders) {
+            FolderResponseDto folderResponseDto = new FolderResponseDto(folder);
+            folderResponseDtos.add(folderResponseDto);
+        }
+
+        return folderResponseDtos;
     }
 
     private List<Long> listToId(List<Share> List) {
         return List.stream().map(Share::getId).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void reportFolder(Long folderId, HttpServletRequest request) {
+        Users users = userinfoHttpRequest.userFindByToken(request);
+
+        Folder folder = folderRepository.findById(folderId)
+                .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
+
+        Users baduser = folder.getUsers();
+        reportRepository.save(new Report(users, folder));
+        folder.setReportCnt(folder.getReportCnt() + 1);
+        baduser.setReportCnt(baduser.getReportCnt() + 1);
     }
 }

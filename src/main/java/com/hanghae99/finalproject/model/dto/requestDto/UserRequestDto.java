@@ -14,11 +14,11 @@ public class UserRequestDto {
     private String information;
     private String password;
     private String newPassword;
+    private String email;
     private Long boardCnt;
     private Long folderCnt;
 
-    public UserRequestDto(Follow follower)
-    {
+    public UserRequestDto(Follow follower) {
         this.id = follower.getFollower().getId();
         this.nickname = follower.getFollower().getNickname();
         this.imgPath = follower.getFollower().getImgPath();

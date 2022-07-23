@@ -1,24 +1,30 @@
 package com.hanghae99.finalproject.model.dto.responseDto;
 
-import com.hanghae99.finalproject.model.entity.Folder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.data.domain.Page;
+import com.hanghae99.finalproject.model.entity.*;
+import com.hanghae99.finalproject.model.resultType.DisclosureStatusType;
+import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 public class FolderResponseDto {
+    private Long id;
+    private String name;
+    private DisclosureStatusType status;
+    private Long sharedCount;
+    private Long folderOrder;
+    private Long boardCnt;
+    private Long userId;
+    private List<Board> boardList = new ArrayList<>();
 
-    private int foldersCnt;
-    private List<Folder> folders = new ArrayList<>();
-
-    public FolderResponseDto(Page<Folder> folders, int foldersCnt){
-        this.foldersCnt = foldersCnt;
-        this.folders = folders.getContent();
+    public FolderResponseDto(Folder folder) {
+        this.id = folder.getId();
+        this.name = folder.getName();
+        this.status = folder.getStatus();
+        this.sharedCount = folder.getSharedCount();
+        this.folderOrder = folder.getFolderOrder();
+        this.boardCnt = folder.getBoardCnt();
+        this.userId = folder.getUsers().getId();
     }
 }

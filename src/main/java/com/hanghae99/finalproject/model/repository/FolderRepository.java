@@ -1,8 +1,7 @@
 package com.hanghae99.finalproject.model.repository;
 
 import com.hanghae99.finalproject.model.entity.*;
-import com.hanghae99.finalproject.util.DisclosureStatus;
-import com.hanghae99.finalproject.util.resultType.CategoryType;
+import com.hanghae99.finalproject.model.resultType.*;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.*;
 
@@ -15,20 +14,18 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
     void deleteAllByUsers(Users user);
 
     @Query("select f from Folder f where  f.name not like '무제'   and f.status in ?1")
-    Page<Folder> findAllBystatus(DisclosureStatus status, Pageable pageable);
+    Page<Folder> findAllBystatus(DisclosureStatusType status, Pageable pageable);
 
     Optional<Folder> findByIdAndUsersIdNot(Long folderId, Long id);
 
     @Query("select count(id) from Folder where users.id = ?1")
     Long findFolderCount(Long id);
 
-    List<Folder> findByUsers(Users userFindByToken);
-
     @Query("select distinct(f) from Folder f, Board b where f.users = ?2 and  f.name LIKE case when ?1 = '%all%' then '%%' else ?1 end and f.name not like case when ?3 = false then '무제' else '' end and f.status in ?4 and f.id = b.folder.id and b.category in ?5")
     Page<Folder> findByNameContaining(String keyword,
                                       Users users,
                                       boolean isBoardInBasicFolder,
-                                      List<DisclosureStatus> disclosureStatuses,
+                                      List<DisclosureStatusType> disclosureStatusTypes,
                                       List<CategoryType> selectCategory,
                                       Pageable pageable);
 
@@ -36,16 +33,13 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
     Page<Folder> findByNameContaining(String keyword,
                                       Users users,
                                       boolean isBoardInBasicFolder,
-                                      List<DisclosureStatus> disclosureStatuses,
+                                      List<DisclosureStatusType> disclosureStatusTypes,
                                       Pageable pageable);
 
     Folder findByUsersAndName(Users users, String basicFolder);
 
-    @Query("select f from Folder f where   f.name LIKE case when ?1 = '%all%' then '%%' else ?1 end and f.name not like '무제'   and f.status in ?2")
-    Page<Folder> findAllByNameContaining1(String keyword, DisclosureStatus disclosureStatuses, Pageable pageable);
-
-    @Query("select f from Folder f where   f.name LIKE case when ?1 = '%all%' then '%%' else ?1 end and f.name not like '무제'   and f.status in ?2")
-    List<Folder> findAllByNameContaining1(String keyword, DisclosureStatus disclosureStatuses);
+    @Query("select f from Folder f where f.name LIKE case when ?1 = '%all%' then '%%' else ?1 end and f.name not like '무제' and f.status in ?2 and not f.users.id = ?3")
+    Page<Folder> findAllByNameContaining1(String keyword, DisclosureStatusType disclosureStatuses, Long usersId, Pageable pageable);
 
     Optional<List<Folder>> findAllByIdInAndUsersId(List<Long> folderId, Long id);
 

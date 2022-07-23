@@ -14,10 +14,4 @@ public class TestController {
         System.out.println(testStr);
         return testStr;
     }
-
-    @ResponseBody
-    @GetMapping("/")
-    public String tes2t() {
-        return "whitewise?";
-    }
 }

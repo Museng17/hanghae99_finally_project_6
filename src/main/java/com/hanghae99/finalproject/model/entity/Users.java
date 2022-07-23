@@ -2,8 +2,7 @@ package com.hanghae99.finalproject.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
-import com.hanghae99.finalproject.util.TimeStamp;
-import com.hanghae99.finalproject.util.resultType.LoginType;
+import com.hanghae99.finalproject.model.resultType.*;
 import lombok.*;
 
 import javax.persistence.*;
@@ -35,6 +34,9 @@ public class Users extends TimeStamp {
     @Column(nullable = true)
     private String password;
 
+    @Column(nullable = false, unique = true)
+    private String email;
+
     @Column(nullable = false)
     private Long folderCnt;
 
@@ -42,7 +44,13 @@ public class Users extends TimeStamp {
     private Long boardCnt;
 
     @Column(nullable = false)
+    private Long reportCnt = 0L;
+
+    @Column(nullable = false)
     private LoginType loginType;
+
+    @OneToOne
+    private Image image;
 
     @OneToMany
     @JoinColumn(name = "folder_id")
@@ -52,13 +60,14 @@ public class Users extends TimeStamp {
     @JoinColumn(name = "board_id")
     private List<Board> boardList;
 
-    public Users(String username, String nickname, String password) {
-        this.username = username;
-        this.nickname = nickname;
-        this.password = password;
-        this.loginType =LoginType.USER;
+    public Users(UserRequestDto Dto) {
+        this.username = Dto.getUsername();
+        this.nickname = Dto.getNickname();
+        this.password = Dto.getPassword();
+        this.loginType = LoginType.USER;
         this.boardCnt = 0L;
         this.folderCnt = 0L;
+        this.email = Dto.getEmail();
     }
 
     public Users(SocialLoginRequestDto socialLoginRequestDto, int allCount) {
@@ -66,15 +75,17 @@ public class Users extends TimeStamp {
         this.nickname = "USER(" + UUID.randomUUID().toString().replaceAll("-", "").substring(5, 9) + allCount + ")";
         this.folderCnt = 0L;
         this.boardCnt = 0L;
+        this.email = socialLoginRequestDto.getEmail();
         this.loginType = LoginType.GOOGLE;
     }
 
-    public Users(Long id, String imgPath, String information, String nickname, String username) {
+    public Users(Long id, String imgPath, String information, String nickname, String username, String email) {
         this.id = id;
         this.username = username;
         this.nickname = nickname;
         this.imgPath = imgPath;
         this.information = information;
+        this.email = email;
     }
 
     public void update(UserRequestDto userRequestDto) {
@@ -90,7 +101,16 @@ public class Users extends TimeStamp {
         this.password = newPassword;
     }
 
+    public void resetPw(String password) {
+
+        this.password = password;
+    }
+
     public void updateImg(String url) {
         this.imgPath = url;
+    }
+
+    public void updateBoardCnt(long boardCnt) {
+        this.boardCnt = boardCnt;
     }
 }

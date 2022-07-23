@@ -2,7 +2,7 @@ package com.hanghae99.finalproject.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae99.finalproject.model.dto.requestDto.FolderRequestDto;
-import com.hanghae99.finalproject.util.*;
+import com.hanghae99.finalproject.model.resultType.*;
 import lombok.*;
 
 import javax.persistence.*;
@@ -23,7 +23,7 @@ public class Folder extends TimeStamp {
     private String name;
 
     @Column(nullable = false)
-    private DisclosureStatus status;
+    private DisclosureStatusType status;
 
     @Column(nullable = false)
     private Long sharedCount = 0L;
@@ -32,7 +32,10 @@ public class Folder extends TimeStamp {
     private Long folderOrder;
 
     @Column(nullable = false)
-    private Long BoardCnt;
+    private Long boardCnt;
+
+    @Column(nullable = false)
+    private Long reportCnt = 0L;
 
     @JsonIgnore
     @ManyToOne
@@ -44,7 +47,7 @@ public class Folder extends TimeStamp {
     @OneToMany
     private List<Board> boardList = new ArrayList<>();
 
-    public Folder(Long id, String name, DisclosureStatus status) {
+    public Folder(Long id, String name, DisclosureStatusType status) {
         this.id = id;
         this.name = name;
         this.status = status;
@@ -52,10 +55,10 @@ public class Folder extends TimeStamp {
 
     public Folder(Users users) {
         this.name = "무제";
-        this.status = DisclosureStatus.PUBLIC;
+        this.status = DisclosureStatusType.PUBLIC;
         this.folderOrder = 1L;
         this.users = users;
-        this.BoardCnt = 0L;
+        this.boardCnt = 0L;
     }
 
     public Folder(FolderRequestDto folderRequestDto, Users users, Long folderCount) {
@@ -63,7 +66,7 @@ public class Folder extends TimeStamp {
         this.status = folderRequestDto.getStatus();
         this.folderOrder = folderCount + 1;
         this.users = users;
-        this.BoardCnt = 0L;
+        this.boardCnt = 0L;
     }
 
     public Folder(FolderRequestDto folderRequestDto, Users users) {
@@ -71,7 +74,7 @@ public class Folder extends TimeStamp {
         this.status = folderRequestDto.getStatus();
         this.users = users;
         this.sharedCount = folderRequestDto.getSharedCount() + 1;
-        this.BoardCnt = folderRequestDto.getBoardCnt();
+        this.boardCnt = folderRequestDto.getBoardCnt();
         this.boardList = folderRequestDto.getBoardList();
         this.folderOrder = users.getFolderCnt() + 2;
     }
@@ -83,5 +86,9 @@ public class Folder extends TimeStamp {
 
     public void updateOrder(Long order) {
         this.folderOrder = order;
+    }
+
+    public void updateBoardCnt(long boardCnt) {
+        this.boardCnt = boardCnt;
     }
 }

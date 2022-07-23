@@ -6,6 +6,7 @@ import com.hanghae99.finalproject.model.entity.Users;
 import com.hanghae99.finalproject.service.*;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +15,11 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
 import static com.hanghae99.finalproject.config.WebConfig.SOCIAL_HEADER_KEY;
 import static com.hanghae99.finalproject.jwt.JwtTokenProvider.REFRESH_TOKEN;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -46,17 +46,23 @@ public class UserController {
     }
 
     @PostMapping("/user/refresh2")
-    public TokenResponseDto refreshToken2(@RequestHeader(REFRESH_TOKEN) String refresh) {
+    public TokenResponseDto refreshToken2(HttpServletRequest request,
+                                          @RequestHeader(value = REFRESH_TOKEN, defaultValue = "noToken") String refresh) {
+        log.info("요청한 Method : " + request.getMethod());
+        log.info("요청한 URL : " + request.getRequestURI());
         return userService.refreshToken2(refresh);
     }
 
     @PostMapping("/user/refresh")
-    public TokenResponseDto refreshToken(@RequestHeader(REFRESH_TOKEN) String refresh) {
+    public TokenResponseDto refreshToken(HttpServletRequest request,
+                                         @RequestHeader(value = REFRESH_TOKEN, defaultValue = "noToken") String refresh) {
+        log.info("요청한 Method : " + request.getMethod());
+        log.info("요청한 URL : " + request.getRequestURI());
         return userService.refreshToken(refresh);
     }
 
     @PostMapping("/user/signup")
-    public UserRegisterRespDto registerUser(@RequestBody UserRequestDto Dto) throws NoSuchAlgorithmException {
+    public UserRegisterRespDto registerUser(@RequestBody UserRequestDto Dto) {
         return userService.registerUser(Dto);
     }
 
@@ -71,6 +77,12 @@ public class UserController {
     @GetMapping("/user/nameDupCheck/{nickname}")
     public Boolean nameDupCheck(@PathVariable String nickname) {
         return userService.checkNameDuplicate(nickname);
+    }
+
+    @PostMapping("/find/username")
+    public String findUsername(@RequestBody UserRequestDto userRequestDto) {
+
+        return userService.findUsername(userRequestDto);
     }
 
     @DeleteMapping("/user/getout")

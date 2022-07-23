@@ -17,7 +17,6 @@ import static com.hanghae99.finalproject.jwt.JwtTokenProvider.REFRESH_TOKEN;
 
 @RequiredArgsConstructor
 @Configuration
-@EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {
 
     private final String[] JWT_INTERCEPTOR_URI = {
@@ -26,9 +25,13 @@ public class WebConfig implements WebMvcConfigurer {
             "/user/nameDupCheck/**",
             "/user/login",
             "/user/social",
+            "/user/social2",
             "/image/og/**",
             "/user/refresh",
-            "/"
+            "/user/refresh2",
+            "/email/**",
+            "/find/**"
+
     };
     public final static String SOCIAL_HEADER_KEY = "Code";
 
@@ -51,7 +54,7 @@ public class WebConfig implements WebMvcConfigurer {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:3000");
         configuration.addAllowedOrigin("http://spartastatic.s3-website.ap-northeast-2.amazonaws.com");
-        configuration.addAllowedOrigin("http://ec2-13-125-137-133.ap-northeast-2.compute.amazonaws.com");
+        configuration.addAllowedOrigin("https://moum.cloud");
         configuration.addAllowedHeader("Content-Type");
         configuration.addAllowedHeader("Custom-Header");
         configuration.addAllowedMethod(HttpMethod.POST);
@@ -91,4 +94,5 @@ public class WebConfig implements WebMvcConfigurer {
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         return builder.build();
     }
+
 }

@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 
-import static com.hanghae99.finalproject.util.resultType.FileUploadType.UBUNTU_BASE_PATH;
+import static com.hanghae99.finalproject.model.resultType.FileUploadType.UBUNTU_BASE_PATH;
 
 @Component
 public class FileUpload {

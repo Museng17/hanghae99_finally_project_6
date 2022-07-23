@@ -1,12 +1,12 @@
-package com.hanghae99.finalproject.util;
+package com.hanghae99.finalproject.model.resultType;
 
-public enum DisclosureStatus {
+public enum DisclosureStatusType {
     PUBLIC("public"),
     PRIVATE("private");
 
     private String status;
 
-    DisclosureStatus(String status) {
+    DisclosureStatusType(String status) {
         this.status = status;
     }
 
@@ -14,7 +14,7 @@ public enum DisclosureStatus {
         return status;
     }
 
-    public DisclosureStatus setStatus(String status) {
+    public DisclosureStatusType setStatus(String status) {
         this.status = status;
         return this;
     }

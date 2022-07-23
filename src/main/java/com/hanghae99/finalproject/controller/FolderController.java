@@ -1,10 +1,10 @@
 package com.hanghae99.finalproject.controller;
 
 import com.hanghae99.finalproject.model.dto.requestDto.*;
-import com.hanghae99.finalproject.model.dto.responseDto.FolderResponseDto;
-import com.hanghae99.finalproject.model.entity.*;
+import com.hanghae99.finalproject.model.dto.responseDto.*;
+import com.hanghae99.finalproject.model.entity.Folder;
+import com.hanghae99.finalproject.model.resultType.CategoryType;
 import com.hanghae99.finalproject.service.FolderService;
-import com.hanghae99.finalproject.util.resultType.CategoryType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
@@ -26,13 +26,6 @@ public class FolderController {
         return folderService.folderSave(folderRequestDto, request);
     }
 
-    @PostMapping("/folder/{folderId}")
-    public void boardInFolder(@PathVariable Long folderId,
-                              @RequestBody FolderRequestDto folderRequestDto,
-                              HttpServletRequest request) {
-        folderService.boardInFolder(folderId, folderRequestDto, request);
-    }
-
     @DeleteMapping("/folders")
     public void folderDelete(@RequestBody List<FolderRequestDto> folderRequestDto,
                              HttpServletRequest request) {
@@ -47,8 +40,8 @@ public class FolderController {
     }
 
     @PutMapping("/folder")
-    public Board crateBoardInFolder(@RequestBody BoardRequestDto boardRequestDto,
-                                    HttpServletRequest request) {
+    public MessageResponseDto crateBoardInFolder(@RequestBody BoardRequestDto boardRequestDto,
+                                                 HttpServletRequest request) {
         return folderService.crateBoardInFolder(boardRequestDto, request);
     }
 
@@ -68,13 +61,13 @@ public class FolderController {
         folderService.shareFolder(folderId, request);
     }
 
-    @PostMapping("/myshare/folder/{folderId}")
-    public void cloneFolder(@PathVariable Long folderId, HttpServletRequest request) {
-        folderService.cloneFolder(folderId, request);
-    }
+    //    @PostMapping("/myshare/folder/{folderId}")
+    //    public void cloneFolder(@PathVariable Long folderId, HttpServletRequest request) {
+    //        folderService.cloneFolder(folderId, request);
+    //    }
 
     @GetMapping("/BestFolders/{page}/{size}")
-    public Page<Folder> findBestFolders(@PathVariable int page, @PathVariable int size) {
+    public List<FolderResponseDto> findBestFolders(@PathVariable int page, @PathVariable int size) {
         return folderService.findBestFolder(page, size);
     }
 
@@ -94,15 +87,24 @@ public class FolderController {
     }
 
     @GetMapping("/shares/{userId}/{keyword}")
-    public List<Folder> shareList(@PathVariable String keyword,
-                                  HttpServletRequest request,
-                                  @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
-                                  @PathVariable Long userId) {
+    public List<FolderResponseDto> shareList(@PathVariable String keyword,
+                                             HttpServletRequest request,
+                                             @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
+                                             @PathVariable Long userId) {
         return folderService.shareList(keyword, request, pageable, userId);
     }
 
-    @PostMapping("/allfolders/{keyword}/{page}")
-    public FolderResponseDto allFolders(@PathVariable String keyword, @PathVariable int page) {
-        return folderService.allFolders(keyword, page);
+    @PostMapping("/allfolders/{keyword}")
+    public FolderListResponseDto allFolders(@PathVariable String keyword,
+                                            HttpServletRequest request,
+                                            @PageableDefault(size = 8, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
+        return folderService.allFolders(keyword, request, pageable);
+
+    }
+
+    @PostMapping("/report/{folderId}")
+    public void reportFolder(@PathVariable Long folderId,
+                             HttpServletRequest request) {
+        folderService.reportFolder(folderId, request);
     }
 }

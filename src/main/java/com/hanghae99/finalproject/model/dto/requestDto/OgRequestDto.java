@@ -1,8 +1,6 @@
 package com.hanghae99.finalproject.model.dto.requestDto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter

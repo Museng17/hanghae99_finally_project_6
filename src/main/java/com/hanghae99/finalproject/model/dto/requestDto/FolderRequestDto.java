@@ -1,8 +1,7 @@
 package com.hanghae99.finalproject.model.dto.requestDto;
 
 import com.hanghae99.finalproject.model.entity.*;
-import com.hanghae99.finalproject.util.DisclosureStatus;
-import com.hanghae99.finalproject.util.resultType.CategoryType;
+import com.hanghae99.finalproject.model.resultType.*;
 import lombok.*;
 import org.springframework.data.domain.Page;
 
@@ -12,13 +11,16 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 public class FolderRequestDto {
+
     private Long id;
     private String name;
-    private DisclosureStatus status;
+    private DisclosureStatusType status;
     private Long sharedCount;
     private Long folderOrder;
     private CategoryType category;
     private Long boardCnt;
+    private String nickname;
+    private Long userId;
     private List<Board> boardList = new ArrayList<>();
 
     public FolderRequestDto(Page<Board> boards, Folder folder) {
@@ -31,12 +33,16 @@ public class FolderRequestDto {
         this.boardList = boards.getContent();
     }
 
-    public FolderRequestDto(Folder folder){
+    public FolderRequestDto(Folder folder) {
         this.id = folder.getId();
         this.name = folder.getName();
         this.status = folder.getStatus();
-        this.folderOrder = folder.getFolderOrder();
         this.sharedCount = folder.getSharedCount();
         this.boardCnt = folder.getBoardCnt();
+        this.nickname = folder.getUsers().getNickname();
+    }
+
+    public FolderRequestDto(Long boardId) {
+        this.boardList.add(new Board(boardId));
     }
 }

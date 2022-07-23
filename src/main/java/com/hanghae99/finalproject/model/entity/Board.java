@@ -2,13 +2,12 @@ package com.hanghae99.finalproject.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
-import com.hanghae99.finalproject.util.*;
-import com.hanghae99.finalproject.util.resultType.*;
+import com.hanghae99.finalproject.model.resultType.*;
 import lombok.*;
 
 import javax.persistence.*;
 
-import java.util.Optional;
+import java.util.*;
 
 @Entity
 @Getter
@@ -36,7 +35,7 @@ public class Board extends TimeStamp {
     private String content;
 
     @Column(nullable = false)
-    private DisclosureStatus status;
+    private DisclosureStatusType status;
 
     @Column(nullable = false)
     private BoardType boardType;
@@ -46,6 +45,9 @@ public class Board extends TimeStamp {
 
     @Column(nullable = false)
     private Long boardOrder;
+
+    @OneToMany
+    private List<Image> imageList;
 
     @ManyToOne
     @JsonIgnore
@@ -66,7 +68,7 @@ public class Board extends TimeStamp {
         this.explanation = boardRequestDto.getExplanation();
         this.imgPath = boardRequestDto.getImgPath();
         this.content = boardRequestDto.getContent();
-        this.status = DisclosureStatus.PRIVATE;
+        this.status = DisclosureStatusType.PRIVATE;
         this.boardType = boardRequestDto.getBoardType();
         this.category = inNullCheck(boardRequestDto.getCategory());
         this.boardOrder = totalCont + 1;
@@ -80,12 +82,16 @@ public class Board extends TimeStamp {
         this.explanation = boardRequestDto.getExplanation();
         this.imgPath = boardRequestDto.getImgPath();
         this.content = boardRequestDto.getContent();
-        this.status = DisclosureStatus.PRIVATE;
+        this.status = DisclosureStatusType.PRIVATE;
         this.boardType = boardRequestDto.getBoardType();
         this.category = inNullCheck(boardRequestDto.getCategory());
         this.boardOrder = boardOrder;
         this.users = users;
         this.folder = folder;
+    }
+
+    public Board(Long id) {
+        this.id = id;
     }
 
     private CategoryType inNullCheck(CategoryType category) {
@@ -95,7 +101,7 @@ public class Board extends TimeStamp {
         return category;
     }
 
-    public Board(BoardRequestDto boardRequestDto, Users user,Folder folder) {
+    public Board(BoardRequestDto boardRequestDto, Users user, Folder folder) {
         this.title = boardRequestDto.getTitle();
         this.explanation = boardRequestDto.getExplanation();
         this.imgPath = boardRequestDto.getImgPath();
@@ -117,7 +123,7 @@ public class Board extends TimeStamp {
         this.status = board.getStatus();
         this.boardType = board.getBoardType();
         this.category = board.getCategory();
-        this.boardOrder = board.getBoardOrder();
+        this.boardOrder = folder.getBoardCnt() + 1;
         this.users = users;
         this.folder = folder;
     }

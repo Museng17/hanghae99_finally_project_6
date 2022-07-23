@@ -3,27 +3,36 @@ package com.hanghae99.finalproject.controller;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.Board;
+import com.hanghae99.finalproject.model.resultType.CategoryType;
 import com.hanghae99.finalproject.service.BoardService;
-import com.hanghae99.finalproject.util.resultType.CategoryType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 
 import java.util.*;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class BoardController {
 
     private final BoardService boardService;
 
+    @GetMapping("/board/{boardId}")
+    public MessageResponseDto findBoard(HttpServletRequest request,
+                                        @PathVariable Long boardId) {
+        return boardService.findBoard(request, boardId);
+    }
+
     @PostMapping("/board")
-    public Board boardSave(@RequestBody BoardRequestDto boardRequestDto,
-                           HttpServletRequest request) {
+    public MessageResponseDto boardSave(@RequestBody BoardRequestDto boardRequestDto,
+                                        HttpServletRequest request) {
+        log.info("요청한 Method : " + request.getMethod());
+        log.info("요청한 URL : " + request.getRequestURI());
         return boardService.boardSave(boardRequestDto, request);
     }
 
@@ -31,6 +40,8 @@ public class BoardController {
     public void boardUpdate(@PathVariable Long id,
                             @RequestBody BoardRequestDto boardRequestDto,
                             HttpServletRequest request) {
+        log.info("요청한 Method : " + request.getMethod());
+        log.info("요청한 URL : " + request.getRequestURI());
         boardService.boardUpdate(id, boardRequestDto, request);
     }
 
@@ -38,6 +49,8 @@ public class BoardController {
     public void boardDelete(@RequestBody List<BoardRequestDto> boardRequestDtos,
                             HttpServletRequest request,
                             @PathVariable Long folderId) {
+        log.info("요청한 Method : " + request.getMethod());
+        log.info("요청한 URL : " + request.getRequestURI());
         boardService.boardDelete(boardRequestDtos, request, folderId);
     }
 
@@ -49,17 +62,18 @@ public class BoardController {
     @PostMapping("/boards")
     public void boardOrderChange(@RequestBody OrderRequestDto orderRequestDto,
                                  HttpServletRequest request) {
+        log.info("요청한 Method : " + request.getMethod());
+        log.info("요청한 URL : " + request.getRequestURI());
         boardService.boardOrderChange(orderRequestDto, request);
     }
 
-    @PostMapping("/myshare/board/{boardId}")
-    public void cloneBoard(@PathVariable Long boardId, HttpServletRequest request) {
-        boardService.cloneBoard(boardId, request);
-    }
-
-    @PostMapping("/board/image")
-    public FileUploadResponse boardImageUpload(@RequestParam("boardImage") MultipartFile imageFile) {
-        return boardService.boardImageUpload(imageFile);
+    //    @PostMapping("/myshare/board/{boardId}")
+    //    public void cloneBoard(@PathVariable Long boardId, HttpServletRequest request) {
+    //        boardService.cloneBoard(boardId, request);
+    //    }
+    @PostMapping("/myshare/boards")
+    public void cloneBoards(@RequestBody List<BoardRequestDto> boards, HttpServletRequest request) {
+        boardService.cloneBoards(boards, request);
     }
 
     @GetMapping("/newboards/{page}/{size}")
@@ -74,6 +88,8 @@ public class BoardController {
                                  @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
                                  @PathVariable Long folderId,
                                  @PathVariable Long userId) {
+        log.info("요청한 Method : " + request.getMethod());
+        log.info("요청한 URL : " + request.getRequestURI());
         return boardService.moum(folderRequestDtos, keyword, request, pageable, folderId, userId);
     }
 
@@ -81,11 +97,23 @@ public class BoardController {
     public List<Map<String, CategoryType>> findCategoryList(@PathVariable Long folderId,
                                                             @PathVariable Long userId,
                                                             HttpServletRequest request) {
+        log.info("요청한 Method : " + request.getMethod());
+        log.info("요청한 URL : " + request.getRequestURI());
         return boardService.findCategoryList(userId, folderId, request);
     }
 
     @PostMapping("/allboards/{keyword}/{page}")
-    public BoardResponseDto allBoards(@PathVariable String keyword, @PathVariable int page, @RequestBody List<FolderRequestDto> folderRequestDtos) {
-        return boardService.allBoards(keyword, page, folderRequestDtos);
+    public BoardAndCntResponseDto allBoards(@PathVariable String keyword,
+                                            @PathVariable int page,
+                                            @RequestBody List<FolderRequestDto> folderRequestDtos,
+                                            HttpServletRequest request) {
+        return boardService.allBoards(keyword, page, folderRequestDtos, request);
+    }
+
+    @PostMapping("/folder/{folderId}")
+    public void boardInFolder(@PathVariable Long folderId,
+                              @RequestBody FolderRequestDto folderRequestDto,
+                              HttpServletRequest request) {
+        boardService.boardInFolder(folderId, folderRequestDto, request);
     }
 }

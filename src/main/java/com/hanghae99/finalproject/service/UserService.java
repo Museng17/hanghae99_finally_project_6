@@ -1,5 +1,6 @@
 package com.hanghae99.finalproject.service;
 
+import com.hanghae99.finalproject.exceptionHandler.CustumException.CustomException;
 import com.hanghae99.finalproject.jwt.*;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
@@ -14,10 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.NOT_REFRESH_TOKEN;
 import static com.hanghae99.finalproject.interceptor.JwtTokenInterceptor.JWT_HEADER_KEY;
 import static com.hanghae99.finalproject.jwt.JwtTokenProvider.*;
 
@@ -58,6 +59,19 @@ public class UserService {
         return true;
     }
 
+    public Boolean checkEmailDuplicate(String email) {
+        Users user = userRepository.findByEmail(email).orElse(null);
+
+        try {
+            if (user.getEmail().equals(email)) {
+                return false;
+            }
+        } catch (NullPointerException e) {
+            return true;
+        }
+        return true;
+    }
+
     public Boolean checkNameDuplicate(String nickname) {
         Users user = userRepository.findByNickname(nickname).orElse(null);
 
@@ -71,65 +85,40 @@ public class UserService {
         return true;
     }
 
-    public static boolean isEmail(String s) {
-        return Pattern.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", s);
-    }
-
-    public static boolean isPassword(String s) {
-        return Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$", s);
-    }
-
-    public UserRegisterRespDto registerUser(UserRequestDto Dto) throws NoSuchAlgorithmException {
-        Boolean result = true;
-        String err_msg = "회원가입 성공";
-        String username = Dto.getUsername();
-        String nickname = Dto.getNickname();
-
-        if (!isEmail(username)) {
-            err_msg = "잘못된 이메일 양식입니다.";
-            result = false;
-            return new UserRegisterRespDto(result, err_msg);
+    @Transactional
+    public UserRegisterRespDto registerUser(UserRequestDto Dto) {
+        //회원가입 정규식 체크
+        UserRegisterRespDto valid = joinValid(Dto);
+        if (Optional.ofNullable(valid).isPresent()) {
+            return valid;
         }
 
-        Optional<Users> foundusername = userRepository.findByUsername(username);
-        Optional<Users> foundnickname = userRepository.findByNickname(nickname);
-
-        // 회원 ID 중복 확인
-        if (foundusername.isPresent()) {
-            err_msg = "중복된 사용자 ID가 존재합니다.";
-            result = false;
-            return new UserRegisterRespDto(result, err_msg);
+        //회원가입 중복 체크
+        valid = duplicateCheck(Dto);
+        if (Optional.ofNullable(valid).isPresent()) {
+            return valid;
         }
 
-        // 회원 닉네임 중복 확인
-        if (foundnickname.isPresent()) {
-            err_msg = "중복된 닉네임이 존재합니다.";
-            result = false;
-            return new UserRegisterRespDto(result, err_msg);
-        }
+        //암호화
+        Dto.setPassword(bCryptPasswordEncoder.encode(Dto.getPassword()));
 
-        String pw = Dto.getPassword();
-        if (!isPassword(pw)) {
-            err_msg = "잘못된 비밀번호 입니다.";
-            result = false;
-            return new UserRegisterRespDto(result, err_msg);
-        }
-
-        // 패스워드 암호화
-        String password = bCryptPasswordEncoder.encode(pw);
-
-        Users user = new Users(username, nickname, password);
-        System.out.println(Dto.getUsername());
-        System.out.println(Dto.getNickname());
-        userRepository.save(user);
-        Users user1 = userRepository.save(user);
+        //가입
         folderRepository.save(
                 new Folder(
-                        user1
+                        userRepository.save(
+                                new Users(Dto)
+                        )
                 )
         );
 
-        return new UserRegisterRespDto(result, err_msg);
+        return new UserRegisterRespDto(true, "회원가입 성공");
+    }
+
+    public String findUsername(UserRequestDto userRequestDto) {
+        Users user = userRepository.findByEmail(userRequestDto.getEmail())
+                .orElseThrow(() -> new RuntimeException("UserService 38에러 회원가입되지 않은 이메일입니다."));
+
+        return user.getUsername();
     }
 
     @Transactional
@@ -166,6 +155,23 @@ public class UserService {
         SocialLoginRequestDto socialLoginRequestDto = googleUserInfoByAccessToken(response.getAccess_token());
 
         Users user = userRepository.findByUsername(socialLoginRequestDto.getEmail())
+                .orElseGet(() -> {
+                            Users users = userRepository.save(
+                                    new Users(
+                                            socialLoginRequestDto,
+                                            userRepository.findAllCount()
+                                    )
+                            );
+                            folderRepository.save(
+                                    new Folder(
+                                            users
+                                    )
+                            );
+                            return users;
+                        }
+                );
+
+        Users users = userRepository.findByEmail(socialLoginRequestDto.getEmail())
                 .orElseGet(() ->
                         userRepository.save(
                                 new Users(
@@ -173,13 +179,9 @@ public class UserService {
                                         userRepository.findAllCount()
                                 )
                         )
+
                 );
 
-        folderRepository.save(
-                new Folder(
-                        user
-                )
-        );
         return createTokens(user.getUsername());
     }
 
@@ -189,20 +191,21 @@ public class UserService {
         SocialLoginRequestDto socialLoginRequestDto = googleUserInfoByAccessToken(response.getAccess_token());
 
         Users user = userRepository.findByUsername(socialLoginRequestDto.getEmail())
-                .orElseGet(() ->
-                        userRepository.save(
-                                new Users(
-                                        socialLoginRequestDto,
-                                        userRepository.findAllCount()
-                                )
-                        )
+                .orElseGet(() -> {
+                            Users users = userRepository.save(
+                                    new Users(
+                                            socialLoginRequestDto,
+                                            userRepository.findAllCount()
+                                    )
+                            );
+                            folderRepository.save(
+                                    new Folder(
+                                            users
+                                    )
+                            );
+                            return users;
+                        }
                 );
-
-        folderRepository.save(
-                new Folder(
-                        user
-                )
-        );
         return createTokens2(user.getUsername());
     }
 
@@ -234,36 +237,42 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public TokenResponseDto refreshToken(String refreshToken) {
-        jwtTokenProvider.validToken(refreshToken);
-        Claims decodeToken = userInfoInJwt.getRefreshToken(refreshToken);
+        jwtTokenProvider.isHeaderToken(refreshToken);
+        jwtTokenProvider.isValidRefreshToken(refreshToken);
 
-        String decodeRefresh = (String) decodeToken.get(REFRESH_TOKEN);
+        Claims claims = userInfoInJwt.getToken(refreshToken);
 
-        if ((Optional.ofNullable(decodeRefresh).isPresent())) {
-            if (!decodeRefresh.equals(REFRESH_TOKEN)) {
-                throw new RuntimeException(refreshToken + "는 " + REFRESH_TOKEN + "이 아닙니다.  UserService + 163에러 ");
+        String decodeRefreshToken = (String) claims.get(REFRESH_TOKEN);
+
+        if ((Optional.ofNullable(decodeRefreshToken).isPresent())) {
+            if (!decodeRefreshToken.equals(REFRESH_TOKEN)) {
+                throw new CustomException(NOT_REFRESH_TOKEN);
             }
         } else {
-            throw new RuntimeException(REFRESH_TOKEN + "이 아닙니다. UserService 166에러 ");
+            throw new CustomException(NOT_REFRESH_TOKEN);
         }
 
-        return createTokens(findUser((String) decodeToken.get(CLAIMS_KEY)).getUsername());
+        Users user = findUser((String) claims.get(CLAIMS_KEY));
+        return createTokens(user.getUsername());
     }
 
     @Transactional(readOnly = true)
     public TokenResponseDto refreshToken2(String refreshToken) {
-        jwtTokenProvider.validToken(refreshToken);
-        Claims decodeToken = userInfoInJwt.getRefreshToken(refreshToken);
+        jwtTokenProvider.isHeaderToken(refreshToken);
+        jwtTokenProvider.isValidRefreshToken(refreshToken);
+
+        Claims decodeToken = userInfoInJwt.getToken(refreshToken);
 
         String decodeRefresh = (String) decodeToken.get(REFRESH_TOKEN);
 
         if ((Optional.ofNullable(decodeRefresh).isPresent())) {
             if (!decodeRefresh.equals(REFRESH_TOKEN)) {
-                throw new RuntimeException(refreshToken + "는 " + REFRESH_TOKEN + "이 아닙니다.  UserService + 163에러 ");
+                throw new CustomException(NOT_REFRESH_TOKEN);
             }
         } else {
-            throw new RuntimeException(REFRESH_TOKEN + "이 아닙니다. UserService 166에러 ");
+            throw new CustomException(NOT_REFRESH_TOKEN);
         }
+        Users user = findUser((String) decodeToken.get(CLAIMS_KEY));
         return createTokens2(findUser((String) decodeToken.get(CLAIMS_KEY)).getUsername());
     }
 
@@ -356,4 +365,28 @@ public class UserService {
         return userRepository.findByUsernameNoJoin(request.getAttribute(JWT_HEADER_KEY).toString())
                 .orElseThrow(() -> new RuntimeException("찾는 회원이 없습니다."));
     }
+
+    private UserRegisterRespDto joinValid(UserRequestDto dto) {
+        if (!Pattern.matches("^[a-zA-Z0-9]{4,11}$", dto.getUsername())) {
+            return new UserRegisterRespDto(false, "아이디를 다시 확인해주세요");
+        }
+        //        if (!Pattern.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", dto.getEmail())) {
+        //            return new UserRegisterRespDto(false, "이메일을 다시 확인해주세요");
+        //        }
+        if (!Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$", dto.getPassword())) {
+            return new UserRegisterRespDto(false, "패스워드를 다시 확인해주세요");
+        }
+        return null;
+    }
+
+    private UserRegisterRespDto duplicateCheck(UserRequestDto dto) {
+        if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
+            return new UserRegisterRespDto(false, "중복된 사용자 ID가 존재합니다.");
+        }
+        if (userRepository.findByNickname(dto.getNickname()).isPresent()) {
+            return new UserRegisterRespDto(false, "중복된 닉네임이 존재합니다.");
+        }
+        return null;
+    }
+
 }
