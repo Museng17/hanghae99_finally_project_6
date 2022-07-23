@@ -185,7 +185,7 @@ public class FolderService {
         return folderRepository.findByIdAndUsersIdNot(folderId, userinfoHttpRequest.userFindByToken(request).getId()).orElseThrow(()
                 -> new RuntimeException("원하는 폴더를 찾지 못했습니다."));
     }
-//
+
     //    @Transactional
     //    public void cloneFolder(Long folderId, HttpServletRequest request) {
     //        Users users = userinfoHttpRequest.userFindByToken(request);
