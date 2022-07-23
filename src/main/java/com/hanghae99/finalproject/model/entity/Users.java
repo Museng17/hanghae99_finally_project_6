@@ -79,12 +79,13 @@ public class Users extends TimeStamp {
         this.loginType = LoginType.GOOGLE;
     }
 
-    public Users(Long id, String imgPath, String information, String nickname, String username) {
+    public Users(Long id, String imgPath, String information, String nickname, String username, String email) {
         this.id = id;
         this.username = username;
         this.nickname = nickname;
         this.imgPath = imgPath;
         this.information = information;
+        this.email = email;
     }
 
     public void update(UserRequestDto userRequestDto) {

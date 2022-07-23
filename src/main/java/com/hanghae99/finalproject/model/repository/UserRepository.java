@@ -23,6 +23,6 @@ public interface UserRepository extends JpaRepository<Users, Long> {
 
     Users findFollowingById(Long id);
 
-    @Query("select new Users(u.id, u.imgPath, u.information, u.nickname, u.username) from Users u where u.username = ?1")
+    @Query("select new Users(u.id, u.imgPath, u.information, u.nickname, u.username, u.email) from Users u where u.username = ?1")
     Optional<Users> findByUsernameNoJoin(String toString);
 }
