@@ -42,8 +42,10 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     List<Board> deleteAllByFolderIdIn(List<Long> folderIdList);
 
-    @Query("SELECT DISTINCT(b.category) FROM Board b WHERE b.users.id = ?1 and b.folder.id = ?2")
-    List<CategoryType> findCategoryByUsersIdAndFolderId(Long id, Long folderId);
+    @Query("SELECT DISTINCT(b.category) FROM Board b WHERE b.users.id = ?1 and b.folder.id = ?2 and b.status in ?3")
+    List<CategoryType> findCategoryByUsersIdAndFolderId(Long id,
+                                                        Long folderId,
+                                                        List<DisclosureStatusType> disclosureStatusTypes);
 
     @Modifying
     @Query("update Board b set b.boardOrder = b.boardOrder +1 where b.boardOrder < ?1 and ?2 <= b.boardOrder and  b.folder.id = ?3")
