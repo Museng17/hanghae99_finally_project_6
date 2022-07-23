@@ -68,6 +68,7 @@ public class Users extends TimeStamp {
         this.boardCnt = 0L;
         this.folderCnt = 0L;
         this.email = Dto.getEmail();
+        this.imgPath = Dto.getImgPath();
     }
 
     public Users(SocialLoginRequestDto socialLoginRequestDto, int allCount) {
