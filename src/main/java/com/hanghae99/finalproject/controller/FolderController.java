@@ -72,11 +72,11 @@ public class FolderController {
     }
 
     @PostMapping("/folders/{userId}/{keyword}")
-    public List<Folder> moum(@PathVariable String keyword,
-                             HttpServletRequest request,
-                             @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
-                             @PathVariable Long userId,
-                             @RequestBody List<FolderRequestDto> folderRequestDtos) {
+    public List<FolderResponseDto> moum(@PathVariable String keyword,
+                                        HttpServletRequest request,
+                                        @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
+                                        @PathVariable Long userId,
+                                        @RequestBody List<FolderRequestDto> folderRequestDtos) {
         return folderService.moum(keyword, request, pageable, userId, folderRequestDtos);
     }
 

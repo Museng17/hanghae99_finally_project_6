@@ -234,7 +234,7 @@ public class FolderService {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("sharedCount").descending());
         List<Folder> folders = folderRepository.findAllBystatus(DisclosureStatusType.PUBLIC, pageRequest).getContent();
         List<FolderResponseDto> folderResponseDtos = new ArrayList<>();
-        for(Folder folder : folders){
+        for (Folder folder : folders) {
             folderResponseDtos.add(new FolderResponseDto(folder));
         }
         return folderResponseDtos;
@@ -245,11 +245,11 @@ public class FolderService {
     }
 
     @Transactional(readOnly = true)
-    public List<Folder> moum(String keyword,
-                             HttpServletRequest request,
-                             Pageable pageable,
-                             Long userId,
-                             List<FolderRequestDto> folderRequestDtos) {
+    public List<FolderResponseDto> moum(String keyword,
+                                        HttpServletRequest request,
+                                        Pageable pageable,
+                                        Long userId,
+                                        List<FolderRequestDto> folderRequestDtos) {
         List<DisclosureStatusType> disclosureStatusTypes = new ArrayList<>();
         disclosureStatusTypes.add(DisclosureStatusType.PUBLIC);
 
@@ -267,23 +267,26 @@ public class FolderService {
                 .findFirst();
 
         if (findAllCategory.isPresent()) {
-            return folderRepository.findByNameContaining(
-                    "%" + keyword + "%",
-                    users,
-                    boardService.findByFolder(findByBasicFolder(users)).size() > 0,
-                    disclosureStatusTypes,
-                    pageable
-            ).getContent();
+            return entityListToDtoListForFolder(
+                    folderRepository.findByNameContaining(
+                            "%" + keyword + "%",
+                            users,
+                            boardService.findByFolder(findByBasicFolder(users)).size() > 0,
+                            disclosureStatusTypes,
+                            pageable
+                    ).getContent()
+            );
         }
-
-        return folderRepository.findByNameContaining(
-                "%" + keyword + "%",
-                users,
-                boardService.findByFolder(findByBasicFolder(users)).size() > 0,
-                disclosureStatusTypes,
-                boardService.findSelectCategory(folderRequestDtos),
-                pageable
-        ).getContent();
+        return entityListToDtoListForFolder(
+                folderRepository.findByNameContaining(
+                        "%" + keyword + "%",
+                        users,
+                        boardService.findByFolder(findByBasicFolder(users)).size() > 0,
+                        disclosureStatusTypes,
+                        boardService.findSelectCategory(folderRequestDtos),
+                        pageable
+                ).getContent()
+        );
     }
 
     @Transactional(readOnly = true)

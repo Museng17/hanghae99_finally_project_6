@@ -1,6 +1,5 @@
 package com.hanghae99.finalproject.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae99.finalproject.model.dto.requestDto.FolderRequestDto;
 import com.hanghae99.finalproject.model.resultType.*;
 import lombok.*;
@@ -37,7 +36,6 @@ public class Folder extends TimeStamp {
     @Column(nullable = false)
     private Long reportCnt = 0L;
 
-    @JsonIgnore
     @ManyToOne
     private Users users;
 
