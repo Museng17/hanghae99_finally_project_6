@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.NOT_FIND_FOLDER;
 import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.NOT_FIND_USER;
 import static com.hanghae99.finalproject.model.resultType.CategoryType.*;
 import static com.hanghae99.finalproject.model.resultType.FileUploadType.BOARD;
@@ -236,10 +237,12 @@ public class BoardService {
     //    }
 
     @Transactional
-    public void cloneBoards(List<BoardRequestDto> boards, HttpServletRequest request) {
+    public void cloneBoards(List<BoardRequestDto> boards, HttpServletRequest request,Long folderId) {
         Users users = userinfoHttpRequest.userFindByToken(request);
 
-        Folder folder = folderRepository.findByUsersAndName(users, "무제");
+        Folder folder = folderRepository.findById(folderId).orElseThrow(() ->
+                new CustomException(NOT_FIND_FOLDER)
+        );
 
         List<Long> LongList = boards.stream()
                 .map(BoardRequestDto::getId)
