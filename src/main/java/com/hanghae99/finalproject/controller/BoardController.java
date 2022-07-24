@@ -71,9 +71,9 @@ public class BoardController {
     //    public void cloneBoard(@PathVariable Long boardId, HttpServletRequest request) {
     //        boardService.cloneBoard(boardId, request);
     //    }
-    @PostMapping("/myshare/boards")
-    public void cloneBoards(@RequestBody List<BoardRequestDto> boards, HttpServletRequest request) {
-        boardService.cloneBoards(boards, request);
+    @PostMapping("/myshare/boards/{folderId}")
+    public void cloneBoards(@RequestBody List<BoardRequestDto> boards, HttpServletRequest request,@PathVariable Long folderId) {
+        boardService.cloneBoards(boards, request,folderId);
     }
 
     @GetMapping("/newboards/{page}/{size}")

@@ -14,6 +14,7 @@ public class FollowDto {
     private  String information;
     private  String imgPath;
     private  String nickname;
+    private  Long boardCnt;
     private  Long id;
 
     public FollowDto(UserRequestDto userRequestDto, Long followerCnt ) {
@@ -21,6 +22,7 @@ public class FollowDto {
         this.nickname = userRequestDto.getNickname();
         this.imgPath = userRequestDto.getImgPath();
         this.information = userRequestDto.getInformation();
+        this.boardCnt = userRequestDto.getBoardCnt();
         this.followerCnt = followerCnt;
     }
 }
