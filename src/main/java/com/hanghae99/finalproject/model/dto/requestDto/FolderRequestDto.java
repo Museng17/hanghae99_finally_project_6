@@ -45,4 +45,8 @@ public class FolderRequestDto {
     public FolderRequestDto(Long boardId) {
         this.boardList.add(new Board(boardId));
     }
+
+    public FolderRequestDto(DisclosureStatusType status) {
+        this.status = status;
+    }
 }

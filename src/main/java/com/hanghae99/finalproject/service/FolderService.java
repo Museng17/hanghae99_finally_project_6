@@ -34,7 +34,6 @@ public class FolderService {
     private final S3Uploader s3Uploader;
     private final ReportRepository reportRepository;
     private final ImageRepository imageRepository;
-
     private final BoardRepository boardRepository;
 
     @Transactional
@@ -395,5 +394,19 @@ public class FolderService {
                         disclosureStatusTypes
                 )
         );
+    }
+
+    @Transactional
+    public Folder updateStatus(FolderRequestDto folderRequestDto, HttpServletRequest request) {
+        Users users = userinfoHttpRequest.userFindByToken(request);
+
+        Folder folder = folderRepository.findFolderByIdAndUsersId(
+                folderRequestDto.getId(),
+                users.getId()
+        ).orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
+
+        folder.updateStatus(folderRequestDto.getStatus());
+
+        return folder;
     }
 }

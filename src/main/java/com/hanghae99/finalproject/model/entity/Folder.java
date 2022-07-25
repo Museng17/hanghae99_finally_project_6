@@ -77,6 +77,11 @@ public class Folder extends TimeStamp {
         this.folderOrder = users.getFolderCnt() + 2;
     }
 
+    public Folder(Long id, DisclosureStatusType status) {
+        this.id = id;
+        this.status = status;
+    }
+
     public void update(FolderRequestDto folderRequestDto) {
         this.name = folderRequestDto.getName();
         this.status = folderRequestDto.getStatus();
@@ -88,5 +93,9 @@ public class Folder extends TimeStamp {
 
     public void updateBoardCnt(long boardCnt) {
         this.boardCnt = boardCnt;
+    }
+
+    public void updateStatus(DisclosureStatusType status) {
+        this.status = status;
     }
 }
