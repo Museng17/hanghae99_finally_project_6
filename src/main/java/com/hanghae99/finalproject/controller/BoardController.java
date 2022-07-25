@@ -31,8 +31,6 @@ public class BoardController {
     @PostMapping("/board")
     public MessageResponseDto boardSave(@RequestBody BoardRequestDto boardRequestDto,
                                         HttpServletRequest request) {
-        log.info("요청한 Method : " + request.getMethod());
-        log.info("요청한 URL : " + request.getRequestURI());
         return boardService.boardSave(boardRequestDto, request);
     }
 
@@ -40,8 +38,6 @@ public class BoardController {
     public void boardUpdate(@PathVariable Long id,
                             @RequestBody BoardRequestDto boardRequestDto,
                             HttpServletRequest request) {
-        log.info("요청한 Method : " + request.getMethod());
-        log.info("요청한 URL : " + request.getRequestURI());
         boardService.boardUpdate(id, boardRequestDto, request);
     }
 
@@ -49,8 +45,6 @@ public class BoardController {
     public void boardDelete(@RequestBody List<BoardRequestDto> boardRequestDtos,
                             HttpServletRequest request,
                             @PathVariable Long folderId) {
-        log.info("요청한 Method : " + request.getMethod());
-        log.info("요청한 URL : " + request.getRequestURI());
         boardService.boardDelete(boardRequestDtos, request, folderId);
     }
 
@@ -62,8 +56,6 @@ public class BoardController {
     @PostMapping("/boards")
     public void boardOrderChange(@RequestBody OrderRequestDto orderRequestDto,
                                  HttpServletRequest request) {
-        log.info("요청한 Method : " + request.getMethod());
-        log.info("요청한 URL : " + request.getRequestURI());
         boardService.boardOrderChange(orderRequestDto, request);
     }
 
@@ -88,8 +80,6 @@ public class BoardController {
                                  @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
                                  @PathVariable Long folderId,
                                  @PathVariable Long userId) {
-        log.info("요청한 Method : " + request.getMethod());
-        log.info("요청한 URL : " + request.getRequestURI());
         return boardService.moum(folderRequestDtos, keyword, request, pageable, folderId, userId);
     }
 
@@ -97,8 +87,6 @@ public class BoardController {
     public List<Map<String, CategoryType>> findCategoryList(@PathVariable Long folderId,
                                                             @PathVariable Long userId,
                                                             HttpServletRequest request) {
-        log.info("요청한 Method : " + request.getMethod());
-        log.info("요청한 URL : " + request.getRequestURI());
         return boardService.findCategoryList(userId, folderId, request);
     }
 
