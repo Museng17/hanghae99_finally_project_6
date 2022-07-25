@@ -51,11 +51,6 @@ public class FolderController {
         folderService.folderOrderChange(orderRequestDto, request);
     }
 
-    @GetMapping("/folders")
-    public List<Folder> folders() {
-        return folderService.folders();
-    }
-
     @PostMapping("/share/folder/{folderId}")
     public void shareFolder(@PathVariable Long folderId, HttpServletRequest request) {
         folderService.shareFolder(folderId, request);
@@ -106,5 +101,12 @@ public class FolderController {
     public void reportFolder(@PathVariable Long folderId,
                              HttpServletRequest request) {
         folderService.reportFolder(folderId, request);
+    }
+
+    @GetMapping("/folders")
+    public List<FolderResponseDto> findAllFolderList(@RequestParam(value = "status", defaultValue = "all") String status,
+                                                     @RequestParam(value = "userId", defaultValue = "0") Long userId,
+                                                     HttpServletRequest request) {
+        return folderService.findAllFolderList(status, userId, request);
     }
 }

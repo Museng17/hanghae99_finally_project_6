@@ -53,4 +53,7 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
     @Modifying
     @Query("update Folder f set f.folderOrder = f.folderOrder -1 where f.folderOrder > ?1 and ?2 >= f.folderOrder ")
     void updateOrderMinus(Long beforeOrder, Long afterOrder);
+
+    @Query("select f from Folder f where f.users.id = ?1 and  f.name not like case when ?2 = 'all' then '' else '무제' end and  f.status in ?3")
+    List<Folder> findFolderList(Long id, String status, List<DisclosureStatusType> disclosureStatusTypes);
 }
