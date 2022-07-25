@@ -26,11 +26,11 @@ public class FollowController {
     }
 
     @DeleteMapping("/unfollow/{followerId}")
-    public boolean unFollowUser(@PathVariable long followerId, HttpServletRequest request) {
+    public MessageResponseDto unFollowUser(@PathVariable long followerId, HttpServletRequest request) {
         Users user = userinfoHttpRequest.userFindByToken(request);
         Long id = followService.getFollowId(user.getId(), followerId);
         followRepository.deleteById(id);
 
-        return true;
+        return new MessageResponseDto(200, "팔로우 취소 성공");
     }
 }
