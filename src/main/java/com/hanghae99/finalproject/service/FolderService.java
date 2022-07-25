@@ -18,7 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.NOT_FIND_FOLDER;
+import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.*;
 import static com.hanghae99.finalproject.model.resultType.CategoryType.ALL;
 import static com.hanghae99.finalproject.model.resultType.FileUploadType.BOARD;
 
@@ -372,5 +372,28 @@ public class FolderService {
         reportRepository.save(new Report(users, folder));
         folder.setReportCnt(folder.getReportCnt() + 1);
         baduser.setReportCnt(baduser.getReportCnt() + 1);
+    }
+
+    @Transactional(readOnly = true)
+    public List<FolderResponseDto> findAllFolderList(String status, Long userId, HttpServletRequest request) {
+        List<DisclosureStatusType> disclosureStatusTypes = new ArrayList<>();
+        disclosureStatusTypes.add(DisclosureStatusType.PUBLIC);
+
+        Users users = userRepository.findById(userId)
+                .orElseGet(() -> {
+                    if (userId == 0L) {
+                        disclosureStatusTypes.add(DisclosureStatusType.PRIVATE);
+                        return userinfoHttpRequest.userFindByToken(request);
+                    }
+                    throw new CustomException(NOT_FIND_USER);
+                });
+
+        return entityListToDtoListForFolder(
+                folderRepository.findFolderList(
+                        users.getId(),
+                        status,
+                        disclosureStatusTypes
+                )
+        );
     }
 }
