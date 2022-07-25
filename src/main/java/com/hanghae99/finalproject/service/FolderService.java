@@ -314,7 +314,8 @@ public class FolderService {
                     throw new RuntimeException("회원을 찾을 수 없습니다.");
                 });
 
-        return entityListToDtoListForFolder(folderRepository.findAllByIdAndNameLike(
+        return entityListToDtoListForFolder(
+                folderRepository.findAllByIdAndNameLike(
                         listToId(shareRepository.findAllByUsersId(users.getId())),
                         "%" + keyword + "%",
                         pageable
@@ -357,7 +358,10 @@ public class FolderService {
     }
 
     private List<Long> listToId(List<Share> List) {
-        return List.stream().map(Share::getId).collect(Collectors.toList());
+        return List.stream()
+                .map(Share::getFolder)
+                .map(Folder::getId)
+                .collect(Collectors.toList());
     }
 
     @Transactional
