@@ -82,34 +82,34 @@ public class UserController {
     }
 
     @DeleteMapping("/user/getout")
-    public Boolean userDelete(HttpServletRequest request) {
+    public MessageResponseDto userDelete(HttpServletRequest request) {
 
         return userService.UserDelete(request);
     }
 
     @PutMapping("/user/updateName")
-    public Boolean userUpdate(@RequestBody UserRequestDto userRequestDto,
+    public MessageResponseDto userUpdate(@RequestBody UserRequestDto userRequestDto,
                               HttpServletRequest request) {
 
-        return userService.updateUserName(userRequestDto, request);
+        return userService.updateUserNickname(userRequestDto, request);
     }
 
     @PutMapping("/user/updateInfo")
-    public Boolean userUpdateInfo(@RequestBody UserRequestDto userRequestDto,
+    public MessageResponseDto userUpdateInfo(@RequestBody UserRequestDto userRequestDto,
                                   HttpServletRequest request) {
 
         return userService.updateUserInfo(userRequestDto, request);
     }
 
     @PutMapping("/user/pw/update")
-    public Boolean userPwUpdate(@RequestBody UserRequestDto userRequestDto,
+    public MessageResponseDto userPwUpdate(@RequestBody UserRequestDto userRequestDto,
                                 HttpServletRequest request) {
 
         return userService.updateUserPw(userRequestDto, request);
     }
 
     @PostMapping("/user/pw/check")
-    public Boolean userPwCheck(@RequestBody UserRequestDto userRequestDto,
+    public MessageResponseDto userPwCheck(@RequestBody UserRequestDto userRequestDto,
                                HttpServletRequest request) {
 
         return userService.checkUserPw(userRequestDto, request);
@@ -117,19 +117,21 @@ public class UserController {
 
     @GetMapping("/user/profile")
     public Users findUserProfile(HttpServletRequest request) {
+
         return userService.findUserProfile(request);
     }
 
     @GetMapping("/user/profile/{id}")
     public UserProfileDto findUserProfile(Model model, @PathVariable Long id, HttpServletRequest request) {
-
         model.addAttribute("userProfileDto");
+
         return userService.getProfile(id, request);
     }
 
     @GetMapping("/user/myProfile")
     public MyProfileDto findMyProfile(Model model, HttpServletRequest request) {
         model.addAttribute("myProfileDto");
+
         return userService.getMyProfile(request);
     }
 

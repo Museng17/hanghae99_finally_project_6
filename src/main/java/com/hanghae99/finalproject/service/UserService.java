@@ -132,7 +132,7 @@ public class UserService {
 
     public String findUsername(UserRequestDto userRequestDto) {
         Users user = userRepository.findByEmail(userRequestDto.getEmail())
-                .orElseThrow(() -> new RuntimeException("UserService 38에러 회원가입되지 않은 이메일입니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FIND_USER));
 
         return user.getUsername();
     }
@@ -206,7 +206,7 @@ public class UserService {
     }
 
     @Transactional
-    public Boolean UserDelete(HttpServletRequest request) {
+    public MessageResponseDto UserDelete(HttpServletRequest request) {
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
 
         List<Board> removeBoardList = boardRepository.findByUsersId(user.getId());
@@ -226,12 +226,9 @@ public class UserService {
 
         shareRepository.deleteByUsersId(user.getId());
         shareRepository.deleteAllByFolderIdIn(removeFolderIdList);
-
         reportRepository.deleteByReporterId(user.getId());
-
         reportRepository.deleteByReporterId(user.getId());
         reportRepository.deleteAllByBadfolderIdIn(removeFolderIdList);
-
         followRepository.deleteByFollowingId(user.getId());
         followRepository.deleteByFollowerId(user.getId());
         imageRepository.deleteByBoardIdIn(removeBoardIdList);
@@ -239,12 +236,12 @@ public class UserService {
         folderRepository.deleteAllByUsers(user);
         userRepository.deleteById(user.getId());
 
-        return true;
+        return new MessageResponseDto(200, "계정 탈퇴 성공");
     }
 
     public Users userFindById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FIND_USER));
     }
 
     public SocialLoginRequestDto googleUserInfoByAccessToken(String accessToken) {
@@ -307,15 +304,17 @@ public class UserService {
     }
 
     @Transactional
-    public Boolean updateUserName(UserRequestDto userRequestDto, HttpServletRequest request) {
+    public MessageResponseDto updateUserNickname(UserRequestDto userRequestDto, HttpServletRequest request) {
         isNickNameValid(userRequestDto);
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
+
         if (!checkNameDuplicate(userRequestDto.getNickname())) {
-            throw new RuntimeException("닉네임이 중복되었습니다.");
+            throw new CustomException(ErrorCode.OVERLAP_NICKNAME);
         }
 
         user.update(userRequestDto);
-        return true;
+
+        return new MessageResponseDto(200, "계정 닉네임 변경 성공");
     }
 
     @Transactional
@@ -326,18 +325,19 @@ public class UserService {
     }
 
     @Transactional
-    public Boolean updateUserInfo(UserRequestDto userRequestDto, HttpServletRequest request) {
+    public MessageResponseDto updateUserInfo(UserRequestDto userRequestDto, HttpServletRequest request) {
         if (userRequestDto.getInformation().length() > 40) {
             throw new RuntimeException("40이하로 입력해주세요");
         }
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
+
         user.updateInfo(userRequestDto);
 
-        return true;
+        return new MessageResponseDto(200, "계정 정보 수정 완료");
     }
 
     @Transactional
-    public Boolean updateUserPw(UserRequestDto userRequestDto, HttpServletRequest request) {
+    public MessageResponseDto updateUserPw(UserRequestDto userRequestDto, HttpServletRequest request) {
         if (!Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$", userRequestDto.getPassword())) {
             throw new RuntimeException("비밀번호를 확인해주세요");
         }
@@ -345,23 +345,23 @@ public class UserService {
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
 
         if (!bCryptPasswordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {
-            throw new RuntimeException("비밀번호가 틀렸습니다.");
+            return new MessageResponseDto(501, "기존 비밀번호 확인 실패");
         }
 
         user.updatePw(bCryptPasswordEncoder.encode(userRequestDto.getNewPassword()));
 
-        return true;
+        return new MessageResponseDto(200, "계정 비밀번호 변경 완료");
     }
 
     @Transactional
-    public Boolean checkUserPw(UserRequestDto userRequestDto, HttpServletRequest request) {
+    public MessageResponseDto checkUserPw(UserRequestDto userRequestDto, HttpServletRequest request) {
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
 
         if (!bCryptPasswordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {
-            throw new RuntimeException("현재 비밀번호와 다릅니다.");
+            return new MessageResponseDto(501, "비밀번호가 다릅니다");
         } else {
 
-            return true;
+            return new MessageResponseDto(200, "비밀번호 확인 성공");
         }
     }
 
@@ -398,7 +398,7 @@ public class UserService {
         return null;
     }
 
-    private void isNickNameValid(UserRequestDto userRequestDto){
+    private void isNickNameValid(UserRequestDto userRequestDto) {
         if (userRequestDto.getNickname().trim().replace(" ", "").startsWith("운영자") ||
                 userRequestDto.getNickname().trim().replace(" ", "").startsWith("admin")) {
             throw new RuntimeException("사용할 수 없는 닉네임입니다.");
