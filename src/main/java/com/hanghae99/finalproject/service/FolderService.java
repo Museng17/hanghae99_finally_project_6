@@ -171,14 +171,16 @@ public class FolderService {
     }
 
     @Transactional
-    public void shareFolder(Long folderId, HttpServletRequest request) {
+    public MessageResponseDto shareFolder(Long folderId, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
         Folder folder = findShareFolder(folderId, request);
-        Optional<Share> findShare = shareRepository.findByIdAndUsersId(folderId, users.getId());
+        Optional<Share> findShare = shareRepository.findByFolderIdAndUsersId(folderId, users.getId());
         if (!findShare.isPresent()) {
             Share share = new Share(folder, users);
             shareRepository.save(share);
+            return new MessageResponseDto<>(200,"공유되었습니다.");
         }
+        return new MessageResponseDto<>(501,"이미 공유된 모음입니다.");
     }
 
     private Folder findShareFolder(Long folderId, HttpServletRequest request) {
@@ -414,10 +416,11 @@ public class FolderService {
 
         return folder;
     }
+    @Transactional
     public void deleteShare(Long folderId,HttpServletRequest request){
         Users user = userinfoHttpRequest.userFindByToken(request);
-        Share share = shareRepository.findByIdAndUsersId(folderId,user.getId())
-                .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
+        Share share = shareRepository.findByFolderIdAndUsersId(folderId,user.getId())
+                .orElseThrow(() -> new CustomException(NOT_FIND_SHARE));
         shareRepository.delete(share);
     }
 }

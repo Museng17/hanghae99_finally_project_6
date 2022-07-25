@@ -52,8 +52,8 @@ public class FolderController {
     }
 
     @PostMapping("/share/folder/{folderId}")
-    public void shareFolder(@PathVariable Long folderId, HttpServletRequest request) {
-        folderService.shareFolder(folderId, request);
+    public MessageResponseDto shareFolder(@PathVariable Long folderId, HttpServletRequest request) {
+        return folderService.shareFolder(folderId, request);
     }
 
     //    @PostMapping("/myshare/folder/{folderId}")
