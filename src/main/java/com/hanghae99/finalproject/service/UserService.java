@@ -166,6 +166,9 @@ public class UserService {
 
         Users user = userRepository.findByUsername(socialLoginRequestDto.getEmail())
                 .orElseGet(() -> {
+                            if (!checkEmailDuplicate(socialLoginRequestDto.getEmail())) {
+                                throw new RuntimeException("이미 존재하는 이메일입니다.");
+                            }
                             Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7)));
                             folderRepository.save(new Folder(users));
                             return users;
@@ -184,6 +187,9 @@ public class UserService {
 
         Users user = userRepository.findByUsername(socialLoginRequestDto.getEmail())
                 .orElseGet(() -> {
+                            if (!checkEmailDuplicate(socialLoginRequestDto.getEmail())) {
+                                throw new RuntimeException("이미 존재하는 이메일입니다.");
+                            }
                             Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7)));
                             folderRepository.save(new Folder(users));
                             return users;
