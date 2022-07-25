@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.*;
+import static com.hanghae99.finalproject.interceptor.JwtTokenInterceptor.JWT_HEADER_KEY;
 import static com.hanghae99.finalproject.model.resultType.CategoryType.ALL;
 import static com.hanghae99.finalproject.model.resultType.FileUploadType.BOARD;
 
@@ -408,5 +409,11 @@ public class FolderService {
         folder.updateStatus(folderRequestDto.getStatus());
 
         return folder;
+    }
+    public void deleteShare(Long folderId,HttpServletRequest request){
+        Users user = userinfoHttpRequest.userFindByToken(request);
+        Share share = shareRepository.findByIdAndUsersId(folderId,user.getId())
+                .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
+        shareRepository.delete(share);
     }
 }

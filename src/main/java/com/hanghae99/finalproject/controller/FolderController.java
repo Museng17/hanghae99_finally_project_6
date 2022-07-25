@@ -115,4 +115,8 @@ public class FolderController {
                                HttpServletRequest request) {
         return folderService.updateStatus(folderRequestDto, request);
     }
+    @DeleteMapping("/share/delete/{folderId}")
+    public void deleteShare(@PathVariable Long folderId, HttpServletRequest request){
+        folderService.deleteShare(folderId,request);
+    }
 }
