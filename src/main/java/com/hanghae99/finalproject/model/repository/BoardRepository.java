@@ -64,4 +64,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> findAllByIdIn(List<Long> longList);
 
     Optional<Board> findByIdAndUsers(Long boardId, Users userFindByToken);
+
+    @Query("select new Board (b.id, b.status) from Board b where b.id = ?1 and b.users.id = ?2")
+    Optional<Board> findBoardByIdAndUsersId(Long folderId, Long id);
 }

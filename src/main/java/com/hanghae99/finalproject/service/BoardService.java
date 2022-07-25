@@ -22,8 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.NOT_FIND_FOLDER;
-import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.NOT_FIND_USER;
+import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.*;
 import static com.hanghae99.finalproject.model.resultType.CategoryType.*;
 import static com.hanghae99.finalproject.model.resultType.FileUploadType.BOARD;
 
@@ -200,7 +199,7 @@ public class BoardService {
         Optional<Board> board = boardRepository.findByFolderId(id);
 
         if (board.isPresent()) {
-            board.get().updateStatus(folderRequestDto);
+            board.get().updateStatus(new FolderRequestDto(folderRequestDto.getStatus()));
         }
 
     }
@@ -237,7 +236,7 @@ public class BoardService {
     //    }
 
     @Transactional
-    public void cloneBoards(List<BoardRequestDto> boards, HttpServletRequest request,Long folderId) {
+    public void cloneBoards(List<BoardRequestDto> boards, HttpServletRequest request, Long folderId) {
         Users users = userinfoHttpRequest.userFindByToken(request);
 
         Folder folder = folderRepository.findById(folderId).orElseThrow(() ->
@@ -422,11 +421,13 @@ public class BoardService {
                 .orElseThrow(() -> new RuntimeException("없는 글입니다."));
 
         Long afterCnt = 1L;
+
         for (Board board : afterBoard) {
             board.addFolderId(afterFolder);
             board.updateOrder(afterFolder.getBoardCnt() + afterCnt);
             afterCnt++;
         }
+
         afterFolder.setBoardCnt(afterFolder.getBoardCnt() + afterBoard.size());
 
         Folder beforeFolder = findByIdAndUsersId(beforeBoardId, request);
@@ -475,5 +476,19 @@ public class BoardService {
                 )
         );
 
+    }
+
+    @Transactional
+    public Board updateStatus(BoardRequestDto boardRequestDto, HttpServletRequest request) {
+        Users users = userinfoHttpRequest.userFindByToken(request);
+
+        Board board = boardRepository.findBoardByIdAndUsersId(
+                boardRequestDto.getId(),
+                users.getId()
+        ).orElseThrow(() -> new CustomException(NOT_FIND_BOARD));
+
+        board.updateStatus(new FolderRequestDto(boardRequestDto.getStatus()));
+
+        return board;
     }
 }

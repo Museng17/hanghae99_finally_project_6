@@ -72,8 +72,8 @@ public class BoardController {
     //        boardService.cloneBoard(boardId, request);
     //    }
     @PostMapping("/myshare/boards/{folderId}")
-    public void cloneBoards(@RequestBody List<BoardRequestDto> boards, HttpServletRequest request,@PathVariable Long folderId) {
-        boardService.cloneBoards(boards, request,folderId);
+    public void cloneBoards(@RequestBody List<BoardRequestDto> boards, HttpServletRequest request, @PathVariable Long folderId) {
+        boardService.cloneBoards(boards, request, folderId);
     }
 
     @GetMapping("/newboards/{page}/{size}")
@@ -115,5 +115,11 @@ public class BoardController {
                               @RequestBody FolderRequestDto folderRequestDto,
                               HttpServletRequest request) {
         boardService.boardInFolder(folderId, folderRequestDto, request);
+    }
+
+    @PutMapping("/board/status")
+    public Board updateStatus(@RequestBody BoardRequestDto boardRequestDto,
+                              HttpServletRequest request) {
+        return boardService.updateStatus(boardRequestDto, request);
     }
 }

@@ -11,6 +11,9 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
 
     Optional<Folder> findByIdAndUsersId(Long folderId, Long userId);
 
+    @Query("select new Folder (f.id, f.status) from Folder f where f.id = ?1 and f.users.id = ?2")
+    Optional<Folder> findFolderByIdAndUsersId(Long folderId, Long userId);
+
     void deleteAllByUsers(Users user);
 
     @Query("select f from Folder f where  f.name not like '무제'   and f.status in ?1")

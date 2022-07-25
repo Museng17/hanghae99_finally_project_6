@@ -109,4 +109,10 @@ public class FolderController {
                                                      HttpServletRequest request) {
         return folderService.findAllFolderList(status, userId, request);
     }
+
+    @PutMapping("/folder/status")
+    public Folder updateStatus(@RequestBody FolderRequestDto folderRequestDto,
+                               HttpServletRequest request) {
+        return folderService.updateStatus(folderRequestDto, request);
+    }
 }

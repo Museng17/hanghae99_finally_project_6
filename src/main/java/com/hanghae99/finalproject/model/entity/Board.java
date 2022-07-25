@@ -139,6 +139,12 @@ public class Board extends TimeStamp {
         this.category = inNullCheck(boardRequestDto.getCategory());
     }
 
+    public Board(Long id,
+                 DisclosureStatusType status) {
+        this.id = id;
+        this.status = status;
+    }
+
     public void updateOrder(Long order) {
         this.boardOrder = order;
     }
