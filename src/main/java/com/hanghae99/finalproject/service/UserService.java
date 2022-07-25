@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.NOT_REFRESH_TOKEN;
@@ -166,31 +166,13 @@ public class UserService {
 
         Users user = userRepository.findByUsername(socialLoginRequestDto.getEmail())
                 .orElseGet(() -> {
-                            Users users = userRepository.save(
-                                    new Users(
-                                            socialLoginRequestDto,
-                                            userRepository.findAllCount()
-                                    )
-                            );
-                            folderRepository.save(
-                                    new Folder(
-                                            users
-                                    )
-                            );
+                            Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7)));
+                            folderRepository.save(new Folder(users));
                             return users;
                         }
                 );
 
-        Users users = userRepository.findByEmail(socialLoginRequestDto.getEmail())
-                .orElseGet(() ->
-                        userRepository.save(
-                                new Users(
-                                        socialLoginRequestDto,
-                                        userRepository.findAllCount()
-                                )
-                        )
-
-                );
+        user.updateNickName();
 
         return createTokens(user.getUsername());
     }
@@ -202,17 +184,8 @@ public class UserService {
 
         Users user = userRepository.findByUsername(socialLoginRequestDto.getEmail())
                 .orElseGet(() -> {
-                            Users users = userRepository.save(
-                                    new Users(
-                                            socialLoginRequestDto,
-                                            userRepository.findAllCount()
-                                    )
-                            );
-                            folderRepository.save(
-                                    new Folder(
-                                            users
-                                    )
-                            );
+                            Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7)));
+                            folderRepository.save(new Folder(users));
                             return users;
                         }
                 );
