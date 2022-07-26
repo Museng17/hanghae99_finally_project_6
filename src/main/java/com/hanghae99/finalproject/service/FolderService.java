@@ -19,7 +19,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.*;
-import static com.hanghae99.finalproject.interceptor.JwtTokenInterceptor.JWT_HEADER_KEY;
 import static com.hanghae99.finalproject.model.resultType.CategoryType.ALL;
 import static com.hanghae99.finalproject.model.resultType.FileUploadType.BOARD;
 
@@ -178,9 +177,9 @@ public class FolderService {
         if (!findShare.isPresent()) {
             Share share = new Share(folder, users);
             shareRepository.save(share);
-            return new MessageResponseDto<>(200,"공유되었습니다.");
+            return new MessageResponseDto<>(200, "공유되었습니다.");
         }
-        return new MessageResponseDto<>(501,"이미 공유된 모음입니다.");
+        return new MessageResponseDto<>(501, "이미 공유된 모음입니다.");
     }
 
     private Folder findShareFolder(Long folderId, HttpServletRequest request) {
@@ -232,10 +231,10 @@ public class FolderService {
     }
 
     @Transactional
-    public List<FolderResponseDto> findBestFolder(int page, int size,HttpServletRequest request) {
+    public List<FolderResponseDto> findBestFolder(int page, int size, HttpServletRequest request) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("sharedCount").descending());
         Users users = userinfoHttpRequest.userFindByToken(request);
-        List<Folder> folders = folderRepository.findAllBystatus(DisclosureStatusType.PUBLIC,users.getId(), pageRequest).getContent();
+        List<Folder> folders = folderRepository.findAllBystatus(DisclosureStatusType.PUBLIC, users.getId(), pageRequest).getContent();
         List<FolderResponseDto> folderResponseDtos = new ArrayList<>();
         for (Folder folder : folders) {
             folderResponseDtos.add(new FolderResponseDto(folder));
@@ -248,11 +247,11 @@ public class FolderService {
     }
 
     @Transactional(readOnly = true)
-    public List<FolderResponseDto> moum(String keyword,
-                                        HttpServletRequest request,
-                                        Pageable pageable,
-                                        Long userId,
-                                        List<FolderRequestDto> folderRequestDtos) {
+    public MessageResponseDto moum(String keyword,
+                                   HttpServletRequest request,
+                                   Pageable pageable,
+                                   Long userId,
+                                   List<FolderRequestDto> folderRequestDtos) {
         List<DisclosureStatusType> disclosureStatusTypes = new ArrayList<>();
         disclosureStatusTypes.add(DisclosureStatusType.PUBLIC);
 
@@ -262,7 +261,7 @@ public class FolderService {
                         disclosureStatusTypes.add(DisclosureStatusType.PRIVATE);
                         return userinfoHttpRequest.userFindByToken(request);
                     }
-                    throw new RuntimeException("회원을 찾을 수 없습니다.");
+                    throw new CustomException(NOT_FIND_USER);
                 });
 
         Optional<FolderRequestDto> findAllCategory = folderRequestDtos.stream()
@@ -270,17 +269,17 @@ public class FolderService {
                 .findFirst();
 
         if (findAllCategory.isPresent()) {
-            return entityListToDtoListForFolder(
+            return pageEntityListToDtoListForFolder(
                     folderRepository.findByNameContaining(
                             "%" + keyword + "%",
                             users,
                             boardService.findByFolder(findByBasicFolder(users)).size() > 0,
                             disclosureStatusTypes,
                             pageable
-                    ).getContent()
+                    )
             );
         }
-        return entityListToDtoListForFolder(
+        return pageEntityListToDtoListForFolder(
                 folderRepository.findByNameContaining(
                         "%" + keyword + "%",
                         users,
@@ -288,7 +287,7 @@ public class FolderService {
                         disclosureStatusTypes,
                         boardService.findSelectCategory(folderRequestDtos),
                         pageable
-                ).getContent()
+                )
         );
     }
 
@@ -305,7 +304,7 @@ public class FolderService {
     }
 
     @Transactional(readOnly = true)
-    public List<FolderResponseDto> shareList(String keyword, HttpServletRequest request, Pageable pageable, Long userId) {
+    public MessageResponseDto shareList(String keyword, HttpServletRequest request, Pageable pageable, Long userId) {
         List<DisclosureStatusType> disclosureStatusTypes = new ArrayList<>();
         disclosureStatusTypes.add(DisclosureStatusType.PUBLIC);
 
@@ -315,15 +314,15 @@ public class FolderService {
                         disclosureStatusTypes.add(DisclosureStatusType.PRIVATE);
                         return userinfoHttpRequest.userFindByToken(request);
                     }
-                    throw new RuntimeException("회원을 찾을 수 없습니다.");
+                    throw new CustomException(NOT_FIND_USER);
                 });
 
-        return entityListToDtoListForFolder(
+        return pageEntityListToDtoListForFolder(
                 folderRepository.findAllByIdAndNameLike(
                         listToId(shareRepository.findAllByUsersId(users.getId())),
                         "%" + keyword + "%",
                         pageable
-                ).getContent()
+                )
         );
 
     }
@@ -335,6 +334,15 @@ public class FolderService {
             folderResponseDtos.add(new FolderResponseDto(folder));
         }
         return folderResponseDtos;
+    }
+
+    private MessageResponseDto pageEntityListToDtoListForFolder(Page<Folder> content) {
+        List<FolderResponseDto> folderResponseDtos = new ArrayList<>();
+        List<Folder> contentList = content.getContent();
+        for (Folder folder : contentList) {
+            folderResponseDtos.add(new FolderResponseDto(folder));
+        }
+        return new MessageResponseDto(200, "조회 완료", folderResponseDtos, content.getTotalPages());
     }
 
     public FolderListResponseDto allFolders(String keyword, HttpServletRequest request, Pageable pageable) {
@@ -417,10 +425,11 @@ public class FolderService {
 
         return folder;
     }
+
     @Transactional
-    public void deleteShare(Long folderId,HttpServletRequest request){
+    public void deleteShare(Long folderId, HttpServletRequest request) {
         Users user = userinfoHttpRequest.userFindByToken(request);
-        Share share = shareRepository.findByFolderIdAndUsersId(folderId,user.getId())
+        Share share = shareRepository.findByFolderIdAndUsersId(folderId, user.getId())
                 .orElseThrow(() -> new CustomException(NOT_FIND_SHARE));
         shareRepository.delete(share);
     }

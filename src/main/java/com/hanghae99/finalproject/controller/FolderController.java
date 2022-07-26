@@ -62,16 +62,16 @@ public class FolderController {
     //    }
 
     @GetMapping("/BestFolders/{page}/{size}")
-    public List<FolderResponseDto> findBestFolders(@PathVariable int page, @PathVariable int size,HttpServletRequest request) {
-        return folderService.findBestFolder(page, size,request);
+    public List<FolderResponseDto> findBestFolders(@PathVariable int page, @PathVariable int size, HttpServletRequest request) {
+        return folderService.findBestFolder(page, size, request);
     }
 
     @PostMapping("/folders/{userId}/{keyword}")
-    public List<FolderResponseDto> moum(@PathVariable String keyword,
-                                        HttpServletRequest request,
-                                        @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
-                                        @PathVariable Long userId,
-                                        @RequestBody List<FolderRequestDto> folderRequestDtos) {
+    public MessageResponseDto moum(@PathVariable String keyword,
+                                   HttpServletRequest request,
+                                   @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
+                                   @PathVariable Long userId,
+                                   @RequestBody List<FolderRequestDto> folderRequestDtos) {
         return folderService.moum(keyword, request, pageable, userId, folderRequestDtos);
     }
 
@@ -82,10 +82,10 @@ public class FolderController {
     }
 
     @GetMapping("/shares/{userId}/{keyword}")
-    public List<FolderResponseDto> shareList(@PathVariable String keyword,
-                                             HttpServletRequest request,
-                                             @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
-                                             @PathVariable Long userId) {
+    public MessageResponseDto shareList(@PathVariable String keyword,
+                                        HttpServletRequest request,
+                                        @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
+                                        @PathVariable Long userId) {
         return folderService.shareList(keyword, request, pageable, userId);
     }
 
@@ -115,8 +115,9 @@ public class FolderController {
                                HttpServletRequest request) {
         return folderService.updateStatus(folderRequestDto, request);
     }
+
     @DeleteMapping("/share/delete/{folderId}")
-    public void deleteShare(@PathVariable Long folderId, HttpServletRequest request){
-        folderService.deleteShare(folderId,request);
+    public void deleteShare(@PathVariable Long folderId, HttpServletRequest request) {
+        folderService.deleteShare(folderId, request);
     }
 }
