@@ -16,6 +16,7 @@ public class BoardRequestDto {
     private DisclosureStatusType status;
     private BoardType boardType;
     private Long folderId;
+    private String folderName;
     private CategoryType category;
     private Long boardOrder;
     private ImageRequestDto image;
@@ -36,5 +37,9 @@ public class BoardRequestDto {
 
     public void updateImagePath(String url) {
         this.imgPath = url;
+    }
+
+    public void updateFolderName(String name) {
+        this.folderName = name;
     }
 }
