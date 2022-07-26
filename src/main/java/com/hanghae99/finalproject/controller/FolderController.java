@@ -62,8 +62,8 @@ public class FolderController {
     //    }
 
     @GetMapping("/BestFolders/{page}/{size}")
-    public List<FolderResponseDto> findBestFolders(@PathVariable int page, @PathVariable int size) {
-        return folderService.findBestFolder(page, size);
+    public List<FolderResponseDto> findBestFolders(@PathVariable int page, @PathVariable int size,HttpServletRequest request) {
+        return folderService.findBestFolder(page, size,request);
     }
 
     @PostMapping("/folders/{userId}/{keyword}")

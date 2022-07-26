@@ -232,9 +232,10 @@ public class FolderService {
     }
 
     @Transactional
-    public List<FolderResponseDto> findBestFolder(int page, int size) {
+    public List<FolderResponseDto> findBestFolder(int page, int size,HttpServletRequest request) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("sharedCount").descending());
-        List<Folder> folders = folderRepository.findAllBystatus(DisclosureStatusType.PUBLIC, pageRequest).getContent();
+        Users users = userinfoHttpRequest.userFindByToken(request);
+        List<Folder> folders = folderRepository.findAllBystatus(DisclosureStatusType.PUBLIC,users.getId(), pageRequest).getContent();
         List<FolderResponseDto> folderResponseDtos = new ArrayList<>();
         for (Folder folder : folders) {
             folderResponseDtos.add(new FolderResponseDto(folder));
