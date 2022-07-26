@@ -16,8 +16,8 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
 
     void deleteAllByUsers(Users user);
 
-    @Query("select f from Folder f where  f.name not like '무제'   and f.status in ?1")
-    Page<Folder> findAllBystatus(DisclosureStatusType status, Pageable pageable);
+    @Query("select f from Folder f where  f.name not like '무제'   and f.status in ?1 and not f.users.id = ?2")
+    Page<Folder> findAllBystatus(DisclosureStatusType status,Long userId, Pageable pageable);
 
     Optional<Folder> findByIdAndUsersIdNot(Long folderId, Long id);
 
