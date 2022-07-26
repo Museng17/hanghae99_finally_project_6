@@ -144,7 +144,7 @@ public class UserController {
     }
 
     @GetMapping("/followinguser/{page}/{size}")
-    public FollowResponseDto findFollowingUser(@PathVariable int page, @PathVariable int size, HttpServletRequest request) {
+    public MessageResponseDto findFollowingUser(@PathVariable int page, @PathVariable int size, HttpServletRequest request) {
         return followService.findFollowingUser(page, size, request);
     }
 }

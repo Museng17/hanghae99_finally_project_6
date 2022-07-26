@@ -231,7 +231,7 @@ public class FolderService {
     }
 
     @Transactional
-    public List<FolderResponseDto> findBestFolder(int page, int size, HttpServletRequest request) {
+    public MessageResponseDto findBestFolder(int page, int size,HttpServletRequest request) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("sharedCount").descending());
         Users users = userinfoHttpRequest.userFindByToken(request);
         List<Folder> folders = folderRepository.findAllBystatus(DisclosureStatusType.PUBLIC, users.getId(), pageRequest).getContent();
@@ -239,7 +239,7 @@ public class FolderService {
         for (Folder folder : folders) {
             folderResponseDtos.add(new FolderResponseDto(folder));
         }
-        return folderResponseDtos;
+        return new MessageResponseDto(200,"인기 모음 찾기 완료.",folderResponseDtos);
     }
 
     public Folder findByBasicFolder(Users users) {
@@ -336,6 +336,7 @@ public class FolderService {
         return folderResponseDtos;
     }
 
+
     private MessageResponseDto pageEntityListToDtoListForFolder(Page<Folder> content) {
         List<FolderResponseDto> folderResponseDtos = new ArrayList<>();
         List<Folder> contentList = content.getContent();
@@ -345,7 +346,8 @@ public class FolderService {
         return new MessageResponseDto(200, "조회 완료", folderResponseDtos, content.getTotalPages());
     }
 
-    public FolderListResponseDto allFolders(String keyword, HttpServletRequest request, Pageable pageable) {
+    public MessageResponseDto allFolders(String keyword, HttpServletRequest request, Pageable pageable) {
+
         Users users = userinfoHttpRequest.userFindByToken(request);
 
         Page<Folder> folders = folderRepository.findAllByNameContaining1(
@@ -355,7 +357,7 @@ public class FolderService {
                 pageable
         );
 
-        return new FolderListResponseDto(getFolder(folders.getContent()), folders.getTotalElements());
+        return new MessageResponseDto(200,"전체 모음 찾기 완료.", new FolderListResponseDto(getFolder(folders.getContent()), folders.getTotalElements()));
     }
 
     public List<FolderResponseDto> getFolder(List<Folder> folders) {
@@ -377,7 +379,7 @@ public class FolderService {
     }
 
     @Transactional
-    public void reportFolder(Long folderId, HttpServletRequest request) {
+    public MessageResponseDto reportFolder(Long folderId, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
 
         Folder folder = folderRepository.findById(folderId)
@@ -387,6 +389,7 @@ public class FolderService {
         reportRepository.save(new Report(users, folder));
         folder.setReportCnt(folder.getReportCnt() + 1);
         baduser.setReportCnt(baduser.getReportCnt() + 1);
+        return new MessageResponseDto(200,"모음 신고 완료.");
     }
 
     @Transactional(readOnly = true)
@@ -425,12 +428,12 @@ public class FolderService {
 
         return folder;
     }
-
     @Transactional
-    public void deleteShare(Long folderId, HttpServletRequest request) {
+    public MessageResponseDto deleteShare(Long folderId,HttpServletRequest request){
         Users user = userinfoHttpRequest.userFindByToken(request);
         Share share = shareRepository.findByFolderIdAndUsersId(folderId, user.getId())
                 .orElseThrow(() -> new CustomException(NOT_FIND_SHARE));
         shareRepository.delete(share);
+        return new MessageResponseDto(200,"공유된 모음 삭제 완료.");
     }
 }

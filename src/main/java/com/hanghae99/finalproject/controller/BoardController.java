@@ -64,12 +64,12 @@ public class BoardController {
     //        boardService.cloneBoard(boardId, request);
     //    }
     @PostMapping("/myshare/boards/{folderId}")
-    public void cloneBoards(@RequestBody List<BoardRequestDto> boards, HttpServletRequest request, @PathVariable Long folderId) {
-        boardService.cloneBoards(boards, request, folderId);
+    public MessageResponseDto cloneBoards(@RequestBody List<BoardRequestDto> boards, HttpServletRequest request, @PathVariable Long folderId) {
+        return boardService.cloneBoards(boards, request, folderId);
     }
 
     @GetMapping("/newboards/{page}/{size}")
-    public Page<Board> findNewBoards(@PathVariable int page, @PathVariable int size) {
+    public MessageResponseDto findNewBoards(@PathVariable int page, @PathVariable int size) {
         return boardService.findNewBoard(page, size);
     }
 
@@ -91,7 +91,7 @@ public class BoardController {
     }
 
     @PostMapping("/allboards/{keyword}/{page}")
-    public BoardAndCntResponseDto allBoards(@PathVariable String keyword,
+    public MessageResponseDto allBoards(@PathVariable String keyword,
                                             @PathVariable int page,
                                             @RequestBody List<FolderRequestDto> folderRequestDtos,
                                             HttpServletRequest request) {

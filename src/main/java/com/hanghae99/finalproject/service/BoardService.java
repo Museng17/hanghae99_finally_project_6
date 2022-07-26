@@ -236,7 +236,7 @@ public class BoardService {
     //    }
 
     @Transactional
-    public void cloneBoards(List<BoardRequestDto> boards, HttpServletRequest request, Long folderId) {
+    public MessageResponseDto cloneBoards(List<BoardRequestDto> boards, HttpServletRequest request, Long folderId) {
         Users users = userinfoHttpRequest.userFindByToken(request);
 
         Folder folder = folderRepository.findById(folderId).orElseThrow(() ->
@@ -255,6 +255,7 @@ public class BoardService {
             folder.setBoardCnt(folder.getBoardCnt() + 1);
             users.setBoardCnt(users.getBoardCnt() + 1);
         }
+        return new MessageResponseDto(200,"조각들 복제 성공");
     }
 
     @Transactional
@@ -283,9 +284,9 @@ public class BoardService {
     }
 
     @Transactional
-    public Page<Board> findNewBoard(int page, int size) {
+    public MessageResponseDto findNewBoard(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        return boardRepository.findAllByStatus(DisclosureStatusType.PUBLIC, pageRequest);
+        return new MessageResponseDto(200,"신규 조각 찾기 완료",boardRepository.findAllByStatus(DisclosureStatusType.PUBLIC, pageRequest));
     }
 
     public List<CategoryType> FolderRequestDtoToCategoryTypeList(List<FolderRequestDto> folderRequestDtos) {
@@ -339,7 +340,7 @@ public class BoardService {
         );
     }
 
-    public BoardAndCntResponseDto allBoards(String keyword, int page, List<FolderRequestDto> folderRequestDtos, HttpServletRequest request) {
+    public MessageResponseDto allBoards(String keyword, int page, List<FolderRequestDto> folderRequestDtos, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
         Optional<FolderRequestDto> all = folderRequestDtos.stream()
                 .filter(categoryType -> categoryType.getCategory() == ALL)
@@ -355,7 +356,7 @@ public class BoardService {
         } else {
             boards = boardRepository.findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatusType.PUBLIC, "%" + keyword + "%", FolderRequestDtoToCategoryTypeList(folderRequestDtos), pageRequest);
         }
-        return new BoardAndCntResponseDto(boards, boards.getTotalElements());
+        return new MessageResponseDto(200,"조각 찾기 완료", new BoardAndCntResponseDto(boards, boards.getTotalElements()));
     }
 
     @Transactional(readOnly = true)
