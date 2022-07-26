@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.NOT_REFRESH_TOKEN;
+import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.*;
 import static com.hanghae99.finalproject.interceptor.JwtTokenInterceptor.JWT_HEADER_KEY;
 import static com.hanghae99.finalproject.jwt.JwtTokenProvider.*;
 
@@ -167,7 +167,7 @@ public class UserService {
         Users user = userRepository.findByUsername(socialLoginRequestDto.getEmail())
                 .orElseGet(() -> {
                             if (!checkEmailDuplicate(socialLoginRequestDto.getEmail())) {
-                                throw new RuntimeException("이미 존재하는 이메일입니다.");
+                                throw new CustomException(OVERLAP_EMAIL);
                             }
                             Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7)));
                             folderRepository.save(new Folder(users));
@@ -176,7 +176,6 @@ public class UserService {
                 );
 
         user.updateNickName();
-
         return createTokens(user.getUsername());
     }
 
