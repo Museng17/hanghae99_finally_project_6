@@ -3,6 +3,7 @@ package com.hanghae99.finalproject.service;
 import com.hanghae99.finalproject.model.dto.requestDto.UserRequestDto;
 import com.hanghae99.finalproject.model.dto.responseDto.FollowDto;
 import com.hanghae99.finalproject.model.dto.responseDto.FollowResponseDto;
+import com.hanghae99.finalproject.model.dto.responseDto.MessageResponseDto;
 import com.hanghae99.finalproject.model.entity.Follow;
 import com.hanghae99.finalproject.model.entity.Users;
 import com.hanghae99.finalproject.model.repository.FollowRepository;
@@ -37,17 +38,25 @@ public class FollowService {
     }
 
     @Transactional
-    public Follow save(Long followingId, Long followerId) {
+    public MessageResponseDto save(Long followingId, Long followerId) {
         Users following = userRepository.findFollowingById(followingId);
         Users follower = userRepository.findFollowerById(followerId);
 
-        if (followRepository.findByFollowingIdAndFollowerId(followingId, followerId) != null)
-            throw new RuntimeException("이미 팔로우 하였습니다.");
+        if (follower == null) {
 
-        return followRepository.save(Follow.builder()
-                .following(following)
-                .follower(follower)
-                .build());
+            return new MessageResponseDto(501, "팔로우 할 대상이 없습니다.");
+        } else if (follower == following) {
+
+            return new MessageResponseDto(501, "팔로우 실패 : 팔로워와 팔로잉이 같습니다.");
+        } else if (followRepository.findByFollowingIdAndFollowerId(followingId,followerId) != null) {
+
+            return new MessageResponseDto(502, "이미 팔로우 하였습니다");
+        }
+
+        Follow follow = new Follow(following, follower);
+        followRepository.save(follow);
+
+        return new MessageResponseDto(200, "팔로우 성공");
     }
 
     @Transactional

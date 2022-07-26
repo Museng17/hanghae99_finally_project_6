@@ -201,17 +201,11 @@ public class UserService {
     public Boolean UserDelete(HttpServletRequest request) {
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
 
-        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
+        boardRepository.deleteAllByUsers(user);
+        folderRepository.deleteAllByUsers(user);
+        userRepository.deleteById(user.getId());
 
-            boardRepository.deleteAllByUsers(user);
-            folderRepository.deleteAllByUsers(user);
-            userRepository.deleteById(user.getId());
-
-            return true;
-        } else {
-
-            return false;
-        }
+        return true;
     }
 
     public Users userFindById(Long id) {
@@ -285,37 +279,25 @@ public class UserService {
             throw new RuntimeException("닉네임이 중복되었습니다.");
         }
 
-        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
-            user.update(userRequestDto);
+        user.update(userRequestDto);
 
-            return true;
-        } else {
-
-            return false;
-        }
+        return true;
     }
 
     @Transactional
     public void updateUserImg(String url, HttpServletRequest request) {
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
 
-        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
-            user.updateImg(url);
-        }
+        user.updateImg(url);
     }
 
     @Transactional
     public Boolean updateUserInfo(UserRequestDto userRequestDto, HttpServletRequest request) {
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
 
-        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
-            user.updateInfo(userRequestDto);
+        user.updateInfo(userRequestDto);
 
-            return true;
-        } else {
-
-            return false;
-        }
+        return true;
     }
 
     @Transactional
@@ -326,14 +308,9 @@ public class UserService {
             throw new RuntimeException("비밀번호가 틀렸습니다.");
         }
 
-        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
-            user.updatePw(bCryptPasswordEncoder.encode(userRequestDto.getNewPassword()));
+        user.updatePw(bCryptPasswordEncoder.encode(userRequestDto.getNewPassword()));
 
-            return true;
-        } else {
-
-            return false;
-        }
+        return true;
     }
 
     @Transactional

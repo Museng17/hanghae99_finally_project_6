@@ -20,7 +20,6 @@ public class Follow {
     @ManyToOne
     private Users follower;
 
-    @Builder
     public Follow(Users following, Users follower) {
 
         this.following = following;
