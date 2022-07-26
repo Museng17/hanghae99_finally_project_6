@@ -60,7 +60,7 @@ public class FolderService {
                         folderId,
                         userinfoHttpRequest.userFindByToken(request).getId()
                 )
-                .orElseThrow(() -> new RuntimeException("FolderService 45 에러, 찾는 폴더가 없습니다."));
+                .orElseThrow(() -> new RuntimeException("에러, 찾는 폴더가 없습니다."));
     }
 
     @Transactional(readOnly = true)
@@ -69,7 +69,7 @@ public class FolderService {
                         folderRequestDto,
                         userinfoHttpRequest.userFindByToken(request).getId()
                 )
-                .orElseThrow(() -> new RuntimeException("FolderService 45 에러, 찾는 폴더가 없습니다."));
+                .orElseThrow(() -> new RuntimeException("에러, 찾는 폴더가 없습니다."));
     }
 
     @Transactional

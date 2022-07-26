@@ -446,7 +446,7 @@ public class BoardService {
                         folderId,
                         userinfoHttpRequest.userFindByToken(request).getId()
                 )
-                .orElseThrow(() -> new RuntimeException("FolderService 45 에러, 찾는 폴더가 없습니다."));
+                .orElseThrow(() -> new RuntimeException("찾는 폴더가 없습니다."));
     }
 
     private void findImageEqualsDtoImage(List<Image> images, BoardRequestDto boardRequestDto, Board board) {
