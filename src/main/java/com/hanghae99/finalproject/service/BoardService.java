@@ -250,7 +250,7 @@ public class BoardService {
     //    }
 
     @Transactional
-    public void cloneBoards(List<BoardRequestDto> boards, HttpServletRequest request, Long folderId) {
+    public MessageResponseDto cloneBoards(List<BoardRequestDto> boards, HttpServletRequest request, Long folderId) {
         Users users = userinfoHttpRequest.userFindByToken(request);
 
         Folder folder = folderRepository.findById(folderId).orElseThrow(() ->
@@ -287,6 +287,7 @@ public class BoardService {
             folder.setBoardCnt(folder.getBoardCnt() + 1);
             users.setBoardCnt(users.getBoardCnt() + 1);
         }
+        return new MessageResponseDto(200, "조각들 복제 성공");
     }
 
     @Transactional
@@ -301,7 +302,7 @@ public class BoardService {
 
         if (board.getBoardOrder() == orderRequestDto.getAfterOrder() || orderRequestDto.getAfterOrder() > users.getBoardCnt()) {
             log.info("BoardService.boardOrderChange : 잘못된 정보입니다. : 기존 order : " + board.getBoardOrder() + "바꾸는 order : " + orderRequestDto.getAfterOrder() + "forder 최종 order : " + users.getBoardCnt() + 1);
-         throw new CustomException(MIX_MATCH_ORDER_NUM);
+            throw new CustomException(MIX_MATCH_ORDER_NUM);
         } else if (board.getBoardOrder() - orderRequestDto.getAfterOrder() > 0) {
             boardRepository.updateOrderSum(board.getBoardOrder(), orderRequestDto.getAfterOrder(), orderRequestDto.getFolderId());
         } else {
@@ -316,10 +317,10 @@ public class BoardService {
     }
 
     @Transactional
-    public Page<Board> findNewBoard(int page, int size, HttpServletRequest request) {
+    public MessageResponseDto findNewBoard(int page, int size, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        return boardRepository.findAllByUsersNotAndStatus(users, DisclosureStatusType.PUBLIC, pageRequest);
+        return new MessageResponseDto(200, "신규 조각 찾기 완료", boardRepository.findAllByUsersNotAndStatus(users, DisclosureStatusType.PUBLIC, pageRequest));
     }
 
     public List<CategoryType> FolderRequestDtoToCategoryTypeList(List<FolderRequestDto> folderRequestDtos) {
@@ -421,7 +422,8 @@ public class BoardService {
         );
     }
 
-    public BoardAndCntResponseDto allBoards(String keyword, int page, List<FolderRequestDto> folderRequestDtos, HttpServletRequest request) {
+    public MessageResponseDto allBoards(String keyword, int page, List<FolderRequestDto> folderRequestDtos, HttpServletRequest request) {
+
         Users users = userinfoHttpRequest.userFindByToken(request);
         Optional<FolderRequestDto> all = folderRequestDtos.stream()
                 .filter(categoryType -> categoryType.getCategory() == ALL)
@@ -441,7 +443,7 @@ public class BoardService {
                     FolderRequestDtoToCategoryTypeList(folderRequestDtos),
                     pageRequest);
         }
-        return new BoardAndCntResponseDto(boards, boards.getTotalElements());
+        return new MessageResponseDto(200, "조각 찾기 완료", new BoardAndCntResponseDto(boards, boards.getTotalElements()));
     }
 
     @Transactional(readOnly = true)
