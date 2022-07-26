@@ -301,12 +301,12 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public FolderRequestDto moum(List<FolderRequestDto> folderRequestDtos,
-                                 String keyword,
-                                 HttpServletRequest request,
-                                 Pageable pageable,
-                                 Long folderId,
-                                 Long userId) {
+    public MessageResponseDto moum(List<FolderRequestDto> folderRequestDtos,
+                                   String keyword,
+                                   HttpServletRequest request,
+                                   Pageable pageable,
+                                   Long folderId,
+                                   Long userId) {
         List<DisclosureStatusType> disclosureStatusTypes = new ArrayList<>();
         disclosureStatusTypes.add(DisclosureStatusType.PUBLIC);
 
@@ -316,19 +316,26 @@ public class BoardService {
                         disclosureStatusTypes.add(DisclosureStatusType.PRIVATE);
                         return userinfoHttpRequest.userFindByToken(request);
                     }
-                    throw new RuntimeException("회원을 찾을 수 없습니다.");
+                    throw new CustomException(NOT_FIND_USER);
                 });
 
-        return new FolderRequestDto(
-                boardRepository.findByFolderIdAndTitleContainingAndCategoryIn(
-                        folderId,
-                        "%" + keyword + "%",
-                        findSelectCategory(folderRequestDtos),
-                        user.getId(),
-                        disclosureStatusTypes,
-                        pageable
+        Page<Board> boards = boardRepository.findByFolderIdAndTitleContainingAndCategoryIn(
+                folderId,
+                "%" + keyword + "%",
+                findSelectCategory(folderRequestDtos),
+                user.getId(),
+                disclosureStatusTypes,
+                pageable
+        );
+
+        return new MessageResponseDto(
+                200,
+                "조회완료",
+                new FolderRequestDto(
+                        boards,
+                        folderRepository.findById(folderId).get()
                 ),
-                folderRepository.findById(folderId).get()
+                boards.getTotalPages()
         );
     }
 

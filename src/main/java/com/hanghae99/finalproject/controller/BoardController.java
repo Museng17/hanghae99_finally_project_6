@@ -74,12 +74,12 @@ public class BoardController {
     }
 
     @PostMapping("/boards/{userId}/{folderId}/{keyword}")
-    public FolderRequestDto moum(@RequestBody List<FolderRequestDto> folderRequestDtos,
-                                 @PathVariable String keyword,
-                                 HttpServletRequest request,
-                                 @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
-                                 @PathVariable Long folderId,
-                                 @PathVariable Long userId) {
+    public MessageResponseDto moum(@RequestBody List<FolderRequestDto> folderRequestDtos,
+                                   @PathVariable String keyword,
+                                   HttpServletRequest request,
+                                   @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
+                                   @PathVariable Long folderId,
+                                   @PathVariable Long userId) {
         return boardService.moum(folderRequestDtos, keyword, request, pageable, folderId, userId);
     }
 
