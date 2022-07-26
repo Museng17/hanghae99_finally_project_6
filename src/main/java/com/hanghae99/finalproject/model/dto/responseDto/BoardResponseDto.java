@@ -23,6 +23,7 @@ public class BoardResponseDto {
     private CategoryType category;
     private Long boardOrder;
     private Long folderId;
+    private String folderName;
     private Long imageId;
     private List<ImageRequestDto> imageList = new ArrayList<>();
 
@@ -38,6 +39,7 @@ public class BoardResponseDto {
         this.category = board.getCategory();
         this.boardOrder = board.getBoardOrder();
         this.folderId = folder.getId();
+        this.folderName = folder.getName();
         this.imageId = saveImage.getId();
         this.imageList.add(saveImage);
     }
@@ -70,6 +72,7 @@ public class BoardResponseDto {
         this.category = board.getCategory();
         this.boardOrder = board.getBoardOrder();
         this.folderId = boardRequestDto.getFolderId();
+        this.folderName = boardRequestDto.getFolderName();
         this.imageId = saveImage.getId();
         this.imageList.add(saveImage);
     }

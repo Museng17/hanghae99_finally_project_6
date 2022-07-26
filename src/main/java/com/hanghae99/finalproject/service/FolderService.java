@@ -157,7 +157,7 @@ public class FolderService {
 
         folder.setBoardCnt(folder.getBoardCnt() + 1);
         user.setBoardCnt(user.getBoardCnt() + 1);
-
+        boardRequestDto.updateFolderName(folder.getName());
         return new MessageResponseDto(
                 200,
                 "저장이 완료 되었습니다.",
