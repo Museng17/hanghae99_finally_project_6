@@ -38,6 +38,11 @@ public class FolderService {
 
     @Transactional
     public Folder folderSave(FolderRequestDto folderRequestDto, HttpServletRequest request) {
+
+        if(folderRequestDto.getName().length() > 25){
+            throw new RuntimeException("25자 이하로 입력해주세요");
+        }
+
         if (folderRequestDto.getName().trim().equals("무제")) {
             throw new RuntimeException("무제라는 이름은 추가할 수 없습니다.");
         }
@@ -111,6 +116,11 @@ public class FolderService {
 
     @Transactional
     public void folderUpdate(Long folderId, HttpServletRequest request, FolderRequestDto folderRequestDto) {
+
+        if(folderRequestDto.getName().length() > 25){
+            throw new RuntimeException("25자 이하로 입력해주세요");
+        }
+
         Folder folder = findFolder(
                 folderId,
                 request
@@ -139,6 +149,9 @@ public class FolderService {
         );
 
         if (boardRequestDto.getBoardType() == BoardType.LINK) {
+            if (!boardRequestDto.getLink().startsWith("https://")) {
+                boardRequestDto.updateLink();
+            }
             boardRequestDto.ogTagToBoardRequestDto(
                     boardService.thumbnailLoad(boardRequestDto.getLink()),
                     boardRequestDto.getLink()
@@ -146,6 +159,8 @@ public class FolderService {
 
             if (!boardRequestDto.getImgPath().equals("") && boardRequestDto.getImgPath() != null) {
                 boardRequestDto.updateImagePath(s3Uploader.upload(BOARD.getPath(), boardRequestDto.getImgPath()).getUrl());
+            } else {
+                boardRequestDto.updateImagePath("https://i.ibb.co/51YGqmc/image.jpg");
             }
 
         } else if (boardRequestDto.getBoardType() == BoardType.MEMO) {
@@ -186,6 +201,7 @@ public class FolderService {
         if (!findShare.isPresent()) {
             Share share = new Share(folder, users);
             shareRepository.save(share);
+            folder.setSharedCount(folder.getSharedCount()+1);
             return new MessageResponseDto<>(200, "공유되었습니다.");
         }
         return new MessageResponseDto<>(501, "이미 공유된 모음입니다.");
@@ -445,8 +461,11 @@ public class FolderService {
     @Transactional
     public void deleteShare(Long folderId, HttpServletRequest request) {
         Users user = userinfoHttpRequest.userFindByToken(request);
+        Folder folder = folderRepository.findById(folderId)
+                .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
         Share share = shareRepository.findByFolderIdAndUsersId(folderId, user.getId())
                 .orElseThrow(() -> new CustomException(NOT_FIND_SHARE));
         shareRepository.delete(share);
+        folder.setSharedCount(folder.getSharedCount()-1);
     }
 }

@@ -70,7 +70,7 @@ public class S3Uploader {
             removeNewFile(imageFile);
         } catch (Exception e) {
             log.info(e.getMessage());
-            uploadImageUrl = "";
+            uploadImageUrl = "https://i.ibb.co/51YGqmc/image.jpg";
         }
 
         return new FileUploadResponse(uploadImageUrl);
