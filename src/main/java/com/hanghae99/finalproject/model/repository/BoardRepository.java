@@ -75,4 +75,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query("select new Board (b.id, b.status) from Board b where b.id = ?1 and b.users.id = ?2")
     Optional<Board> findBoardByIdAndUsersId(Long folderId, Long id);
+
+    List<Board> findAllByFolderIdIn(List<Long> dbLongList);
 }
