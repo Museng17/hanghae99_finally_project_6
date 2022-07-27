@@ -96,7 +96,7 @@ public class MailUtils {
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setHost("smtp.gmail.com");
         javaMailSender.setPort(587);
-        javaMailSender.setUsername("whitewise95@gmail.com");
+        javaMailSender.setUsername("moumservice@gmail.com");
         javaMailSender.setPassword(PASSWORD);
 
         Properties prop = new Properties();
