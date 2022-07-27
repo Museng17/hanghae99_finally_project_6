@@ -186,6 +186,7 @@ public class FolderService {
         if (!findShare.isPresent()) {
             Share share = new Share(folder, users);
             shareRepository.save(share);
+            folder.setSharedCount(folder.getSharedCount()+1);
             return new MessageResponseDto<>(200, "공유되었습니다.");
         }
         return new MessageResponseDto<>(501, "이미 공유된 모음입니다.");
