@@ -92,11 +92,11 @@ public class UserService {
     @Transactional
     public UserRegisterRespDto registerUser(UserRequestDto Dto) {
 
-        if (!certificationMap.match(Dto.getEmail())) {
-            throw new CustomException(ErrorCode.NOT_EMAIL_CERTIFICATION_CHECK);
-        }
-
-        certificationMap.remove(Dto.getEmail(), true);
+//        if (!certificationMap.match(Dto.getEmail())) {
+//            throw new CustomException(ErrorCode.NOT_EMAIL_CERTIFICATION_CHECK);
+//        }
+//
+//        certificationMap.remove(Dto.getEmail(), true);
 
         //회원가입 정규식 체크
         UserRegisterRespDto valid = joinValid(Dto);
@@ -205,6 +205,8 @@ public class UserService {
         boardRepository.deleteAllByUsers(user);
         folderRepository.deleteAllByUsers(user);
         reportRepository.deleteByReporterId(user.getId());
+        followRepository.deleteByFollowingId(user.getId());
+        followRepository.deleteByFollowerId(user.getId());
         userRepository.deleteById(user.getId());
 
         return true;
