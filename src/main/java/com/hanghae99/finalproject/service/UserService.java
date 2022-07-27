@@ -168,19 +168,19 @@ public class UserService {
         SocialLoginRequestDto response = socialLoginRestTemplate.findAccessTokenByCode(code);
         SocialLoginRequestDto socialLoginRequestDto = googleUserInfoByAccessToken(response.getAccess_token());
 
-        Users user = userRepository.findByUsername(socialLoginRequestDto.getEmail())
-                .orElseGet(() -> {
-                            if (!checkEmailDuplicate(socialLoginRequestDto.getEmail())) {
-                                throw new CustomException(OVERLAP_EMAIL);
-                            }
-                            Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7)));
-                            folderRepository.save(new Folder(users));
-                            return users;
-                        }
-                );
+        Optional<Users> user = userRepository.findByUsername(socialLoginRequestDto.getEmail());
 
-        user.updateNickName();
-        return createTokens(user.getUsername());
+        if(!user.isPresent()){
+            if (!checkEmailDuplicate(socialLoginRequestDto.getEmail())) {
+                throw new CustomException(OVERLAP_EMAIL);
+            }
+            Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7)));
+            folderRepository.save(new Folder(users));
+            users.updateNickName();
+            return createTokens(users.getUsername());
+        }
+
+        return createTokens(user.get().getUsername());
     }
 
     @Transactional
@@ -188,17 +188,19 @@ public class UserService {
         SocialLoginRequestDto response = socialLoginRestTemplate.findAccessTokenByCode(code);
         SocialLoginRequestDto socialLoginRequestDto = googleUserInfoByAccessToken(response.getAccess_token());
 
-        Users user = userRepository.findByUsername(socialLoginRequestDto.getEmail())
-                .orElseGet(() -> {
-                            if (!checkEmailDuplicate(socialLoginRequestDto.getEmail())) {
-                                throw new RuntimeException("이미 존재하는 이메일입니다.");
-                            }
-                            Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7)));
-                            folderRepository.save(new Folder(users));
-                            return users;
-                        }
-                );
-        return createTokens2(user.getUsername());
+        Optional<Users> user = userRepository.findByUsername(socialLoginRequestDto.getEmail());
+
+        if(!user.isPresent()){
+            if (!checkEmailDuplicate(socialLoginRequestDto.getEmail())) {
+                throw new CustomException(OVERLAP_EMAIL);
+            }
+            Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7)));
+            folderRepository.save(new Folder(users));
+            users.updateNickName();
+            return createTokens(users.getUsername());
+        }
+
+        return createTokens2(user.get().getUsername());
     }
 
     @Transactional
