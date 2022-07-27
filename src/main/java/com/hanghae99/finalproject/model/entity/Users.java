@@ -9,6 +9,8 @@ import javax.persistence.*;
 
 import java.util.*;
 
+import static com.hanghae99.finalproject.model.resultType.ProfileType.profileTypes;
+
 @Entity
 @Getter
 @Setter
@@ -68,15 +70,17 @@ public class Users extends TimeStamp {
         this.boardCnt = 0L;
         this.folderCnt = 0L;
         this.email = Dto.getEmail();
+        this.imgPath = Dto.getImgPath();
     }
 
-    public Users(SocialLoginRequestDto socialLoginRequestDto, int allCount) {
+    public Users(SocialLoginRequestDto socialLoginRequestDto,  int randomNum) {
         this.username = socialLoginRequestDto.getEmail();
-        this.nickname = "USER(" + UUID.randomUUID().toString().replaceAll("-", "").substring(5, 9) + allCount + ")";
+        this.nickname = "익명의 사용자";
         this.folderCnt = 0L;
         this.boardCnt = 0L;
         this.email = socialLoginRequestDto.getEmail();
         this.loginType = LoginType.GOOGLE;
+        this.imgPath = profileTypes.get(randomNum).getUrl();
     }
 
     public Users(Long id, String imgPath, String information, String nickname, String username, String email) {
@@ -112,5 +116,9 @@ public class Users extends TimeStamp {
 
     public void updateBoardCnt(long boardCnt) {
         this.boardCnt = boardCnt;
+    }
+
+    public void updateNickName() {
+        this.nickname = this.nickname + this.id;
     }
 }

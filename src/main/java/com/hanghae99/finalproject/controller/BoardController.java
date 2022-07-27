@@ -31,8 +31,6 @@ public class BoardController {
     @PostMapping("/board")
     public MessageResponseDto boardSave(@RequestBody BoardRequestDto boardRequestDto,
                                         HttpServletRequest request) {
-        log.info("요청한 Method : " + request.getMethod());
-        log.info("요청한 URL : " + request.getRequestURI());
         return boardService.boardSave(boardRequestDto, request);
     }
 
@@ -40,8 +38,6 @@ public class BoardController {
     public void boardUpdate(@PathVariable Long id,
                             @RequestBody BoardRequestDto boardRequestDto,
                             HttpServletRequest request) {
-        log.info("요청한 Method : " + request.getMethod());
-        log.info("요청한 URL : " + request.getRequestURI());
         boardService.boardUpdate(id, boardRequestDto, request);
     }
 
@@ -49,8 +45,6 @@ public class BoardController {
     public void boardDelete(@RequestBody List<BoardRequestDto> boardRequestDtos,
                             HttpServletRequest request,
                             @PathVariable Long folderId) {
-        log.info("요청한 Method : " + request.getMethod());
-        log.info("요청한 URL : " + request.getRequestURI());
         boardService.boardDelete(boardRequestDtos, request, folderId);
     }
 
@@ -62,8 +56,6 @@ public class BoardController {
     @PostMapping("/boards")
     public void boardOrderChange(@RequestBody OrderRequestDto orderRequestDto,
                                  HttpServletRequest request) {
-        log.info("요청한 Method : " + request.getMethod());
-        log.info("요청한 URL : " + request.getRequestURI());
         boardService.boardOrderChange(orderRequestDto, request);
     }
 
@@ -71,9 +63,9 @@ public class BoardController {
     //    public void cloneBoard(@PathVariable Long boardId, HttpServletRequest request) {
     //        boardService.cloneBoard(boardId, request);
     //    }
-    @PostMapping("/myshare/boards")
-    public void cloneBoards(@RequestBody List<BoardRequestDto> boards, HttpServletRequest request) {
-        boardService.cloneBoards(boards, request);
+    @PostMapping("/myshare/boards/{folderId}")
+    public void cloneBoards(@RequestBody List<BoardRequestDto> boards, HttpServletRequest request, @PathVariable Long folderId) {
+        boardService.cloneBoards(boards, request, folderId);
     }
 
     @GetMapping("/newboards/{page}/{size}")
@@ -82,23 +74,29 @@ public class BoardController {
     }
 
     @PostMapping("/boards/{userId}/{folderId}/{keyword}")
-    public FolderRequestDto moum(@RequestBody List<FolderRequestDto> folderRequestDtos,
-                                 @PathVariable String keyword,
-                                 HttpServletRequest request,
-                                 @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
-                                 @PathVariable Long folderId,
-                                 @PathVariable Long userId) {
-        log.info("요청한 Method : " + request.getMethod());
-        log.info("요청한 URL : " + request.getRequestURI());
+    public MessageResponseDto moum(@RequestBody List<FolderRequestDto> folderRequestDtos,
+                                   @PathVariable String keyword,
+                                   HttpServletRequest request,
+                                   @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
+                                   @PathVariable Long folderId,
+                                   @PathVariable Long userId) {
         return boardService.moum(folderRequestDtos, keyword, request, pageable, folderId, userId);
+    }
+
+    @PostMapping("/boards2/{userId}/{folderId}/{keyword}")
+    public MessageResponseDto moum2(@RequestBody List<FolderRequestDto> folderRequestDtos,
+                                    @PathVariable String keyword,
+                                    HttpServletRequest request,
+                                    @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
+                                    @PathVariable Long folderId,
+                                    @PathVariable Long userId) {
+        return boardService.moum2(folderRequestDtos, keyword, request, pageable, folderId, userId);
     }
 
     @GetMapping("/boards/{userId}/{folderId}")
     public List<Map<String, CategoryType>> findCategoryList(@PathVariable Long folderId,
                                                             @PathVariable Long userId,
                                                             HttpServletRequest request) {
-        log.info("요청한 Method : " + request.getMethod());
-        log.info("요청한 URL : " + request.getRequestURI());
         return boardService.findCategoryList(userId, folderId, request);
     }
 
@@ -115,5 +113,15 @@ public class BoardController {
                               @RequestBody FolderRequestDto folderRequestDto,
                               HttpServletRequest request) {
         boardService.boardInFolder(folderId, folderRequestDto, request);
+    }
+
+    @PutMapping("/board/status")
+    public Board updateStatus(@RequestBody BoardRequestDto boardRequestDto,
+                              HttpServletRequest request) {
+        return boardService.updateStatus(boardRequestDto, request);
+    }
+    @PostMapping("/reportboard/{boardId}")
+    public void reportBoard(@PathVariable Long boardId,HttpServletRequest request){
+        boardService.reportBoard(boardId,request);
     }
 }

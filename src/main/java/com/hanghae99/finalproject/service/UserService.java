@@ -1,11 +1,12 @@
 package com.hanghae99.finalproject.service;
 
-import com.hanghae99.finalproject.exceptionHandler.CustumException.CustomException;
+import com.hanghae99.finalproject.exceptionHandler.CustumException.*;
 import com.hanghae99.finalproject.jwt.*;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
+import com.hanghae99.finalproject.singleton.CertificationMap;
 import com.hanghae99.finalproject.util.restTemplates.SocialLoginRestTemplate;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -15,16 +16,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.NOT_REFRESH_TOKEN;
+import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.*;
 import static com.hanghae99.finalproject.interceptor.JwtTokenInterceptor.JWT_HEADER_KEY;
 import static com.hanghae99.finalproject.jwt.JwtTokenProvider.*;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    private CertificationMap certificationMap = CertificationMap.getInstance();
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -34,6 +38,9 @@ public class UserService {
     private final FolderRepository folderRepository;
     private final UserInfoInJwt userInfoInJwt;
     private final FollowRepository followRepository;
+    private final ReportRepository reportRepository;
+    private final ImageRepository imageRepository;
+    private final ShareRepository shareRepository;
 
     @Transactional(readOnly = true)
     public TokenResponseDto login(UserRequestDto userRequestDto) {
@@ -87,6 +94,13 @@ public class UserService {
 
     @Transactional
     public UserRegisterRespDto registerUser(UserRequestDto Dto) {
+
+        if (!certificationMap.match(Dto.getEmail())) {
+            throw new CustomException(ErrorCode.NOT_EMAIL_CERTIFICATION_CHECK);
+        }
+
+        certificationMap.remove(Dto.getEmail(), true);
+
         //회원가입 정규식 체크
         UserRegisterRespDto valid = joinValid(Dto);
         if (Optional.ofNullable(valid).isPresent()) {
@@ -111,7 +125,7 @@ public class UserService {
                 )
         );
 
-        return new UserRegisterRespDto(true, "회원가입 성공");
+        return new UserRegisterRespDto(200, true, "회원가입 성공");
     }
 
     public String findUsername(UserRequestDto userRequestDto) {
@@ -156,32 +170,16 @@ public class UserService {
 
         Users user = userRepository.findByUsername(socialLoginRequestDto.getEmail())
                 .orElseGet(() -> {
-                            Users users = userRepository.save(
-                                    new Users(
-                                            socialLoginRequestDto,
-                                            userRepository.findAllCount()
-                                    )
-                            );
-                            folderRepository.save(
-                                    new Folder(
-                                            users
-                                    )
-                            );
+                            if (!checkEmailDuplicate(socialLoginRequestDto.getEmail())) {
+                                throw new CustomException(OVERLAP_EMAIL);
+                            }
+                            Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7)));
+                            folderRepository.save(new Folder(users));
                             return users;
                         }
                 );
 
-        Users users = userRepository.findByEmail(socialLoginRequestDto.getEmail())
-                .orElseGet(() ->
-                        userRepository.save(
-                                new Users(
-                                        socialLoginRequestDto,
-                                        userRepository.findAllCount()
-                                )
-                        )
-
-                );
-
+        user.updateNickName();
         return createTokens(user.getUsername());
     }
 
@@ -192,17 +190,11 @@ public class UserService {
 
         Users user = userRepository.findByUsername(socialLoginRequestDto.getEmail())
                 .orElseGet(() -> {
-                            Users users = userRepository.save(
-                                    new Users(
-                                            socialLoginRequestDto,
-                                            userRepository.findAllCount()
-                                    )
-                            );
-                            folderRepository.save(
-                                    new Folder(
-                                            users
-                                    )
-                            );
+                            if (!checkEmailDuplicate(socialLoginRequestDto.getEmail())) {
+                                throw new RuntimeException("이미 존재하는 이메일입니다.");
+                            }
+                            Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7)));
+                            folderRepository.save(new Folder(users));
                             return users;
                         }
                 );
@@ -213,17 +205,26 @@ public class UserService {
     public Boolean UserDelete(HttpServletRequest request) {
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
 
-        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
+        List<Board> removeBoardList = boardRepository.findByUsersId(user.getId());
 
-            boardRepository.deleteAllByUsers(user);
-            folderRepository.deleteAllByUsers(user);
-            userRepository.deleteById(user.getId());
-
-            return true;
-        } else {
-
-            return false;
+        List<Long> removeBoardIdList = removeBoardList.stream()
+                .map(Board::getId)
+                .collect(Collectors.toList());
+        List<Share> shares = shareRepository.findAllByUsersId(user.getId());
+        List<Folder> folders = shares.stream().map(Share::getFolder).collect(Collectors.toList());
+        for(Folder folder : folders){
+            folder.setSharedCount(folder.getSharedCount()-1);
         }
+        shareRepository.deleteByUsersId(user.getId());
+        reportRepository.deleteByReporterId(user.getId());
+        followRepository.deleteByFollowingId(user.getId());
+        followRepository.deleteByFollowerId(user.getId());
+        imageRepository.deleteByBoardIdIn(removeBoardIdList);
+        boardRepository.deleteAllByUsers(user);
+        folderRepository.deleteAllByUsers(user);
+        userRepository.deleteById(user.getId());
+
+        return true;
     }
 
     public Users userFindById(Long id) {
@@ -297,37 +298,25 @@ public class UserService {
             throw new RuntimeException("닉네임이 중복되었습니다.");
         }
 
-        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
-            user.update(userRequestDto);
+        user.update(userRequestDto);
 
-            return true;
-        } else {
-
-            return false;
-        }
+        return true;
     }
 
     @Transactional
     public void updateUserImg(String url, HttpServletRequest request) {
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
 
-        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
-            user.updateImg(url);
-        }
+        user.updateImg(url);
     }
 
     @Transactional
     public Boolean updateUserInfo(UserRequestDto userRequestDto, HttpServletRequest request) {
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
 
-        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
-            user.updateInfo(userRequestDto);
+        user.updateInfo(userRequestDto);
 
-            return true;
-        } else {
-
-            return false;
-        }
+        return true;
     }
 
     @Transactional
@@ -338,14 +327,9 @@ public class UserService {
             throw new RuntimeException("비밀번호가 틀렸습니다.");
         }
 
-        if (user.getId() == findUser(request.getAttribute(JWT_HEADER_KEY).toString()).getId()) {
-            user.updatePw(bCryptPasswordEncoder.encode(userRequestDto.getNewPassword()));
+        user.updatePw(bCryptPasswordEncoder.encode(userRequestDto.getNewPassword()));
 
-            return true;
-        } else {
-
-            return false;
-        }
+        return true;
     }
 
     @Transactional
@@ -368,23 +352,27 @@ public class UserService {
 
     private UserRegisterRespDto joinValid(UserRequestDto dto) {
         if (!Pattern.matches("^[a-zA-Z0-9]{4,11}$", dto.getUsername())) {
-            return new UserRegisterRespDto(false, "아이디를 다시 확인해주세요");
+            return new UserRegisterRespDto(502, false, "아이디를 다시 확인해주세요");
         }
-        //        if (!Pattern.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", dto.getEmail())) {
-        //            return new UserRegisterRespDto(false, "이메일을 다시 확인해주세요");
-        //        }
+        if (!Pattern.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", dto.getEmail())) {
+            return new UserRegisterRespDto(502, false, "이메일을 다시 확인해주세요");
+        }
         if (!Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$", dto.getPassword())) {
-            return new UserRegisterRespDto(false, "패스워드를 다시 확인해주세요");
+            return new UserRegisterRespDto(502, false, "패스워드를 다시 확인해주세요");
         }
         return null;
     }
 
     private UserRegisterRespDto duplicateCheck(UserRequestDto dto) {
         if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
-            return new UserRegisterRespDto(false, "중복된 사용자 ID가 존재합니다.");
+            return new UserRegisterRespDto(501, false, "중복된 사용자 ID가 존재합니다.");
         }
         if (userRepository.findByNickname(dto.getNickname()).isPresent()) {
-            return new UserRegisterRespDto(false, "중복된 닉네임이 존재합니다.");
+            return new UserRegisterRespDto(501, false, "중복된 닉네임이 존재합니다.");
+        }
+
+        if (!checkEmailDuplicate(dto.getEmail())) {
+            return new UserRegisterRespDto(501, false, "중복된 이메일이 존재합니다.");
         }
         return null;
     }

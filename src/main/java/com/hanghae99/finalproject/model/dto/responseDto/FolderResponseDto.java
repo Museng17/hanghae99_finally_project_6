@@ -4,6 +4,7 @@ import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.resultType.DisclosureStatusType;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Getter
@@ -16,6 +17,10 @@ public class FolderResponseDto {
     private Long folderOrder;
     private Long boardCnt;
     private Long userId;
+    private String nickname;
+    private  String imgPath;
+    private LocalDateTime createDate;
+    private LocalDateTime modifiedDate;
     private List<Board> boardList = new ArrayList<>();
 
     public FolderResponseDto(Folder folder) {
@@ -26,5 +31,9 @@ public class FolderResponseDto {
         this.folderOrder = folder.getFolderOrder();
         this.boardCnt = folder.getBoardCnt();
         this.userId = folder.getUsers().getId();
+        this.createDate = folder.getCreatedDate();
+        this.modifiedDate = folder.getModifiedDate();
+        this.nickname = folder.getUsers().getNickname();
+        this.imgPath = folder.getUsers().getImgPath();
     }
 }

@@ -48,16 +48,12 @@ public class UserController {
     @PostMapping("/user/refresh2")
     public TokenResponseDto refreshToken2(HttpServletRequest request,
                                           @RequestHeader(value = REFRESH_TOKEN, defaultValue = "noToken") String refresh) {
-        log.info("요청한 Method : " + request.getMethod());
-        log.info("요청한 URL : " + request.getRequestURI());
         return userService.refreshToken2(refresh);
     }
 
     @PostMapping("/user/refresh")
     public TokenResponseDto refreshToken(HttpServletRequest request,
                                          @RequestHeader(value = REFRESH_TOKEN, defaultValue = "noToken") String refresh) {
-        log.info("요청한 Method : " + request.getMethod());
-        log.info("요청한 URL : " + request.getRequestURI());
         return userService.refreshToken(refresh);
     }
 

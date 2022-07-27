@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.NOT_FIND_USER;
+import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.*;
 import static com.hanghae99.finalproject.model.resultType.CategoryType.*;
 import static com.hanghae99.finalproject.model.resultType.FileUploadType.BOARD;
 
@@ -36,6 +36,7 @@ public class BoardService {
     private final S3Uploader s3Uploader;
     private final UserRepository userRepository;
     private final ImageRepository imageRepository;
+    private final ReportRepository reportRepository;
 
     @Transactional
     public MessageResponseDto boardSave(BoardRequestDto boardRequestDto, HttpServletRequest request) {
@@ -191,15 +192,11 @@ public class BoardService {
         return boardRepository.findAllById(longs);
     }
 
-    public List<Board> boardDeleteByFolderId(List<Long> folderIdList) {
-        return boardRepository.deleteAllByFolderIdIn(folderIdList);
-    }
-
     public void statusUpdateByFolderId(Long id, FolderRequestDto folderRequestDto) {
         Optional<Board> board = boardRepository.findByFolderId(id);
 
         if (board.isPresent()) {
-            board.get().updateStatus(folderRequestDto);
+            board.get().updateStatus(new FolderRequestDto(folderRequestDto.getStatus()));
         }
 
     }
@@ -236,10 +233,12 @@ public class BoardService {
     //    }
 
     @Transactional
-    public void cloneBoards(List<BoardRequestDto> boards, HttpServletRequest request) {
+    public void cloneBoards(List<BoardRequestDto> boards, HttpServletRequest request, Long folderId) {
         Users users = userinfoHttpRequest.userFindByToken(request);
 
-        Folder folder = folderRepository.findByUsersAndName(users, "무제");
+        Folder folder = folderRepository.findById(folderId).orElseThrow(() ->
+                new CustomException(NOT_FIND_FOLDER)
+        );
 
         List<Long> LongList = boards.stream()
                 .map(BoardRequestDto::getId)
@@ -299,12 +298,12 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public FolderRequestDto moum(List<FolderRequestDto> folderRequestDtos,
-                                 String keyword,
-                                 HttpServletRequest request,
-                                 Pageable pageable,
-                                 Long folderId,
-                                 Long userId) {
+    public MessageResponseDto moum(List<FolderRequestDto> folderRequestDtos,
+                                   String keyword,
+                                   HttpServletRequest request,
+                                   Pageable pageable,
+                                   Long folderId,
+                                   Long userId) {
         List<DisclosureStatusType> disclosureStatusTypes = new ArrayList<>();
         disclosureStatusTypes.add(DisclosureStatusType.PUBLIC);
 
@@ -314,19 +313,64 @@ public class BoardService {
                         disclosureStatusTypes.add(DisclosureStatusType.PRIVATE);
                         return userinfoHttpRequest.userFindByToken(request);
                     }
-                    throw new RuntimeException("회원을 찾을 수 없습니다.");
+                    throw new CustomException(NOT_FIND_USER);
                 });
 
-        return new FolderRequestDto(
-                boardRepository.findByFolderIdAndTitleContainingAndCategoryIn(
-                        folderId,
-                        "%" + keyword + "%",
-                        findSelectCategory(folderRequestDtos),
-                        user.getId(),
-                        disclosureStatusTypes,
-                        pageable
+        Page<Board> boards = boardRepository.findByFolderIdAndTitleContainingAndCategoryIn(
+                folderId,
+                "%" + keyword + "%",
+                findSelectCategory(folderRequestDtos),
+                user.getId(),
+                disclosureStatusTypes,
+                pageable
+        );
+
+        return new MessageResponseDto(
+                200,
+                "조회완료",
+                new FolderRequestDto(
+                        boards,
+                        folderRepository.findById(folderId).get()
                 ),
-                folderRepository.findById(folderId).get()
+                boards.getTotalPages()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public MessageResponseDto moum2(List<FolderRequestDto> folderRequestDtos,
+                                    String keyword,
+                                    HttpServletRequest request,
+                                    Pageable pageable,
+                                    Long folderId,
+                                    Long userId) {
+        List<DisclosureStatusType> disclosureStatusTypes = new ArrayList<>();
+        disclosureStatusTypes.add(DisclosureStatusType.PUBLIC);
+
+        Users user = userRepository.findById(userId)
+                .orElseGet(() -> {
+                    if (userId == 0L) {
+                        disclosureStatusTypes.add(DisclosureStatusType.PRIVATE);
+                        return userinfoHttpRequest.userFindByToken(request);
+                    }
+                    throw new CustomException(NOT_FIND_USER);
+                });
+
+        List<Board> boards = boardRepository.findByFolderIdAndTitleContainingAndCategoryIn2(
+                folderId,
+                "%" + keyword + "%",
+                findSelectCategory(folderRequestDtos),
+                user.getId(),
+                disclosureStatusTypes
+        );
+
+        return new MessageResponseDto(
+                200,
+                "조회완료",
+                new FolderRequestDto(
+                        boards,
+                        folderRepository.findById(folderId).get()
+                ),
+                0
         );
     }
 
@@ -338,13 +382,17 @@ public class BoardService {
         Page<Board> boards;
         PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("createdDate").descending());
         if (all.isPresent()) {
-            boards = boardRepository.findAllByStatusAndTitleContaining(DisclosureStatusType.PUBLIC,
+            boards = boardRepository.findAllByStatusAndTitleContaining(users.getId(),
+                    DisclosureStatusType.PUBLIC,
                     "%" + keyword + "%",
-                    users.getId(),
                     pageRequest
             );
         } else {
-            boards = boardRepository.findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatusType.PUBLIC, "%" + keyword + "%", FolderRequestDtoToCategoryTypeList(folderRequestDtos), pageRequest);
+            boards = boardRepository.findAllByStatusAndTitleContainingAndCategoryIn(users.getId(),
+                    DisclosureStatusType.PUBLIC,
+                    "%" + keyword + "%",
+                    FolderRequestDtoToCategoryTypeList(folderRequestDtos),
+                    pageRequest);
         }
         return new BoardAndCntResponseDto(boards, boards.getTotalElements());
     }
@@ -419,11 +467,13 @@ public class BoardService {
                 .orElseThrow(() -> new RuntimeException("없는 글입니다."));
 
         Long afterCnt = 1L;
+
         for (Board board : afterBoard) {
             board.addFolderId(afterFolder);
             board.updateOrder(afterFolder.getBoardCnt() + afterCnt);
             afterCnt++;
         }
+
         afterFolder.setBoardCnt(afterFolder.getBoardCnt() + afterBoard.size());
 
         Folder beforeFolder = findByIdAndUsersId(beforeBoardId, request);
@@ -442,7 +492,7 @@ public class BoardService {
                         folderId,
                         userinfoHttpRequest.userFindByToken(request).getId()
                 )
-                .orElseThrow(() -> new RuntimeException("FolderService 45 에러, 찾는 폴더가 없습니다."));
+                .orElseThrow(() -> new RuntimeException("찾는 폴더가 없습니다."));
     }
 
     private void findImageEqualsDtoImage(List<Image> images, BoardRequestDto boardRequestDto, Board board) {
@@ -472,5 +522,36 @@ public class BoardService {
                 )
         );
 
+    }
+
+    @Transactional
+    public Board updateStatus(BoardRequestDto boardRequestDto, HttpServletRequest request) {
+        Users users = userinfoHttpRequest.userFindByToken(request);
+
+        Board board = boardRepository.findBoardByIdAndUsersId(
+                boardRequestDto.getId(),
+                users.getId()
+        ).orElseThrow(() -> new CustomException(NOT_FIND_BOARD));
+
+        board.updateStatus(new FolderRequestDto(boardRequestDto.getStatus()));
+
+        return board;
+    }
+    @Transactional
+    public void reportBoard(Long boardId, HttpServletRequest request) {
+        Users users = userinfoHttpRequest.userFindByToken(request);
+
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new CustomException(NOT_FIND_BOARD));
+        Folder folder = folderRepository.findById(board.getId())
+                .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
+
+        Users baduser = folder.getUsers();
+        if(!new Report(users, folder).equals(reportRepository.findByBadfolderIdAndReporterId(folder.getId(),users.getId()))){
+            throw new CustomException("이미 신고하셨습니다.",500);
+        }
+        reportRepository.save(new Report(users, folder));
+        folder.setReportCnt(folder.getReportCnt() + 1);
+        baduser.setReportCnt(baduser.getReportCnt() + 1);
     }
 }

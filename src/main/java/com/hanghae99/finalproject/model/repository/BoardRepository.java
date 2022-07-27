@@ -26,21 +26,27 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
                                                               List<DisclosureStatusType> disclosureStatusTypes,
                                                               Pageable pageable);
 
+    @Query("select b from Board b where  b.folder.id = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and b.category in ?3 and b.users.id = ?4 and b.status IN ?5")
+    List<Board> findByFolderIdAndTitleContainingAndCategoryIn2(Long folderId,
+                                                               String keyword,
+                                                               List<CategoryType> categoryTypeList,
+                                                               Long userId,
+                                                               List<DisclosureStatusType> disclosureStatusTypes);
+
     List<Board> findByFolder(Folder folder);
 
     @Query("SELECT DISTINCT(B.category) FROM Board B WHERE B.users.id = :id")
     List<CategoryType> findAllCategoryByUsersId(@Param("id") Long id);
 
-    @Query("select b from Board b where  b.status = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and b.category in ?3")
-    Page<Board> findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatusType status,
+    @Query("select b from Board b where  not b.users.id = ?1 and b.status = ?2 and b.title LIKE case when ?3 = '%all%' then '%%' else ?3 end and b.category in ?4")
+    Page<Board> findAllByStatusAndTitleContainingAndCategoryIn(Long usersId,
+                                                               DisclosureStatusType status,
                                                                String keyword,
                                                                List<CategoryType> categoryTypeList,
                                                                Pageable pageable);
 
-    @Query("select b from Board b where  b.status = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and not b.users.id = ?3")
-    Page<Board> findAllByStatusAndTitleContaining(DisclosureStatusType status, String keyword, Long usersId, Pageable pageable);
-
-    List<Board> deleteAllByFolderIdIn(List<Long> folderIdList);
+    @Query("select b from Board b where  not b.users.id = ?1 and b.status = ?2 and b.title LIKE case when ?3 = '%all%' then '%%' else ?3 end")
+    Page<Board> findAllByStatusAndTitleContaining(Long usersId, DisclosureStatusType status, String keyword, Pageable pageable);
 
     @Query("SELECT DISTINCT(b.category) FROM Board b WHERE b.users.id = ?1 and b.folder.id = ?2 and b.status in ?3")
     List<CategoryType> findCategoryByUsersIdAndFolderId(Long id,
@@ -64,4 +70,13 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> findAllByIdIn(List<Long> longList);
 
     Optional<Board> findByIdAndUsers(Long boardId, Users userFindByToken);
+
+    @Query("select new Board (b.id, b.status) from Board b where b.id = ?1 and b.users.id = ?2")
+    Optional<Board> findBoardByIdAndUsersId(Long folderId, Long id);
+
+    List<Board> findAllByFolderIdIn(List<Long> dbLongList);
+
+    void deleteAllByIdIn(List<Long> boardRemoveIdList);
+
+    List<Board> findByUsersId(Long id);
 }

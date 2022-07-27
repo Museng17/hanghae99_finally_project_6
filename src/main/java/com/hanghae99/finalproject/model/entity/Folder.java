@@ -1,6 +1,5 @@
 package com.hanghae99.finalproject.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae99.finalproject.model.dto.requestDto.FolderRequestDto;
 import com.hanghae99.finalproject.model.resultType.*;
 import lombok.*;
@@ -37,7 +36,6 @@ public class Folder extends TimeStamp {
     @Column(nullable = false)
     private Long reportCnt = 0L;
 
-    @JsonIgnore
     @ManyToOne
     private Users users;
 
@@ -79,6 +77,11 @@ public class Folder extends TimeStamp {
         this.folderOrder = users.getFolderCnt() + 2;
     }
 
+    public Folder(Long id, DisclosureStatusType status) {
+        this.id = id;
+        this.status = status;
+    }
+
     public void update(FolderRequestDto folderRequestDto) {
         this.name = folderRequestDto.getName();
         this.status = folderRequestDto.getStatus();
@@ -90,5 +93,9 @@ public class Folder extends TimeStamp {
 
     public void updateBoardCnt(long boardCnt) {
         this.boardCnt = boardCnt;
+    }
+
+    public void updateStatus(DisclosureStatusType status) {
+        this.status = status;
     }
 }

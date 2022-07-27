@@ -11,10 +11,13 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
 
     Optional<Folder> findByIdAndUsersId(Long folderId, Long userId);
 
+    @Query("select new Folder (f.id, f.status) from Folder f where f.id = ?1 and f.users.id = ?2")
+    Optional<Folder> findFolderByIdAndUsersId(Long folderId, Long userId);
+
     void deleteAllByUsers(Users user);
 
-    @Query("select f from Folder f where  f.name not like '무제'   and f.status in ?1")
-    Page<Folder> findAllBystatus(DisclosureStatusType status, Pageable pageable);
+    @Query("select f from Folder f where not f.users.id = ?1 and f.name not like '무제'   and f.status in ?2")
+    Page<Folder> findAllBystatus(Long userId,DisclosureStatusType status, Pageable pageable);
 
     Optional<Folder> findByIdAndUsersIdNot(Long folderId, Long id);
 
@@ -37,9 +40,11 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
                                       Pageable pageable);
 
     Folder findByUsersAndName(Users users, String basicFolder);
+    @Query("select f from Folder f , Board b where f.id = b.folder.id and  b.id = ?1")
+    Optional<Folder> findByBoardId(Long boardId);
 
-    @Query("select f from Folder f where f.name LIKE case when ?1 = '%all%' then '%%' else ?1 end and f.name not like '무제' and f.status in ?2 and not f.users.id = ?3")
-    Page<Folder> findAllByNameContaining1(String keyword, DisclosureStatusType disclosureStatuses, Long usersId, Pageable pageable);
+    @Query("select f from Folder f where not f.users.id = ?1 and f.status in ?2 and f.name LIKE case when ?3 = '%all%' then '%%' else ?3 end and f.name not like '무제'")
+    Page<Folder> findAllByNameContaining1(Long usersId, DisclosureStatusType disclosureStatuses, String keyword, Pageable pageable);
 
     Optional<List<Folder>> findAllByIdInAndUsersId(List<Long> folderId, Long id);
 
@@ -53,4 +58,7 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
     @Modifying
     @Query("update Folder f set f.folderOrder = f.folderOrder -1 where f.folderOrder > ?1 and ?2 >= f.folderOrder ")
     void updateOrderMinus(Long beforeOrder, Long afterOrder);
+
+    @Query("select f from Folder f where f.users.id = ?1 and  f.name not like case when ?2 = 'all' then '' else '무제' end and  f.status in ?3")
+    List<Folder> findFolderList(Long id, String status, List<DisclosureStatusType> disclosureStatusTypes);
 }

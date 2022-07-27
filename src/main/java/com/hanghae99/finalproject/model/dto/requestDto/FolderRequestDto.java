@@ -33,6 +33,16 @@ public class FolderRequestDto {
         this.boardList = boards.getContent();
     }
 
+    public FolderRequestDto(List<Board> boards, Folder folder) {
+        this.id = folder.getId();
+        this.name = folder.getName();
+        this.status = folder.getStatus();
+        this.boardCnt = folder.getBoardCnt();
+        this.sharedCount = folder.getSharedCount();
+        this.folderOrder = folder.getFolderOrder();
+        this.boardList = boards;
+    }
+
     public FolderRequestDto(Folder folder) {
         this.id = folder.getId();
         this.name = folder.getName();
@@ -44,5 +54,9 @@ public class FolderRequestDto {
 
     public FolderRequestDto(Long boardId) {
         this.boardList.add(new Board(boardId));
+    }
+
+    public FolderRequestDto(DisclosureStatusType status) {
+        this.status = status;
     }
 }

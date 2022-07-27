@@ -1,5 +1,6 @@
 package com.hanghae99.finalproject.controller;
 
+import com.hanghae99.finalproject.model.dto.responseDto.MessageResponseDto;
 import com.hanghae99.finalproject.model.entity.Users;
 import com.hanghae99.finalproject.model.repository.FollowRepository;
 import com.hanghae99.finalproject.service.FollowService;
@@ -18,11 +19,10 @@ public class FollowController {
     private final UserinfoHttpRequest userinfoHttpRequest;
 
     @PostMapping("/follow/{followerId}")
-    public boolean followUser(@PathVariable long followerId, HttpServletRequest request) {
+    public MessageResponseDto followUser(@PathVariable long followerId, HttpServletRequest request) {
         Users user = userinfoHttpRequest.userFindByToken(request);
-        followService.save(user.getId(), followerId);
 
-        return true;
+        return followService.save(user.getId(), followerId);
     }
 
     @DeleteMapping("/unfollow/{followerId}")

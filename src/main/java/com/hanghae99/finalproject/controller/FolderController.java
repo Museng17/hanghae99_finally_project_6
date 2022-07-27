@@ -51,14 +51,9 @@ public class FolderController {
         folderService.folderOrderChange(orderRequestDto, request);
     }
 
-    @GetMapping("/folders")
-    public List<Folder> folders() {
-        return folderService.folders();
-    }
-
     @PostMapping("/share/folder/{folderId}")
-    public void shareFolder(@PathVariable Long folderId, HttpServletRequest request) {
-        folderService.shareFolder(folderId, request);
+    public MessageResponseDto shareFolder(@PathVariable Long folderId, HttpServletRequest request) {
+        return folderService.shareFolder(folderId, request);
     }
 
     //    @PostMapping("/myshare/folder/{folderId}")
@@ -67,16 +62,16 @@ public class FolderController {
     //    }
 
     @GetMapping("/BestFolders/{page}/{size}")
-    public List<FolderResponseDto> findBestFolders(@PathVariable int page, @PathVariable int size) {
-        return folderService.findBestFolder(page, size);
+    public List<FolderResponseDto> findBestFolders(@PathVariable int page, @PathVariable int size, HttpServletRequest request) {
+        return folderService.findBestFolder(page, size, request);
     }
 
     @PostMapping("/folders/{userId}/{keyword}")
-    public List<Folder> moum(@PathVariable String keyword,
-                             HttpServletRequest request,
-                             @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
-                             @PathVariable Long userId,
-                             @RequestBody List<FolderRequestDto> folderRequestDtos) {
+    public MessageResponseDto moum(@PathVariable String keyword,
+                                   HttpServletRequest request,
+                                   @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
+                                   @PathVariable Long userId,
+                                   @RequestBody List<FolderRequestDto> folderRequestDtos) {
         return folderService.moum(keyword, request, pageable, userId, folderRequestDtos);
     }
 
@@ -87,10 +82,10 @@ public class FolderController {
     }
 
     @GetMapping("/shares/{userId}/{keyword}")
-    public List<FolderResponseDto> shareList(@PathVariable String keyword,
-                                             HttpServletRequest request,
-                                             @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
-                                             @PathVariable Long userId) {
+    public MessageResponseDto shareList(@PathVariable String keyword,
+                                        HttpServletRequest request,
+                                        @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
+                                        @PathVariable Long userId) {
         return folderService.shareList(keyword, request, pageable, userId);
     }
 
@@ -102,9 +97,27 @@ public class FolderController {
 
     }
 
-    @PostMapping("/report/{folderId}")
+    @PostMapping("/reportfolder/{folderId}")
     public void reportFolder(@PathVariable Long folderId,
                              HttpServletRequest request) {
         folderService.reportFolder(folderId, request);
+    }
+
+    @GetMapping("/folders")
+    public List<FolderResponseDto> findAllFolderList(@RequestParam(value = "status", defaultValue = "all") String status,
+                                                     @RequestParam(value = "userId", defaultValue = "0") Long userId,
+                                                     HttpServletRequest request) {
+        return folderService.findAllFolderList(status, userId, request);
+    }
+
+    @PutMapping("/folder/status")
+    public Folder updateStatus(@RequestBody FolderRequestDto folderRequestDto,
+                               HttpServletRequest request) {
+        return folderService.updateStatus(folderRequestDto, request);
+    }
+
+    @DeleteMapping("/share/delete/{folderId}")
+    public void deleteShare(@PathVariable Long folderId, HttpServletRequest request) {
+        folderService.deleteShare(folderId, request);
     }
 }

@@ -15,7 +15,7 @@ public enum GoogleLoginType {
     CLIENT_SECRET("client_secret"),
     CODE("code"),
     GRANT_TYPE("grant_type", "authorization_code"),
-    REDIRECT_URI("redirect_uri", "http://localhost:3000");
+    REDIRECT_URI("redirect_uri", "https://moum.cloud");
 
     private String name;
     private String value;
