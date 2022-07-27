@@ -12,4 +12,6 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     List<Image> findByBoard(Board board);
 
     void deleteAllByBoardIdIn(List<Long> longs);
+
+    void deleteByBoardIdIn(List<Long> removeBoardIdList);
 }
