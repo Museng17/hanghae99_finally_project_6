@@ -31,8 +31,10 @@ public class MailService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private MessageResponseDto sendEmailCertification(MailRequestDto mailRequestDto, String htmlFileName) {
+        if (!Pattern.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", mailRequestDto.getEmail())) {
+            throw new CustomException(NOT_EMAIL);
+        }
         String massage = mailUtils.makeRandomUUID(6);
-
         try {
             Context context = new Context();
             context.setVariable("massage", massage);
@@ -70,6 +72,9 @@ public class MailService {
     }
 
     public MessageResponseDto sendEmailAndUpdatePassword(MailRequestDto mailRequestDto) {
+        if (!Pattern.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", mailRequestDto.getEmail())) {
+            throw new CustomException(NOT_EMAIL);
+        }
         String str = getTempPassword();
 
         try {
@@ -109,7 +114,6 @@ public class MailService {
     }
 
     public MessageResponseDto sendEmailForResetPassword(UserRequestDto userRequestDto) {
-
         MailRequestDto mailRequestDto = new MailRequestDto(userRequestDto);
 
         Users user = userRepository.findByUsername(userRequestDto.getUsername())
@@ -145,11 +149,6 @@ public class MailService {
 
     @Transactional(readOnly = true)
     public MessageResponseDto sendEmail(MailRequestDto mailRequestDto) {
-        if (!Pattern.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", mailRequestDto.getEmail())) {
-            throw new CustomException(NOT_EMAIL);
-        }
-
-
         Optional<Users> user = userRepository.findByEmail(mailRequestDto.getEmail());
         if (user.isPresent()) {
             throw new CustomException(OVERLAP_EMAIL);
