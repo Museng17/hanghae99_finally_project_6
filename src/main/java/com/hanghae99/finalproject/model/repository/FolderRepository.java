@@ -61,4 +61,6 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
 
     @Query("select f from Folder f where f.users.id = ?1 and  f.name not like case when ?2 = 'all' then '' else '무제' end and  f.status in ?3")
     List<Folder> findFolderList(Long id, String status, List<DisclosureStatusType> disclosureStatusTypes);
+
+    List<Folder> findByUsersId(Long id);
 }
