@@ -97,7 +97,7 @@ public class FolderController {
 
     }
 
-    @PostMapping("/report/{folderId}")
+    @PostMapping("/reportfolder/{folderId}")
     public void reportFolder(@PathVariable Long folderId,
                              HttpServletRequest request) {
         folderService.reportFolder(folderId, request);

@@ -234,7 +234,7 @@ public class FolderService {
     public List<FolderResponseDto> findBestFolder(int page, int size, HttpServletRequest request) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("sharedCount").descending());
         Users users = userinfoHttpRequest.userFindByToken(request);
-        List<Folder> folders = folderRepository.findAllBystatus(DisclosureStatusType.PUBLIC, users.getId(), pageRequest).getContent();
+        List<Folder> folders = folderRepository.findAllBystatus(users.getId(), DisclosureStatusType.PUBLIC, pageRequest).getContent();
         List<FolderResponseDto> folderResponseDtos = new ArrayList<>();
         for (Folder folder : folders) {
             folderResponseDtos.add(new FolderResponseDto(folder));
@@ -349,9 +349,9 @@ public class FolderService {
         Users users = userinfoHttpRequest.userFindByToken(request);
 
         Page<Folder> folders = folderRepository.findAllByNameContaining1(
-                "%" + keyword + "%",
-                DisclosureStatusType.PUBLIC,
                 users.getId(),
+                DisclosureStatusType.PUBLIC,
+                "%" + keyword + "%",
                 pageable
         );
 

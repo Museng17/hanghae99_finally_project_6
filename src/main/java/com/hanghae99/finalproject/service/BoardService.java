@@ -36,6 +36,7 @@ public class BoardService {
     private final S3Uploader s3Uploader;
     private final UserRepository userRepository;
     private final ImageRepository imageRepository;
+    private final ReportRepository reportRepository;
 
     @Transactional
     public MessageResponseDto boardSave(BoardRequestDto boardRequestDto, HttpServletRequest request) {
@@ -347,13 +348,17 @@ public class BoardService {
         Page<Board> boards;
         PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("createdDate").descending());
         if (all.isPresent()) {
-            boards = boardRepository.findAllByStatusAndTitleContaining(DisclosureStatusType.PUBLIC,
+            boards = boardRepository.findAllByStatusAndTitleContaining(users.getId(),
+                    DisclosureStatusType.PUBLIC,
                     "%" + keyword + "%",
-                    users.getId(),
                     pageRequest
             );
         } else {
-            boards = boardRepository.findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatusType.PUBLIC, "%" + keyword + "%", FolderRequestDtoToCategoryTypeList(folderRequestDtos), pageRequest);
+            boards = boardRepository.findAllByStatusAndTitleContainingAndCategoryIn(users.getId(),
+                    DisclosureStatusType.PUBLIC,
+                    "%" + keyword + "%",
+                    FolderRequestDtoToCategoryTypeList(folderRequestDtos),
+                    pageRequest);
         }
         return new BoardAndCntResponseDto(boards, boards.getTotalElements());
     }
@@ -497,5 +502,17 @@ public class BoardService {
         board.updateStatus(new FolderRequestDto(boardRequestDto.getStatus()));
 
         return board;
+    }
+    @Transactional
+    public void reportBoard(Long boardId, HttpServletRequest request) {
+        Users users = userinfoHttpRequest.userFindByToken(request);
+
+        Folder folder = folderRepository.findByBoardId(boardId)
+                .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
+
+        Users baduser = folder.getUsers();
+        reportRepository.save(new Report(users, folder));
+        folder.setReportCnt(folder.getReportCnt() + 1);
+        baduser.setReportCnt(baduser.getReportCnt() + 1);
     }
 }

@@ -31,14 +31,15 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("SELECT DISTINCT(B.category) FROM Board B WHERE B.users.id = :id")
     List<CategoryType> findAllCategoryByUsersId(@Param("id") Long id);
 
-    @Query("select b from Board b where  b.status = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and b.category in ?3")
-    Page<Board> findAllByStatusAndTitleContainingAndCategoryIn(DisclosureStatusType status,
+    @Query("select b from Board b where  not b.users.id = ?1 and b.status = ?2 and b.title LIKE case when ?3 = '%all%' then '%%' else ?3 end and b.category in ?4")
+    Page<Board> findAllByStatusAndTitleContainingAndCategoryIn(Long usersId,
+                                                               DisclosureStatusType status,
                                                                String keyword,
                                                                List<CategoryType> categoryTypeList,
                                                                Pageable pageable);
 
-    @Query("select b from Board b where  b.status = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and not b.users.id = ?3")
-    Page<Board> findAllByStatusAndTitleContaining(DisclosureStatusType status, String keyword, Long usersId, Pageable pageable);
+    @Query("select b from Board b where  not b.users.id = ?1 and b.status = ?2 and b.title LIKE case when ?3 = '%all%' then '%%' else ?3 end")
+    Page<Board> findAllByStatusAndTitleContaining(Long usersId, DisclosureStatusType status, String keyword, Pageable pageable);
 
     List<Board> deleteAllByFolderIdIn(List<Long> folderIdList);
 

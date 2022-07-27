@@ -16,8 +16,8 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
 
     void deleteAllByUsers(Users user);
 
-    @Query("select f from Folder f where  f.name not like '무제'   and f.status in ?1 and not f.users.id = ?2")
-    Page<Folder> findAllBystatus(DisclosureStatusType status,Long userId, Pageable pageable);
+    @Query("select f from Folder f where not f.users.id = ?1 and f.name not like '무제'   and f.status in ?2")
+    Page<Folder> findAllBystatus(Long userId,DisclosureStatusType status, Pageable pageable);
 
     Optional<Folder> findByIdAndUsersIdNot(Long folderId, Long id);
 
@@ -40,9 +40,11 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
                                       Pageable pageable);
 
     Folder findByUsersAndName(Users users, String basicFolder);
+    @Query("select f from Folder f join Board b where b.id = ?1 and f.id = b.folder.id")
+    Optional<Folder> findByBoardId(Long boardId);
 
-    @Query("select f from Folder f where f.name LIKE case when ?1 = '%all%' then '%%' else ?1 end and f.name not like '무제' and f.status in ?2 and not f.users.id = ?3")
-    Page<Folder> findAllByNameContaining1(String keyword, DisclosureStatusType disclosureStatuses, Long usersId, Pageable pageable);
+    @Query("select f from Folder f where not f.users.id = ?1 and f.status in ?2 and f.name LIKE case when ?3 = '%all%' then '%%' else ?3 end and f.name not like '무제'")
+    Page<Folder> findAllByNameContaining1(Long usersId, DisclosureStatusType disclosureStatuses, String keyword, Pageable pageable);
 
     Optional<List<Folder>> findAllByIdInAndUsersId(List<Long> folderId, Long id);
 

@@ -110,4 +110,8 @@ public class BoardController {
                               HttpServletRequest request) {
         return boardService.updateStatus(boardRequestDto, request);
     }
+    @PostMapping("/reportboard/{boardId}")
+    public void reportBoard(@PathVariable Long boardId,HttpServletRequest request){
+        boardService.reportBoard(boardId,request);
+    }
 }
