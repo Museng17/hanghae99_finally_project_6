@@ -58,6 +58,8 @@ public class BoardService {
                                 boardRequestDto.getImgPath()
                         ).getUrl()
                 );
+            } else {
+                boardRequestDto.updateImagePath("https://i.ibb.co/51YGqmc/image.jpg");
             }
 
         } else if (boardRequestDto.getBoardType() == BoardType.MEMO) {
