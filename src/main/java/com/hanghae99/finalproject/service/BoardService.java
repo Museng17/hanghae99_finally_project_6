@@ -544,7 +544,8 @@ public class BoardService {
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(NOT_FIND_BOARD));
-        Folder folder = folderRepository.findById(board.getId())
+
+        Folder folder = folderRepository.findById(board.getFolder().getId())
                 .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
 
         Users baduser = folder.getUsers();
