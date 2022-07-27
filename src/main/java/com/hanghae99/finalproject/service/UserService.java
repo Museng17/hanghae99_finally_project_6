@@ -310,6 +310,12 @@ public class UserService {
 
     @Transactional
     public Boolean updateUserName(UserRequestDto userRequestDto, HttpServletRequest request) {
+
+        if(userRequestDto.getNickname().length() > 10 || userRequestDto.getNickname().length() <= 0){
+            throw new RuntimeException("10자 이하로 입력해주세요");
+        }
+
+
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
         if (!checkNameDuplicate(userRequestDto.getNickname())) {
             throw new RuntimeException("닉네임이 중복되었습니다.");
@@ -329,8 +335,10 @@ public class UserService {
 
     @Transactional
     public Boolean updateUserInfo(UserRequestDto userRequestDto, HttpServletRequest request) {
+        if(userRequestDto.getInformation().length() > 40){
+            throw new RuntimeException("40이하로 입력해주세요");
+        }
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
-
         user.updateInfo(userRequestDto);
 
         return true;
@@ -338,6 +346,10 @@ public class UserService {
 
     @Transactional
     public Boolean updateUserPw(UserRequestDto userRequestDto, HttpServletRequest request) {
+        if (!Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$", userRequestDto.getPassword())) {
+            throw new RuntimeException("비밀번호를 확인해주세요");
+        }
+
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
 
         if (!bCryptPasswordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {

@@ -38,6 +38,11 @@ public class FolderService {
 
     @Transactional
     public Folder folderSave(FolderRequestDto folderRequestDto, HttpServletRequest request) {
+
+        if(folderRequestDto.getName().length() > 25){
+            throw new RuntimeException("25자 이하로 입력해주세요");
+        }
+
         if (folderRequestDto.getName().trim().equals("무제")) {
             throw new RuntimeException("무제라는 이름은 추가할 수 없습니다.");
         }
