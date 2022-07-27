@@ -95,7 +95,7 @@ public class FolderService {
         }
 
         List<Board> removeBoardList = boardService.boardDeleteByFolderId(DbLongList);
-        folderRepository.deleteAllById(DbLongList);
+        reportRepository.deleteAllByBadfolderIdIn(DbLongList);
         users.setBoardCnt(users.getBoardCnt() - removeBoardList.size());
         users.setFolderCnt(users.getFolderCnt() - DbLongList.size());
     }
