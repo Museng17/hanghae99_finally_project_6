@@ -33,7 +33,6 @@ public class WebConfig implements WebMvcConfigurer {
             "/find/**"
 
     };
-
     public final static String SOCIAL_HEADER_KEY = "Code";
 
     private final JwtTokenInterceptor jwtTokenInterceptor;
