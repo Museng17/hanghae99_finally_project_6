@@ -192,10 +192,6 @@ public class BoardService {
         return boardRepository.findAllById(longs);
     }
 
-    public List<Board> boardDeleteByFolderId(List<Long> folderIdList) {
-        return boardRepository.deleteAllByFolderIdIn(folderIdList);
-    }
-
     public void statusUpdateByFolderId(Long id, FolderRequestDto folderRequestDto) {
         Optional<Board> board = boardRepository.findByFolderId(id);
 

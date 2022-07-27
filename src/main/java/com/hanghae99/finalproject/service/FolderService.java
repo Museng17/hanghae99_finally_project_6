@@ -94,8 +94,13 @@ public class FolderService {
             );
         }
         List<Board> removeBoardList = boardRepository.findAllByFolderIdIn(DbLongList);
-        imageRepository.deleteAllByBoardIdIn(longs);
-        boardService.boardDeleteByFolderId(DbLongList);
+
+        List<Long> boardRemoveIdList = removeBoardList.stream()
+                .map(Board::getId)
+                .collect(Collectors.toList());
+
+        imageRepository.deleteAllByBoardIdIn(boardRemoveIdList);
+        boardRepository.deleteAllByIdIn(boardRemoveIdList);
         reportRepository.deleteAllByBadfolderIdIn(DbLongList);
         shareRepository.deleteAllByFolderIdIn(DbLongList);
         folderRepository.deleteAllById(DbLongList);

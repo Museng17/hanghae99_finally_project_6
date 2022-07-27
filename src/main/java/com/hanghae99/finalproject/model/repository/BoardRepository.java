@@ -48,8 +48,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("select b from Board b where  not b.users.id = ?1 and b.status = ?2 and b.title LIKE case when ?3 = '%all%' then '%%' else ?3 end")
     Page<Board> findAllByStatusAndTitleContaining(Long usersId, DisclosureStatusType status, String keyword, Pageable pageable);
 
-    List<Board> deleteAllByFolderIdIn(List<Long> folderIdList);
-
     @Query("SELECT DISTINCT(b.category) FROM Board b WHERE b.users.id = ?1 and b.folder.id = ?2 and b.status in ?3")
     List<CategoryType> findCategoryByUsersIdAndFolderId(Long id,
                                                         Long folderId,
@@ -77,4 +75,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     Optional<Board> findBoardByIdAndUsersId(Long folderId, Long id);
 
     List<Board> findAllByFolderIdIn(List<Long> dbLongList);
+
+    void deleteAllByIdIn(List<Long> boardRemoveIdList);
 }
