@@ -14,6 +14,8 @@ public enum ErrorCode {
     NOT_EMAIL_CERTIFICATION_CHECK(404, 200, "이메일 인증을 하지 않은 회원입니다."),
     NOT_FIND_SHARE(500,200,"공유된 폴더를 찾을 수 없습니다."),
     EXIST_REPORT(500,200,"이미 신고하셨습니다."),
+    NOT_EMAIL(505, 200, "이메일를 형식이 다릅니다."),
+    NOT_CERTIFICATION(505, 200, "인증번호를 입력해주세요"),
 
     //엑세스 토큰
     NOT_HEADER_ACCESS_TOKEN(402, 402, "헤더에 엑세스 토큰이 없습니다."),

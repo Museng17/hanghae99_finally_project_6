@@ -1,8 +1,8 @@
 package com.hanghae99.finalproject.service;
 
-import com.hanghae99.finalproject.exceptionHandler.CustumException.CustomException;
+import com.hanghae99.finalproject.exceptionHandler.CustumException.*;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
-import com.hanghae99.finalproject.model.dto.responseDto.MessageResponseDto;
+import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.Users;
 import com.hanghae99.finalproject.model.repository.UserRepository;
 import com.hanghae99.finalproject.model.resultType.LoginType;
@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.*;
 
@@ -45,6 +46,9 @@ public class MailService {
     }
 
     public MessageResponseDto emailCheck(MailRequestDto mailRequestDto) {
+        if(mailRequestDto.getCertification().trim().length() < 0) {
+            throw new CustomException(NOT_CERTIFICATION);
+        }
         if (!certificationCheck(mailRequestDto.getEmail(), mailRequestDto.getCertification())) {
             log.info("인증번호 요청 불일치");
             return new MessageResponseDto(404, "불일치");
@@ -54,6 +58,9 @@ public class MailService {
     }
 
     public MessageResponseDto emailPasswordCheck(MailRequestDto mailRequestDto) {
+        if(mailRequestDto.getCertification().trim().length() < 0) {
+            throw new CustomException(NOT_CERTIFICATION);
+        }
         if (!certificationCheck(mailRequestDto.getEmail(), mailRequestDto.getCertification())) {
             log.info("인증번호 요청 불일치");
             return new MessageResponseDto(404, "불일치");
@@ -138,6 +145,11 @@ public class MailService {
 
     @Transactional(readOnly = true)
     public MessageResponseDto sendEmail(MailRequestDto mailRequestDto) {
+        if (!Pattern.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", mailRequestDto.getEmail())) {
+            throw new CustomException(NOT_EMAIL);
+        }
+
+
         Optional<Users> user = userRepository.findByEmail(mailRequestDto.getEmail());
         if (user.isPresent()) {
             throw new CustomException(OVERLAP_EMAIL);
