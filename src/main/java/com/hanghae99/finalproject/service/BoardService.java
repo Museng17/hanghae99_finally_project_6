@@ -545,7 +545,9 @@ public class BoardService {
     public void reportBoard(Long boardId, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
 
-        Folder folder = folderRepository.findByBoardId(boardId)
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new CustomException(NOT_FIND_BOARD));
+        Folder folder = folderRepository.findById(board.getId())
                 .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
 
         Users baduser = folder.getUsers();

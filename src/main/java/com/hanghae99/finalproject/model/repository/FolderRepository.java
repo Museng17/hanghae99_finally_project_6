@@ -40,7 +40,7 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
                                       Pageable pageable);
 
     Folder findByUsersAndName(Users users, String basicFolder);
-    @Query("select f from Folder f join Board b where b.id = ?1 and f.id = b.folder.id")
+    @Query("select f from Folder f , Board b where f.id = b.folder.id and  b.id = ?1")
     Optional<Folder> findByBoardId(Long boardId);
 
     @Query("select f from Folder f where not f.users.id = ?1 and f.status in ?2 and f.name LIKE case when ?3 = '%all%' then '%%' else ?3 end and f.name not like '무제'")
