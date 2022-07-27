@@ -197,7 +197,7 @@ public class UserService {
             Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7)));
             folderRepository.save(new Folder(users));
             users.updateNickName();
-            return createTokens(users.getUsername());
+            return createTokens2(users.getUsername());
         }
 
         return createTokens2(user.get().getUsername());
