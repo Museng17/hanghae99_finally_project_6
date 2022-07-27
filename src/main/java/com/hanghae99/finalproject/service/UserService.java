@@ -37,6 +37,7 @@ public class UserService {
     private final FolderRepository folderRepository;
     private final UserInfoInJwt userInfoInJwt;
     private final FollowRepository followRepository;
+    private final ReportRepository reportRepository;
 
     @Transactional(readOnly = true)
     public TokenResponseDto login(UserRequestDto userRequestDto) {
@@ -204,6 +205,7 @@ public class UserService {
         boardRepository.deleteAllByUsers(user);
         folderRepository.deleteAllByUsers(user);
         userRepository.deleteById(user.getId());
+        reportRepository.deleteById(user.getId());
 
         return true;
     }
