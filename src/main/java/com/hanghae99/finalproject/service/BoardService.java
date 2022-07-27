@@ -547,6 +547,9 @@ public class BoardService {
                 .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
 
         Users baduser = folder.getUsers();
+        if(!new Report(users, folder).equals(reportRepository.findByBadfolderIdAndReporterId(folder.getId(),users.getId()))){
+            throw new CustomException("이미 신고하셨습니다.",500);
+        }
         reportRepository.save(new Report(users, folder));
         folder.setReportCnt(folder.getReportCnt() + 1);
         baduser.setReportCnt(baduser.getReportCnt() + 1);
