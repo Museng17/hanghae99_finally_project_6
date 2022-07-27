@@ -94,5 +94,4 @@ public class WebConfig implements WebMvcConfigurer {
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         return builder.build();
     }
-
 }
