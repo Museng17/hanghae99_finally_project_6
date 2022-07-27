@@ -15,8 +15,7 @@ public enum GoogleLoginType {
     CLIENT_SECRET("client_secret"),
     CODE("code"),
     GRANT_TYPE("grant_type", "authorization_code"),
-//    REDIRECT_URI("redirect_uri", "https://moum.cloud");
-    REDIRECT_URI("redirect_uri", "http://spartastatic.s3-website.ap-northeast-2.amazonaws.com");
+    REDIRECT_URI("redirect_uri", "https://moum.cloud");
 
     private String name;
     private String value;
