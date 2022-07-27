@@ -11,5 +11,7 @@ public interface ShareRepository extends JpaRepository<Share, Long> {
     List<Share> findAllByUsersId(Long id);
     
     void deleteAllByFolderIdIn(List<Long> dbLongList);
+
+    void deleteByUserId(Long id);
 }
 

@@ -77,4 +77,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> findAllByFolderIdIn(List<Long> dbLongList);
 
     void deleteAllByIdIn(List<Long> boardRemoveIdList);
+
+    List<Board> findByUsersId(Long id);
 }

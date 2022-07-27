@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode.*;
 import static com.hanghae99.finalproject.interceptor.JwtTokenInterceptor.JWT_HEADER_KEY;
@@ -38,6 +39,8 @@ public class UserService {
     private final UserInfoInJwt userInfoInJwt;
     private final FollowRepository followRepository;
     private final ReportRepository reportRepository;
+    private final ImageRepository imageRepository;
+    private final ShareRepository shareRepository;
 
     @Transactional(readOnly = true)
     public TokenResponseDto login(UserRequestDto userRequestDto) {
@@ -92,11 +95,11 @@ public class UserService {
     @Transactional
     public UserRegisterRespDto registerUser(UserRequestDto Dto) {
 
-//        if (!certificationMap.match(Dto.getEmail())) {
-//            throw new CustomException(ErrorCode.NOT_EMAIL_CERTIFICATION_CHECK);
-//        }
-//
-//        certificationMap.remove(Dto.getEmail(), true);
+        if (!certificationMap.match(Dto.getEmail())) {
+            throw new CustomException(ErrorCode.NOT_EMAIL_CERTIFICATION_CHECK);
+        }
+
+        certificationMap.remove(Dto.getEmail(), true);
 
         //회원가입 정규식 체크
         UserRegisterRespDto valid = joinValid(Dto);
@@ -202,11 +205,19 @@ public class UserService {
     public Boolean UserDelete(HttpServletRequest request) {
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
 
-        boardRepository.deleteAllByUsers(user);
-        folderRepository.deleteAllByUsers(user);
+        List<Board> removeBoardList = boardRepository.findByUsersId(user.getId());
+
+        List<Long> removeBoardIdList = removeBoardList.stream()
+                .map(Board::getId)
+                .collect(Collectors.toList());
+
+        shareRepository.deleteByUserId(user.getId());
         reportRepository.deleteByReporterId(user.getId());
         followRepository.deleteByFollowingId(user.getId());
         followRepository.deleteByFollowerId(user.getId());
+        imageRepository.deleteByBoardIdIn(removeBoardIdList);
+        boardRepository.deleteAllByUsers(user);
+        folderRepository.deleteAllByUsers(user);
         userRepository.deleteById(user.getId());
 
         return true;
