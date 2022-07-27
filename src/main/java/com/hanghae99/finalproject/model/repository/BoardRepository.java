@@ -12,7 +12,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     Optional<Board> findByFolderId(Long folderId);
 
-    Page<Board> findAllByStatus(DisclosureStatusType status, Pageable pageable);
+//    Page<Board> findAllByStatus(Users users, DisclosureStatusType status, Pageable pageable);
 
     void deleteAllByUsers(Users user);
 
@@ -79,4 +79,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     void deleteAllByIdIn(List<Long> boardRemoveIdList);
 
     List<Board> findByUsersId(Long id);
+
+    Page<Board> findAllByUsersNotAndStatus(Users users, DisclosureStatusType aPublic, PageRequest pageRequest);
 }

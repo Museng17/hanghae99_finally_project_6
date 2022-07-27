@@ -69,8 +69,8 @@ public class BoardController {
     }
 
     @GetMapping("/newboards/{page}/{size}")
-    public Page<Board> findNewBoards(@PathVariable int page, @PathVariable int size) {
-        return boardService.findNewBoard(page, size);
+    public Page<Board> findNewBoards(@PathVariable int page, @PathVariable int size, HttpServletRequest request) {
+        return boardService.findNewBoard(page, size, request);
     }
 
     @PostMapping("/boards/{userId}/{folderId}/{keyword}")
