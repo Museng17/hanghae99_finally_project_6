@@ -9,7 +9,7 @@ public interface ShareRepository extends JpaRepository<Share, Long> {
     Optional<Share> findByFolderIdAndUsersId(Long folderId, Long userId);
 
     List<Share> findAllByUsersId(Long id);
-
-    void deleteAllByFolderId(List<Long> dbLongList);
+    
+    void deleteAllByFolderIdIn(List<Long> dbLongList);
 }
 
