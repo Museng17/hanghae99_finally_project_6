@@ -280,9 +280,10 @@ public class BoardService {
     }
 
     @Transactional
-    public Page<Board> findNewBoard(int page, int size) {
+    public Page<Board> findNewBoard(int page, int size, HttpServletRequest request) {
+        Users users = userinfoHttpRequest.userFindByToken(request);
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        return boardRepository.findAllByStatus(DisclosureStatusType.PUBLIC, pageRequest);
+        return boardRepository.findAllByUsersNotAndStatus(users, DisclosureStatusType.PUBLIC, pageRequest);
     }
 
     public List<CategoryType> FolderRequestDtoToCategoryTypeList(List<FolderRequestDto> folderRequestDtos) {
