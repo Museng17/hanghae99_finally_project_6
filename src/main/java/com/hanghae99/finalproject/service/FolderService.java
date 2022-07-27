@@ -446,8 +446,11 @@ public class FolderService {
     @Transactional
     public void deleteShare(Long folderId, HttpServletRequest request) {
         Users user = userinfoHttpRequest.userFindByToken(request);
+        Folder folder = folderRepository.findById(folderId)
+                .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
         Share share = shareRepository.findByFolderIdAndUsersId(folderId, user.getId())
                 .orElseThrow(() -> new CustomException(NOT_FIND_SHARE));
         shareRepository.delete(share);
+        folder.setSharedCount(folder.getSharedCount()-1);
     }
 }
