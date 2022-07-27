@@ -1,6 +1,6 @@
 package com.hanghae99.finalproject.service;
 
-import com.hanghae99.finalproject.exceptionHandler.CustumException.CustomException;
+import com.hanghae99.finalproject.exceptionHandler.CustumException.*;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.*;
@@ -395,7 +395,7 @@ public class FolderService {
         Users baduser = folder.getUsers();
         Optional<Report> report = reportRepository.findByBadfolderIdAndReporterId(folder.getId(),users.getId());
         if(report.isPresent()){
-            throw new CustomException("이미 신고하셨습니다.",500);
+            throw new CustomException(EXIST_REPORT);
         }
 //        if(!new Report(users, folder).equals(reportRepository.findByBadfolderIdAndReporterId(folder.getId(),users.getId()))){
 //            throw new CustomException("이미 신고하셨습니다.",500);

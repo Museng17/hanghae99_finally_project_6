@@ -549,7 +549,7 @@ public class BoardService {
                 .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
         Optional<Report> report = reportRepository.findByBadfolderIdAndReporterId(folder.getId(),users.getId());
         if(report.isPresent()){
-            throw new CustomException("이미 신고하셨습니다.",500);
+            throw new CustomException(EXIST_REPORT);
         }
 
         Users baduser = folder.getUsers();
