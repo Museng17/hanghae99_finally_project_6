@@ -38,7 +38,7 @@ public class MailService {
             mailUtils.sendEmail(mailUtils.makeMassageHtml("이메일 인증", mailRequestDto.getEmail(), htmlFileName, context));
         } catch (Exception e) {
             log.info("이메일 전송 실패");
-            return new MessageResponseDto(501, "전송실패 : " + e.getMessage());
+            return new MessageResponseDto(500, "전송실패 : " + e.getMessage());
         }
         certificationMap.put(mailRequestDto.getEmail(), massage);
         return new MessageResponseDto(200, "전송완료");

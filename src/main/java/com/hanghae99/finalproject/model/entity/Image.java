@@ -37,7 +37,16 @@ public class Image {
         this.board = board;
     }
 
+    public Image(Image image) {
+        this.imgPath = image.getImgPath();
+        this.imageType = image.getImageType();
+    }
+
     public void imagePathUpdate(BoardRequestDto boardRequestDto) {
         this.imgPath = boardRequestDto.getImgPath();
+    }
+
+    public void updateBoard(Board board) {
+        this.board = board;
     }
 }
