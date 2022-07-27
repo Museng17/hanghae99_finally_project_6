@@ -12,7 +12,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     Optional<Board> findByFolderId(Long folderId);
 
-    Page<Board> findAllByStatus(DisclosureStatusType status, Pageable pageable);
+//    Page<Board> findAllByStatus(Users users, DisclosureStatusType status, Pageable pageable);
 
     void deleteAllByUsers(Users user);
 
@@ -26,8 +26,15 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
                                                               List<DisclosureStatusType> disclosureStatusTypes,
                                                               Pageable pageable);
 
-    @Query("select b from Board b where  b.folder.id = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and b.category in ?3 and b.users.id = ?4 and b.status IN ?5")
+    @Query("select b from Board b where  b.folder.id = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and b.category in ?3 and b.users.id = ?4 and b.status IN ?5 order by b.createdDate DESC ")
     List<Board> findByFolderIdAndTitleContainingAndCategoryIn2(Long folderId,
+                                                               String keyword,
+                                                               List<CategoryType> categoryTypeList,
+                                                               Long userId,
+                                                               List<DisclosureStatusType> disclosureStatusTypes);
+
+    @Query("select b from Board b where  b.folder.id = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and b.category in ?3 and b.users.id = ?4 and b.status IN ?5 order by b.boardOrder asc ")
+    List<Board> findByFolderIdAndTitleContainingAndCategoryIn3(Long folderId,
                                                                String keyword,
                                                                List<CategoryType> categoryTypeList,
                                                                Long userId,
@@ -79,4 +86,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     void deleteAllByIdIn(List<Long> boardRemoveIdList);
 
     List<Board> findByUsersId(Long id);
+
+    Page<Board> findAllByUsersNotAndStatus(Users users, DisclosureStatusType aPublic, PageRequest pageRequest);
 }
