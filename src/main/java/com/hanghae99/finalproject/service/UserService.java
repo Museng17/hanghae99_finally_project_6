@@ -204,8 +204,8 @@ public class UserService {
 
         boardRepository.deleteAllByUsers(user);
         folderRepository.deleteAllByUsers(user);
+        reportRepository.deleteByReporterId(user.getId());
         userRepository.deleteById(user.getId());
-        reportRepository.deleteById(user.getId());
 
         return true;
     }
