@@ -210,7 +210,11 @@ public class UserService {
         List<Long> removeBoardIdList = removeBoardList.stream()
                 .map(Board::getId)
                 .collect(Collectors.toList());
-
+        List<Share> shares = shareRepository.findAllByUsersId(user.getId());
+        List<Folder> folders = shares.stream().map(Share::getFolder).collect(Collectors.toList());
+        for(Folder folder : folders){
+            folder.setSharedCount(folder.getSharedCount()-1);
+        }
         shareRepository.deleteByUserId(user.getId());
         reportRepository.deleteByReporterId(user.getId());
         followRepository.deleteByFollowingId(user.getId());
