@@ -247,8 +247,26 @@ public class BoardService {
         List<Board> boardList = boardRepository.findAllByIdIn(LongList);
 
         for (Board board : boardList) {
+            List<Image> images2 = imageRepository.findByBoard(board);
+            List<Image> images = new ArrayList<>();
+            for (Image image : images2) {
+                images.add(new Image(image));
+            }
 
-            boardRepository.save(new Board(board, users, folder));
+            for (Image image : images) {
+                image.updateBoard(
+                        boardRepository.save(
+                                new Board(
+                                        board,
+                                        users,
+                                        folder
+                                )
+                        )
+                );
+            }
+
+            imageRepository.saveAll(images);
+
             folder.setBoardCnt(folder.getBoardCnt() + 1);
             users.setBoardCnt(users.getBoardCnt() + 1);
         }
@@ -357,7 +375,7 @@ public class BoardService {
                 });
         List<Board> boards = new ArrayList<>();
 
-        if(sort.equals("a")){
+        if (sort.equals("a")) {
             boards = boardRepository.findByFolderIdAndTitleContainingAndCategoryIn2(
                     folderId,
                     "%" + keyword + "%",
