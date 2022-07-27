@@ -215,7 +215,7 @@ public class UserService {
         for(Folder folder : folders){
             folder.setSharedCount(folder.getSharedCount()-1);
         }
-        shareRepository.deleteByUserId(user.getId());
+        shareRepository.deleteByUsersId(user.getId());
         reportRepository.deleteByReporterId(user.getId());
         followRepository.deleteByFollowingId(user.getId());
         followRepository.deleteByFollowerId(user.getId());
