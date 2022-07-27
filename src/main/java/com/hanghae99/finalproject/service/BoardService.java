@@ -355,15 +355,25 @@ public class BoardService {
                     }
                     throw new CustomException(NOT_FIND_USER);
                 });
+        List<Board> boards = new ArrayList<>();
 
-        List<Board> boards = boardRepository.findByFolderIdAndTitleContainingAndCategoryIn2(
-                folderId,
-                "%" + keyword + "%",
-                findSelectCategory(folderRequestDtos),
-                user.getId(),
-                disclosureStatusTypes
-        );
-
+        if(sort.equals("a")){
+            boards = boardRepository.findByFolderIdAndTitleContainingAndCategoryIn2(
+                    folderId,
+                    "%" + keyword + "%",
+                    findSelectCategory(folderRequestDtos),
+                    user.getId(),
+                    disclosureStatusTypes
+            );
+        } else {
+            boards = boardRepository.findByFolderIdAndTitleContainingAndCategoryIn3(
+                    folderId,
+                    "%" + keyword + "%",
+                    findSelectCategory(folderRequestDtos),
+                    user.getId(),
+                    disclosureStatusTypes
+            );
+        }
         return new MessageResponseDto(
                 200,
                 "조회완료",
