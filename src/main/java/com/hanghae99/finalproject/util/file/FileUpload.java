@@ -1,5 +1,6 @@
 package com.hanghae99.finalproject.util.file;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,6 +13,7 @@ import java.net.URL;
 import static com.hanghae99.finalproject.model.resultType.FileUploadType.UBUNTU_BASE_PATH;
 
 @Component
+@Slf4j
 public class FileUpload {
 
     /* multipartFile을 file로 변환 하는 작업 */
@@ -66,7 +68,7 @@ public class FileUpload {
             ImageIO.write(image, imageName.substring(imageName.lastIndexOf(".") + 1), file);
 
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            log.info(e.getMessage());
         }
         return file;
     }

@@ -64,8 +64,15 @@ public class S3Uploader {
     public FileUploadResponse upload(String imagePath, String path) {
         String imgName = fileUtils.makeFileName();
         File imageFile = fileUpload.imageUploadToSever(path, imgName);
-        String uploadImageUrl = putS3(imageFile, imagePath + imgName);
-        removeNewFile(imageFile);
+        String uploadImageUrl  = "";
+        try {
+            uploadImageUrl = putS3(imageFile, imagePath + imgName);
+            removeNewFile(imageFile);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            uploadImageUrl = "";
+        }
+
         return new FileUploadResponse(uploadImageUrl);
     }
 
