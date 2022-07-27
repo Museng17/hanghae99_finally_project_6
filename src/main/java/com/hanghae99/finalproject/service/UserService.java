@@ -225,6 +225,8 @@ public class UserService {
 
 
         shareRepository.deleteByUsersId(user.getId());
+        shareRepository.deleteAllByFolderIdIn(removeFolderIdList);
+
         reportRepository.deleteByReporterId(user.getId());
 
 

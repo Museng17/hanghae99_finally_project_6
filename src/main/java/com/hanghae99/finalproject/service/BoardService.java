@@ -341,9 +341,9 @@ public class BoardService {
     public MessageResponseDto moum2(List<FolderRequestDto> folderRequestDtos,
                                     String keyword,
                                     HttpServletRequest request,
-                                    Pageable pageable,
                                     Long folderId,
-                                    Long userId) {
+                                    Long userId,
+                                    String sort) {
         List<DisclosureStatusType> disclosureStatusTypes = new ArrayList<>();
         disclosureStatusTypes.add(DisclosureStatusType.PUBLIC);
 
@@ -538,6 +538,7 @@ public class BoardService {
 
         return board;
     }
+
     @Transactional
     public void reportBoard(Long boardId, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
@@ -547,15 +548,15 @@ public class BoardService {
 
         Folder folder = folderRepository.findById(board.getFolder().getId())
                 .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
-        Optional<Report> report = reportRepository.findByBadfolderIdAndReporterId(folder.getId(),users.getId());
-        if(report.isPresent()){
+        Optional<Report> report = reportRepository.findByBadfolderIdAndReporterId(folder.getId(), users.getId());
+        if (report.isPresent()) {
             throw new CustomException(EXIST_REPORT);
         }
 
         Users baduser = folder.getUsers();
-//        if(!new Report(users, folder).equals(reportRepository.findByBadfolderIdAndReporterId(folder.getId(),users.getId()))){
-//
-//        }
+        //        if(!new Report(users, folder).equals(reportRepository.findByBadfolderIdAndReporterId(folder.getId(),users.getId()))){
+        //
+        //        }
 
         reportRepository.save(new Report(users, folder));
         folder.setReportCnt(folder.getReportCnt() + 1);
