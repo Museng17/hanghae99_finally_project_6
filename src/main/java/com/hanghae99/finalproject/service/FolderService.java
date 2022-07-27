@@ -191,6 +191,7 @@ public class FolderService {
         if (!findShare.isPresent()) {
             Share share = new Share(folder, users);
             shareRepository.save(share);
+            folder.setSharedCount(folder.getSharedCount()+1);
             return new MessageResponseDto<>(200, "공유되었습니다.");
         }
         return new MessageResponseDto<>(501, "이미 공유된 모음입니다.");
@@ -450,8 +451,11 @@ public class FolderService {
     @Transactional
     public void deleteShare(Long folderId, HttpServletRequest request) {
         Users user = userinfoHttpRequest.userFindByToken(request);
+        Folder folder = folderRepository.findById(folderId)
+                .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
         Share share = shareRepository.findByFolderIdAndUsersId(folderId, user.getId())
                 .orElseThrow(() -> new CustomException(NOT_FIND_SHARE));
         shareRepository.delete(share);
+        folder.setSharedCount(folder.getSharedCount()-1);
     }
 }
