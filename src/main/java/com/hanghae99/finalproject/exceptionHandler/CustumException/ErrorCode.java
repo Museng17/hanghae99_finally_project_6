@@ -16,6 +16,9 @@ public enum ErrorCode {
     EXIST_REPORT(500,200,"이미 신고하셨습니다."),
     NOT_EMAIL(505, 200, "이메일를 형식이 다릅니다."),
     NOT_CERTIFICATION(505, 200, "인증번호를 입력해주세요"),
+    OVER_TEXT(505, 200, "글자수를 확인해주세요"),
+    CONTENT_OVER_TEXT(505, 200, "내용 글자수를 확인해주세요"),
+    TITLE_OVER_TEXT(505, 200, "제목 글자수를 확인해주세요"),
 
     //엑세스 토큰
     NOT_HEADER_ACCESS_TOKEN(402, 402, "헤더에 엑세스 토큰이 없습니다."),

@@ -116,6 +116,11 @@ public class FolderService {
 
     @Transactional
     public void folderUpdate(Long folderId, HttpServletRequest request, FolderRequestDto folderRequestDto) {
+
+        if(folderRequestDto.getName().length() > 25){
+            throw new RuntimeException("25자 이하로 입력해주세요");
+        }
+
         Folder folder = findFolder(
                 folderId,
                 request

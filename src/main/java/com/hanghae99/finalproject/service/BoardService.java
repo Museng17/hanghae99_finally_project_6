@@ -43,6 +43,9 @@ public class BoardService {
         Image saveImage = new Image();
 
         if (boardRequestDto.getBoardType() == BoardType.LINK) {
+            if (!boardRequestDto.getLink().startsWith("https://")) {
+                boardRequestDto.updateLink();
+            }
             boardRequestDto.ogTagToBoardRequestDto(
                     thumbnailLoad(boardRequestDto.getLink()),
                     boardRequestDto.getLink()
@@ -58,6 +61,9 @@ public class BoardService {
             }
 
         } else if (boardRequestDto.getBoardType() == BoardType.MEMO) {
+            if (boardRequestDto.getContent().length() > 250) {
+                throw new CustomException(OVER_TEXT);
+            }
             boardRequestDto.updateTitle(new SimpleDateFormat(DateType.YEAR_MONTH_DAY.getPattern()).format(new Date()));
         }
 
@@ -140,7 +146,14 @@ public class BoardService {
                 }
             }
         }
-
+        if (boardRequestDto.getBoardType() == BoardType.MEMO) {
+            if (boardRequestDto.getContent().length() > 250) {
+                throw new CustomException(CONTENT_OVER_TEXT);
+            }
+            if (boardRequestDto.getTitle().length() > 30) {
+                throw new CustomException(TITLE_OVER_TEXT);
+            }
+        }
         board.update(boardRequestDto);
     }
 

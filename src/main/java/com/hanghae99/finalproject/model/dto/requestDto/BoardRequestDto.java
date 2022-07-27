@@ -42,4 +42,8 @@ public class BoardRequestDto {
     public void updateFolderName(String name) {
         this.folderName = name;
     }
+
+    public void updateLink() {
+        this.link = "https://" + this.link;
+    }
 }

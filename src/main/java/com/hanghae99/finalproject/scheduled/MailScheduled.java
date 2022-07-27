@@ -13,8 +13,6 @@ public class MailScheduled {
 
     @Scheduled(cron = "00 00 10 * * *")
     private void singletonRemove() {
-
-
         log.info("스케쥴러 작동");
         log.info("삭제되기전 인증요청 카운트 : " + certificationMap.getCertificationMapSize());
         int checkCnt = 0;
