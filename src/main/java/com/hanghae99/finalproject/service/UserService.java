@@ -313,6 +313,7 @@ public class UserService {
         if (!checkNameDuplicate(userRequestDto.getNickname())) {
             throw new RuntimeException("닉네임이 중복되었습니다.");
         }
+
         user.update(userRequestDto);
         return true;
     }
