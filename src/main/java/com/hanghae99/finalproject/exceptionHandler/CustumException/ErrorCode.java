@@ -27,7 +27,7 @@ public enum ErrorCode {
 
     //사용할 수 없습니다.
     CNT_NOT_USE_NICKNAME(505, 200, "이용할 수 없는 닉네임입니다."),
-    NOT_USE_PASSWORD(500, 200, "사용할 수 없는 비밀번호입니다."),
+    NOT_USE_PASSWORD(505, 200, "사용할 수 없는 비밀번호입니다."),
 
     //인증실패
     NOT_CERTIFICATION(505, 200, "인증번호를 입력해주세요"),
