@@ -73,9 +73,9 @@ public class Users extends TimeStamp {
         this.imgPath = Dto.getImgPath();
     }
 
-    public Users(SocialLoginRequestDto socialLoginRequestDto,  int randomNum) {
+    public Users(SocialLoginRequestDto socialLoginRequestDto,  int randomNum, Long maxId) {
         this.username = socialLoginRequestDto.getEmail();
-        this.nickname = "익명의 사용자";
+        this.nickname = "익명의 사용자" + maxId;
         this.folderCnt = 0L;
         this.boardCnt = 0L;
         this.email = socialLoginRequestDto.getEmail();
@@ -93,7 +93,7 @@ public class Users extends TimeStamp {
     }
 
     public void update(UserRequestDto userRequestDto) {
-        this.nickname = userRequestDto.getNickname();
+        this.nickname = userRequestDto.getNickname().trim();
     }
 
     public void updateInfo(UserRequestDto userRequestDto) {
