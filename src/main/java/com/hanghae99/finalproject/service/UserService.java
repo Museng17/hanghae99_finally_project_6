@@ -174,9 +174,9 @@ public class UserService {
             if (!checkEmailDuplicate(socialLoginRequestDto.getEmail())) {
                 throw new CustomException(OVERLAP_EMAIL);
             }
-            Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7)));
+            Long maxLongId = userRepository.findMaxId() + 1 ;
+            Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7), maxLongId));
             folderRepository.save(new Folder(users));
-            users.updateNickName();
             return createTokens(users.getUsername());
         }
 
@@ -194,9 +194,9 @@ public class UserService {
             if (!checkEmailDuplicate(socialLoginRequestDto.getEmail())) {
                 throw new CustomException(OVERLAP_EMAIL);
             }
-            Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7)));
+            Long maxLongId = userRepository.findMaxId() + 1 ;
+            Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7), maxLongId));
             folderRepository.save(new Folder(users));
-            users.updateNickName();
             return createTokens2(users.getUsername());
         }
 
@@ -335,9 +335,6 @@ public class UserService {
 
     @Transactional
     public Boolean updateUserInfo(UserRequestDto userRequestDto, HttpServletRequest request) {
-        if(userRequestDto.getNickname().startsWith("익명의 사용자")){
-            throw new RuntimeException("익명의사용자는 이용할 수 없는 닉네임입니다.");
-        }
         if(userRequestDto.getInformation().length() > 40){
             throw new RuntimeException("40이하로 입력해주세요");
         }
