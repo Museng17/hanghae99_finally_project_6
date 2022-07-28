@@ -105,7 +105,6 @@ public class MailUtils {
         prop.put("mail.smtp.debug", "true");
         prop.put("mail.smtp.starttls.enable", "true");
         prop.put("mail.smtp.EnableSSL.enable", "true");
-
         javaMailSender.setJavaMailProperties(prop);
         return javaMailSender;
     }
