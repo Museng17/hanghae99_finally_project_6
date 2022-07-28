@@ -335,6 +335,9 @@ public class UserService {
 
     @Transactional
     public Boolean updateUserInfo(UserRequestDto userRequestDto, HttpServletRequest request) {
+        if(userRequestDto.getNickname().startsWith("익명의 사용자")){
+            throw new RuntimeException("익명의사용자는 이용할 수 없는 닉네임입니다.");
+        }
         if(userRequestDto.getInformation().length() > 40){
             throw new RuntimeException("40이하로 입력해주세요");
         }
