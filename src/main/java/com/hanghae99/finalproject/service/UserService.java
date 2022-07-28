@@ -162,7 +162,7 @@ public class UserService {
 
     public Users findUser(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("UserService 109 에러 찾는 회원이 없습니다."));
+                .orElseThrow(() -> new CustomException(NOT_FIND_USER));
     }
 
     @Transactional
@@ -327,7 +327,7 @@ public class UserService {
     @Transactional
     public MessageResponseDto updateUserInfo(UserRequestDto userRequestDto, HttpServletRequest request) {
         if (userRequestDto.getInformation().length() > 40) {
-            throw new RuntimeException("40이하로 입력해주세요");
+            throw new CustomException(OVER_TEXT);
         }
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
 
@@ -339,7 +339,7 @@ public class UserService {
     @Transactional
     public MessageResponseDto updateUserPw(UserRequestDto userRequestDto, HttpServletRequest request) {
         if (!Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$", userRequestDto.getPassword())) {
-            throw new RuntimeException("비밀번호를 확인해주세요");
+            throw new CustomException(NOT_USE_PASSWORD);
         }
 
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
@@ -401,13 +401,13 @@ public class UserService {
     private void isNickNameValid(UserRequestDto userRequestDto) {
         if (userRequestDto.getNickname().trim().replace(" ", "").startsWith("운영자") ||
                 userRequestDto.getNickname().trim().replace(" ", "").startsWith("admin")) {
-            throw new RuntimeException("사용할 수 없는 닉네임입니다.");
+            throw new CustomException(CNT_NOT_USE_NICKNAME);
         }
 
         if (userRequestDto.getNickname().startsWith("익명의 사용자")) {
             try {
                 Integer.parseInt(userRequestDto.getNickname().trim().substring(7));
-                throw new RuntimeException("사용할 수 없는 닉네임입니다.");
+                throw new CustomException(CNT_NOT_USE_NICKNAME);
             } catch (NumberFormatException e) {
             } finally {
                 log.info("UserService.updateUserName : " + userRequestDto.getNickname());
@@ -415,7 +415,7 @@ public class UserService {
         }
 
         if (userRequestDto.getNickname().trim().length() > 10 || userRequestDto.getNickname().trim().length() <= 0) {
-            throw new RuntimeException("글자 수를 확인해주세요");
+            throw new CustomException(OVER_TEXT);
         }
     }
 
