@@ -19,6 +19,7 @@ public enum ErrorCode {
     OVER_TEXT(505, 200, "글자수를 확인해주세요"),
     CONTENT_OVER_TEXT(505, 200, "내용 글자수를 확인해주세요"),
     TITLE_OVER_TEXT(505, 200, "제목 글자수를 확인해주세요"),
+    CNT_NOT_USE_NICKNAME(505, 200, "이용할 수 없는 닉네임입니다."),
 
     //엑세스 토큰
     NOT_HEADER_ACCESS_TOKEN(402, 402, "헤더에 엑세스 토큰이 없습니다."),

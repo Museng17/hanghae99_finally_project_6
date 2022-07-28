@@ -93,7 +93,7 @@ public class Users extends TimeStamp {
     }
 
     public void update(UserRequestDto userRequestDto) {
-        this.nickname = userRequestDto.getNickname();
+        this.nickname = userRequestDto.getNickname().trim();
     }
 
     public void updateInfo(UserRequestDto userRequestDto) {

@@ -10,6 +10,7 @@ import com.hanghae99.finalproject.singleton.CertificationMap;
 import com.hanghae99.finalproject.util.restTemplates.SocialLoginRestTemplate;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorC
 import static com.hanghae99.finalproject.interceptor.JwtTokenInterceptor.JWT_HEADER_KEY;
 import static com.hanghae99.finalproject.jwt.JwtTokenProvider.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -170,11 +172,11 @@ public class UserService {
 
         Optional<Users> user = userRepository.findByUsername(socialLoginRequestDto.getEmail());
 
-        if(!user.isPresent()){
+        if (!user.isPresent()) {
             if (!checkEmailDuplicate(socialLoginRequestDto.getEmail())) {
                 throw new CustomException(OVERLAP_EMAIL);
             }
-            Long maxLongId = userRepository.findMaxId() + 1 ;
+            Long maxLongId = userRepository.findMaxId() + 1;
             Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7), maxLongId));
             folderRepository.save(new Folder(users));
             return createTokens(users.getUsername());
@@ -190,11 +192,11 @@ public class UserService {
 
         Optional<Users> user = userRepository.findByUsername(socialLoginRequestDto.getEmail());
 
-        if(!user.isPresent()){
+        if (!user.isPresent()) {
             if (!checkEmailDuplicate(socialLoginRequestDto.getEmail())) {
                 throw new CustomException(OVERLAP_EMAIL);
             }
-            Long maxLongId = userRepository.findMaxId() + 1 ;
+            Long maxLongId = userRepository.findMaxId() + 1;
             Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7), maxLongId));
             folderRepository.save(new Folder(users));
             return createTokens2(users.getUsername());
@@ -215,24 +217,20 @@ public class UserService {
         List<Share> shares = shareRepository.findAllByUsersId(user.getId());
 
         List<Folder> folders = shares.stream().map(Share::getFolder).collect(Collectors.toList());
-        for(Folder folder : folders){
-            folder.setSharedCount(folder.getSharedCount()-1);
+        for (Folder folder : folders) {
+            folder.setSharedCount(folder.getSharedCount() - 1);
         }
 
         List<Folder> folderList = folderRepository.findByUsersId(user.getId());
-        List<Long> removeFolderIdList  = folderList.stream().map(Folder::getId).collect(Collectors.toList());
-
-
+        List<Long> removeFolderIdList = folderList.stream().map(Folder::getId).collect(Collectors.toList());
 
         shareRepository.deleteByUsersId(user.getId());
         shareRepository.deleteAllByFolderIdIn(removeFolderIdList);
 
         reportRepository.deleteByReporterId(user.getId());
 
-
         reportRepository.deleteByReporterId(user.getId());
         reportRepository.deleteAllByBadfolderIdIn(removeFolderIdList);
-
 
         followRepository.deleteByFollowingId(user.getId());
         followRepository.deleteByFollowerId(user.getId());
@@ -310,19 +308,12 @@ public class UserService {
 
     @Transactional
     public Boolean updateUserName(UserRequestDto userRequestDto, HttpServletRequest request) {
-
-        if(userRequestDto.getNickname().length() > 10 || userRequestDto.getNickname().length() <= 0){
-            throw new RuntimeException("10자 이하로 입력해주세요");
-        }
-
-
+        isNickNameValid(userRequestDto);
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
         if (!checkNameDuplicate(userRequestDto.getNickname())) {
             throw new RuntimeException("닉네임이 중복되었습니다.");
         }
-
         user.update(userRequestDto);
-
         return true;
     }
 
@@ -335,7 +326,7 @@ public class UserService {
 
     @Transactional
     public Boolean updateUserInfo(UserRequestDto userRequestDto, HttpServletRequest request) {
-        if(userRequestDto.getInformation().length() > 40){
+        if (userRequestDto.getInformation().length() > 40) {
             throw new RuntimeException("40이하로 입력해주세요");
         }
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
@@ -404,6 +395,27 @@ public class UserService {
             return new UserRegisterRespDto(501, false, "중복된 이메일이 존재합니다.");
         }
         return null;
+    }
+
+    private void isNickNameValid(UserRequestDto userRequestDto){
+        if (userRequestDto.getNickname().trim().replace(" ", "").startsWith("운영자") ||
+                userRequestDto.getNickname().trim().replace(" ", "").startsWith("admin")) {
+            throw new RuntimeException("사용할 수 없는 닉네임입니다.");
+        }
+
+        if (userRequestDto.getNickname().startsWith("익명의 사용자")) {
+            try {
+                Integer.parseInt(userRequestDto.getNickname().trim().substring(7));
+                throw new RuntimeException("사용할 수 없는 닉네임입니다.");
+            } catch (NumberFormatException e) {
+            } finally {
+                log.info("UserService.updateUserName : " + userRequestDto.getNickname());
+            }
+        }
+
+        if (userRequestDto.getNickname().trim().length() > 10 || userRequestDto.getNickname().trim().length() <= 0) {
+            throw new RuntimeException("글자 수를 확인해주세요");
+        }
     }
 
 }
