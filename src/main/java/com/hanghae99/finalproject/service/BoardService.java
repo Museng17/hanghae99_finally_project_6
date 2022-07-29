@@ -9,6 +9,7 @@ import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.model.resultType.*;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.data.domain.*;
@@ -26,6 +27,7 @@ import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorC
 import static com.hanghae99.finalproject.model.resultType.CategoryType.*;
 import static com.hanghae99.finalproject.model.resultType.FileUploadType.BOARD;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BoardService {
@@ -184,7 +186,7 @@ public class BoardService {
             cnt++;
         }
         Folder folder = folderRepository.findById(folderId)
-                .orElseThrow(() -> new RuntimeException("찾는 폴더가 없습니다."));
+                .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
 
         folder.setBoardCnt(folder.getBoardCnt() - longs.size());
     }
@@ -290,15 +292,16 @@ public class BoardService {
     @Transactional
     public void boardOrderChange(OrderRequestDto orderRequestDto, HttpServletRequest request) {
         Board board = boardRepository.findById(orderRequestDto.getBoardId())
-                .orElseThrow(() -> new RuntimeException("없는 게시물입니다."));
+                .orElseThrow(() -> new CustomException(NOT_FIND_BOARD));
         Users users = userinfoHttpRequest.userFindByToken(request);
 
         if (board.getUsers().getId() != users.getId()) {
-            throw new RuntimeException("글쓴이가 아닙니다.");
+            throw new CustomException(MIX_MATCH_USER);
         }
 
         if (board.getBoardOrder() == orderRequestDto.getAfterOrder() || orderRequestDto.getAfterOrder() > users.getBoardCnt()) {
-            throw new RuntimeException("잘못된 정보입니다. : 기존 order : " + board.getBoardOrder() + "바꾸는 order : " + orderRequestDto.getAfterOrder() + "forder 최종 order : " + users.getBoardCnt() + 1);
+            log.info("BoardService.boardOrderChange : 잘못된 정보입니다. : 기존 order : " + board.getBoardOrder() + "바꾸는 order : " + orderRequestDto.getAfterOrder() + "forder 최종 order : " + users.getBoardCnt() + 1);
+         throw new CustomException(MIX_MATCH_ORDER_NUM);
         } else if (board.getBoardOrder() - orderRequestDto.getAfterOrder() > 0) {
             boardRepository.updateOrderSum(board.getBoardOrder(), orderRequestDto.getAfterOrder(), orderRequestDto.getFolderId());
         } else {

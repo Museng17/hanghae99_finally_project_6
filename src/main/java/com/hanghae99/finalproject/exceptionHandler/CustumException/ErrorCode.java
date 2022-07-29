@@ -6,6 +6,13 @@ import lombok.*;
 @RequiredArgsConstructor
 public enum ErrorCode {
 
+    //믹스매치
+    MIX_MATCH_USER(4040, 200, "글쓴이가 아닙니다."),
+    MIX_MATCH_ORDER_NUM(4040, 200, "정확한 order number가 아닙니다."),
+
+    //할 수 없습니다.
+    CNT_NOT_DO_IT(5000, 200, "삭제할 수 없습니다."),
+
     //중복
     OVERLAP_EMAIL(501, 200, "중복된 이메일 입니다."),
     OVERLAP_NICKNAME(501, 200, "중복된 닉네임입니다."),
@@ -28,6 +35,8 @@ public enum ErrorCode {
     //사용할 수 없습니다.
     CNT_NOT_USE_NICKNAME(505, 200, "이용할 수 없는 닉네임입니다."),
     NOT_USE_PASSWORD(505, 200, "사용할 수 없는 비밀번호입니다."),
+    NOT_USE_EXT(505, 200, "사용할 수 없는 확장자 파일입니다."),
+    NOT_USE_SUBJECT(505, 200, "사용할 수 없는 제목입니다."),
 
     //인증실패
     NOT_CERTIFICATION(505, 200, "인증번호를 입력해주세요"),
