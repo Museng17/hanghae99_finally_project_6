@@ -62,7 +62,7 @@
 <details>
 <summary>ERD</summary>
 <div markdown="1">
-<img src="https://user-images.githubusercontent.com/81284265/181689837-b53f14bd-fd94-4ee6-b37c-8c87d924b443.png" width="1000px">
+<img src="https://user-images.githubusercontent.com/81284265/181692536-d9085c23-b86f-4621-b3e2-864f1e772161.png" width="1000px">
 </div>
 </details>
 
