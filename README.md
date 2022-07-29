@@ -62,7 +62,7 @@
 <details>
 <summary>ERD</summary>
 <div markdown="1">
-<img src="https://s3.us-west-2.amazonaws.com/secure.notion-static.com/69d16196-1ff8-46f5-a0c9-1a7db58a701a/%ED%99%94%EB%A9%B4_%EC%BA%A1%EC%B2%98_2022-07-13_163032.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220728%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220728T060339Z&X-Amz-Expires=86400&X-Amz-Signature=a55845d0359aafb777896844797bedcf034bcbf6b7408ce5e49b67478850dda2&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22%25ED%2599%2594%25EB%25A9%25B4%2520%25EC%25BA%25A1%25EC%25B2%2598%25202022-07-13%2520163032.png%22&x-id=GetObject" width="700px">
+![화면 캡처 2022-07-29 143537](https://user-images.githubusercontent.com/81284265/181689837-b53f14bd-fd94-4ee6-b37c-8c87d924b443.png)
 
 </div>
 </details>
