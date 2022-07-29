@@ -62,8 +62,7 @@
 <details>
 <summary>ERD</summary>
 <div markdown="1">
-![화면 캡처 2022-07-29 143537](https://user-images.githubusercontent.com/81284265/181689837-b53f14bd-fd94-4ee6-b37c-8c87d924b443.png)
-
+<img src="https://user-images.githubusercontent.com/81284265/181689837-b53f14bd-fd94-4ee6-b37c-8c87d924b443.png" width="1000px">
 </div>
 </details>
 
