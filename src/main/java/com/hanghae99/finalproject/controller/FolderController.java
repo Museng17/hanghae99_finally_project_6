@@ -27,16 +27,18 @@ public class FolderController {
     }
 
     @DeleteMapping("/folders")
-    public void folderDelete(@RequestBody List<FolderRequestDto> folderRequestDto,
+    public MessageResponseDto folderDelete(@RequestBody List<FolderRequestDto> folderRequestDto,
                              HttpServletRequest request) {
         folderService.folderDelete(folderRequestDto, request);
+        return new MessageResponseDto(200, "삭제되었습니다.");
     }
 
     @PutMapping("/folder/{folderId}")
-    public void folderUpdate(@PathVariable Long folderId,
+    public MessageResponseDto folderUpdate(@PathVariable Long folderId,
                              @RequestBody FolderRequestDto folderRequestDto,
                              HttpServletRequest request) {
         folderService.folderUpdate(folderId, request, folderRequestDto);
+        return new MessageResponseDto(200, "수정되었습니다.");
     }
 
     @PutMapping("/folder")
@@ -46,9 +48,10 @@ public class FolderController {
     }
 
     @PostMapping("/folders")
-    public void folderOrderChange(@RequestBody OrderRequestDto orderRequestDto,
+    public MessageResponseDto folderOrderChange(@RequestBody OrderRequestDto orderRequestDto,
                                   HttpServletRequest request) {
         folderService.folderOrderChange(orderRequestDto, request);
+        return new MessageResponseDto(200, "수정되었습니다.");
     }
 
     @PostMapping("/share/folder/{folderId}")

@@ -26,7 +26,8 @@ public class FileUpload {
             fos = new FileOutputStream(file);
             fos.write(uploadFile.getBytes());
         } catch (Exception e) {
-            throw new RuntimeException("S3Uploader 121 에러" + e.getMessage());
+            log.info("FileUpload.multipartFileToFileWithUpload : " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
         } finally {
             close(fos);
         }
@@ -68,7 +69,7 @@ public class FileUpload {
             ImageIO.write(image, imageName.substring(imageName.lastIndexOf(".") + 1), file);
 
         } catch (Exception e) {
-            log.info(e.getMessage());
+            log.info("FileUpload.imageUploadToSever : " + e.getMessage());
         }
         return file;
     }
@@ -80,7 +81,8 @@ public class FileUpload {
         try {
             fos.close();
         } catch (Exception e) {
-            throw new RuntimeException("S3Uploader 137 에러" + e.getMessage());
+            log.info("FileUpload.close : " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 }

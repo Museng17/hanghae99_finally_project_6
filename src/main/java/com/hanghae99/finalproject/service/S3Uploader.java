@@ -69,7 +69,7 @@ public class S3Uploader {
             uploadImageUrl = putS3(imageFile, imagePath + imgName);
             removeNewFile(imageFile);
         } catch (Exception e) {
-            log.info(e.getMessage());
+            log.info("S3Uploader.upload(imagePath, imgName) : "+ e.getMessage());
             uploadImageUrl = "https://i.ibb.co/51YGqmc/image.jpg";
         }
 
@@ -88,12 +88,11 @@ public class S3Uploader {
         if (targetFile == null) {
             return;
         }
-
         if (targetFile.delete()) {
-            log.info("파일이 삭제되었습니다.");
+            log.info("S3Uploader.removeNewFile() : 파일이 삭제되었습니다.");
             return;
         }
-        log.info("파일 삭제 실패");
+        log.info("S3Uploader.removeNewFile() : 파일 삭제 실패");
     }
 
     /* S3에서 이미지 찾기 */
@@ -102,7 +101,7 @@ public class S3Uploader {
         try {
             s3Object = amazonS3.getObject(new GetObjectRequest(bucket, path + imageName.substring(imageName.lastIndexOf("/") + 1)));
         } catch (Exception e) {
-            log.info(e.getMessage());
+            log.info("S3Uploader.selectImage() : " + e.getMessage());
         }
         return s3Object;
     }
@@ -112,7 +111,7 @@ public class S3Uploader {
         try {
             amazonS3.deleteObject(bucket, imageNameWithPath);
         } catch (AmazonServiceException e) {
-            System.err.println(e.getErrorMessage());
+            log.info("S3Uploader.fileDelete() : " + e.getMessage());
         }
     }
 }

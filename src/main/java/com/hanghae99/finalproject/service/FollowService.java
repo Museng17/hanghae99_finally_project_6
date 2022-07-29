@@ -1,5 +1,7 @@
 package com.hanghae99.finalproject.service;
 
+import com.hanghae99.finalproject.exceptionHandler.CustumException.CustomException;
+import com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorCode;
 import com.hanghae99.finalproject.model.dto.requestDto.UserRequestDto;
 import com.hanghae99.finalproject.model.dto.responseDto.FollowDto;
 import com.hanghae99.finalproject.model.dto.responseDto.FollowResponseDto;
@@ -34,7 +36,7 @@ public class FollowService {
         Follow follow = followRepository.findByFollowingIdAndFollowerId(followingId, followerId);
 
         if (follow != null) return follow.getId();
-        else throw new RuntimeException("팔로우 취소 할 대상이 없습니다");
+        else throw new CustomException(ErrorCode.NOT_FOUND_TARGET);
     }
 
     @Transactional
