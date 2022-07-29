@@ -8,6 +8,7 @@ import com.hanghae99.finalproject.model.repository.*;
 import com.hanghae99.finalproject.model.resultType.*;
 import com.hanghae99.finalproject.util.UserinfoHttpRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import static com.hanghae99.finalproject.exceptionHandler.CustumException.ErrorC
 import static com.hanghae99.finalproject.model.resultType.CategoryType.ALL;
 import static com.hanghae99.finalproject.model.resultType.FileUploadType.BOARD;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FolderService {
@@ -40,11 +42,11 @@ public class FolderService {
     public Folder folderSave(FolderRequestDto folderRequestDto, HttpServletRequest request) {
 
         if(folderRequestDto.getName().length() > 25){
-            throw new RuntimeException("25자 이하로 입력해주세요");
+            throw new CustomException(OVER_TEXT);
         }
 
         if (folderRequestDto.getName().trim().equals("무제")) {
-            throw new RuntimeException("무제라는 이름은 추가할 수 없습니다.");
+            throw new CustomException(NOT_USE_SUBJECT);
         }
 
         Users user = userinfoHttpRequest.userFindByToken(request);
@@ -91,7 +93,7 @@ public class FolderService {
 
         for (Folder folder : folders) {
             if (folder.getName().equals("무제")) {
-                throw new RuntimeException("무제폴더는 삭제할 수 없습니다.");
+                throw new CustomException(CNT_NOT_DO_IT);
             }
             userinfoHttpRequest.userAndWriterMatches(
                     folder.getUsers().getId(),
@@ -118,7 +120,7 @@ public class FolderService {
     public void folderUpdate(Long folderId, HttpServletRequest request, FolderRequestDto folderRequestDto) {
 
         if(folderRequestDto.getName().length() > 25){
-            throw new RuntimeException("25자 이하로 입력해주세요");
+            throw new CustomException(OVER_TEXT);
         }
 
         Folder folder = findFolder(
@@ -127,7 +129,7 @@ public class FolderService {
         );
 
         if (folder.getName().equals("무제")) {
-            throw new RuntimeException("무제 폴더는 이름을 수정할 수 없습니다.");
+            throw new CustomException(NOT_USE_SUBJECT);
         }
 
         userinfoHttpRequest.userAndWriterMatches(
@@ -232,14 +234,15 @@ public class FolderService {
     @Transactional
     public void folderOrderChange(OrderRequestDto orderRequestDto, HttpServletRequest request) {
         Folder folder = folderRepository.findById(orderRequestDto.getFolderId())
-                .orElseThrow(() -> new RuntimeException("없는 게시물입니다."));
+                .orElseThrow(() ->  new CustomException(NOT_FIND_BOARD));
         Users users = userinfoHttpRequest.userFindByToken(request);
         if (folder.getUsers().getId() != users.getId()) {
-            throw new RuntimeException("폴더 생성자가 아닙니다.");
+            throw new CustomException(MIX_MATCH_USER);
         }
 
         if (folder.getFolderOrder() == orderRequestDto.getAfterOrder() || users.getFolderCnt() + 1 < orderRequestDto.getAfterOrder()) {
-            throw new RuntimeException("잘못된 정보입니다. 기존 order : " + folder.getFolderOrder() + " , 바꾸는 order : " + orderRequestDto.getAfterOrder() + " , forder 최종 order : " + users.getFolderCnt());
+            log.info("BoardService.boardOrderChange : 잘못된 정보입니다. 기존 order : " + folder.getFolderOrder() + " , 바꾸는 order : " + orderRequestDto.getAfterOrder() + " , forder 최종 order : " + users.getFolderCnt());
+            throw new CustomException(MIX_MATCH_ORDER_NUM);
         } else if (folder.getFolderOrder() - orderRequestDto.getAfterOrder() > 0) {
             folderRepository.updateOrderSum(folder.getFolderOrder(), orderRequestDto.getAfterOrder());
         } else {
