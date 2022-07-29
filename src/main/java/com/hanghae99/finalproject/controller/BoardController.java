@@ -35,17 +35,19 @@ public class BoardController {
     }
 
     @PutMapping("/board/{id}")
-    public void boardUpdate(@PathVariable Long id,
+    public MessageResponseDto boardUpdate(@PathVariable Long id,
                             @RequestBody BoardRequestDto boardRequestDto,
                             HttpServletRequest request) {
         boardService.boardUpdate(id, boardRequestDto, request);
+        return new MessageResponseDto(200, "수정되었습니다.");
     }
 
     @DeleteMapping("/boards/{folderId}")
-    public void boardDelete(@RequestBody List<BoardRequestDto> boardRequestDtos,
+    public MessageResponseDto boardDelete(@RequestBody List<BoardRequestDto> boardRequestDtos,
                             HttpServletRequest request,
                             @PathVariable Long folderId) {
         boardService.boardDelete(boardRequestDtos, request, folderId);
+        return new MessageResponseDto(200, "삭제되었습니다.");
     }
 
     @PostMapping("/image/og")
@@ -54,15 +56,17 @@ public class BoardController {
     }
 
     @PostMapping("/boards")
-    public void boardOrderChange(@RequestBody OrderRequestDto orderRequestDto,
+    public MessageResponseDto boardOrderChange(@RequestBody OrderRequestDto orderRequestDto,
                                  HttpServletRequest request) {
         boardService.boardOrderChange(orderRequestDto, request);
+        return new MessageResponseDto(200, "수정되었습니다.");
     }
 
     //    @PostMapping("/myshare/board/{boardId}")
     //    public void cloneBoard(@PathVariable Long boardId, HttpServletRequest request) {
     //        boardService.cloneBoard(boardId, request);
     //    }
+
     @PostMapping("/myshare/boards/{folderId}")
     public void cloneBoards(@RequestBody List<BoardRequestDto> boards, HttpServletRequest request, @PathVariable Long folderId) {
         boardService.cloneBoards(boards, request, folderId);
