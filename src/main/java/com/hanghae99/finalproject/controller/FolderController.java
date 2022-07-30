@@ -65,8 +65,8 @@ public class FolderController {
     //    }
 
     @GetMapping("/BestFolders/{page}/{size}")
-    public List<FolderResponseDto> findBestFolders(@PathVariable int page, @PathVariable int size, HttpServletRequest request) {
-        return folderService.findBestFolder(page, size, request);
+    public MessageResponseDto findBestFolders(@PathVariable int page, @PathVariable int size,HttpServletRequest request) {
+        return folderService.findBestFolder(page, size,request);
     }
 
     @PostMapping("/folders/{userId}/{keyword}")
@@ -93,17 +93,17 @@ public class FolderController {
     }
 
     @PostMapping("/allfolders/{keyword}")
-    public FolderListResponseDto allFolders(@PathVariable String keyword,
+    public MessageResponseDto allFolders(@PathVariable String keyword,
                                             HttpServletRequest request,
                                             @PageableDefault(size = 8, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
         return folderService.allFolders(keyword, request, pageable);
 
     }
 
-    @PostMapping("/reportfolder/{folderId}")
-    public void reportFolder(@PathVariable Long folderId,
+    @PostMapping("/report/{folderId}")
+    public MessageResponseDto reportFolder(@PathVariable Long folderId,
                              HttpServletRequest request) {
-        folderService.reportFolder(folderId, request);
+        return folderService.reportFolder(folderId, request);
     }
 
     @GetMapping("/folders")
@@ -118,9 +118,8 @@ public class FolderController {
                                HttpServletRequest request) {
         return folderService.updateStatus(folderRequestDto, request);
     }
-
     @DeleteMapping("/share/delete/{folderId}")
-    public void deleteShare(@PathVariable Long folderId, HttpServletRequest request) {
-        folderService.deleteShare(folderId, request);
+    public MessageResponseDto deleteShare(@PathVariable Long folderId, HttpServletRequest request) {
+        return folderService.deleteShare(folderId, request);
     }
 }
