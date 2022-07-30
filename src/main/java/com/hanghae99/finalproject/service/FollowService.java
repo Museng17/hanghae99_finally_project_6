@@ -62,14 +62,14 @@ public class FollowService {
     }
 
     @Transactional
-    public FollowResponseDto findFollowingUser(int page, int size, HttpServletRequest request){
+    public MessageResponseDto findFollowingUser(int page, int size, HttpServletRequest request){
         Users following = userRepository.findFollowingById(userinfoHttpRequest.userFindByToken(request).getId());
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Follow> follow = followRepository.findAllByFollowing(pageRequest,following);
         List<Follow> follow1 = follow.getContent();
         List<UserRequestDto> follow2 = toBoardRequestDtoList(follow1);
         List<FollowDto> followDtos = toFollowRequestDtoList(follow2);
-        return  new FollowResponseDto(followDtos, follow.getTotalElements());
+        return  new MessageResponseDto(200,"팔로우된 계정 찾기 성공",new FollowResponseDto(followDtos, follow.getTotalElements()));
     }
     private List<UserRequestDto> toBoardRequestDtoList(List<Follow> follows) {
         List<UserRequestDto> boardRequestDtoList = new ArrayList<>();
