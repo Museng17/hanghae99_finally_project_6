@@ -176,8 +176,8 @@ public class UserService {
             if (!checkEmailDuplicate(socialLoginRequestDto.getEmail())) {
                 throw new CustomException(OVERLAP_EMAIL);
             }
-            Long maxLongId = userRepository.findMaxId() + 1;
-            Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7), maxLongId));
+            Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7)));
+            users.updateNickName();
             folderRepository.save(new Folder(users));
             return createTokens(users.getUsername());
         }
@@ -196,8 +196,8 @@ public class UserService {
             if (!checkEmailDuplicate(socialLoginRequestDto.getEmail())) {
                 throw new CustomException(OVERLAP_EMAIL);
             }
-            Long maxLongId = userRepository.findMaxId() + 1;
-            Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7), maxLongId));
+            Users users = userRepository.save(new Users(socialLoginRequestDto, new Random().nextInt(7)));
+            users.updateNickName();
             folderRepository.save(new Folder(users));
             return createTokens2(users.getUsername());
         }
