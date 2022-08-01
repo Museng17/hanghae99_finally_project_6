@@ -30,6 +30,33 @@
 
 <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fb2tCUu%2FbtrIoCbxN2z%2FnkySFWvB68tp8qbbjeUfwK%2Fimg.png" width="80%" >
 
+<br />
+
+### 💻 로그인 - [Wiki 보러 가기](https://github.com/Mmuseng/hanghae99_finally_project_6/wiki/%EA%B8%B0%EB%8A%A5-:-%EB%A1%9C%EA%B7%B8%EC%9D%B8)
+- JWT토큰을 활용한 로그인 기능 구현
+- jwt 리플레쉬토큰을 활용해 엑세스토큰이 만료되었을 때 재발급 기능 구현
+- HandlerInterceptor를 이용한 토큰체크 기능 구현
+
+<br />
+
+### 💻 소셜로그인(구글) - [Wiki 보러 가기](https://github.com/Mmuseng/hanghae99_finally_project_6/wiki/%EA%B8%B0%EB%8A%A5-:-%EC%86%8C%EC%85%9C%EB%A1%9C%EA%B7%B8%EC%9D%B8)
+- 구글 로그인 구현
+- 구글의 회원정보를 받아 회원가입시키는 로직으로 구현
+- 소셜로그인된 회원의 아이디로 리프레쉬토큰과 엑세스토큰을 발급
+
+<br />
+
+### 💻 이메일 인증을 활용한 회원가입 - [Wiki 보러가기](https://github.com/Mmuseng/hanghae99_finally_project_6/wiki/%EA%B8%B0%EB%8A%A5-:--%EC%9D%B8%EC%A6%9D%EB%B2%88%ED%98%B8%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%EC%9D%B8%EC%A6%9D)
+- 이메일에 인증번호를 전송해 인증하는 방식으로 인증구현
+- 비밀번호를 잊어버렸을 때 임시비밀번호를 이메일로 전송 하도록 구현
+
+<br />
+
+### 💻 조각(게시물), 모음(폴더) CRUD - [Wiki 보러가기](https://github.com/Mmuseng/hanghae99_finally_project_6/wiki/%EA%B8%B0%EB%8A%A5-:-CRUD)
+- 조각, 모음 검색 및 필터(최신순, 사용자 지정순) 적용
+- 조회시 Pageable를 통해 페이징 적용
+- 조각, 모음 정렬 순서를 사용자가 직접 순서를 정렬할 수 있도록 적용
+- 조각에 해당되는 카테고리만 카테고리 목록에 나올 수 있도록 적용
 
 <br />
  
@@ -68,35 +95,6 @@
 
 <br />
 
-# 주요 기능 
-
-### 로그인 - [Wiki 보러 가기](https://github.com/Mmuseng/hanghae99_finally_project_6/wiki/%EA%B8%B0%EB%8A%A5-:-%EB%A1%9C%EA%B7%B8%EC%9D%B8)
-- JWT토큰을 활용한 로그인 기능 구현
-- jwt 리플레쉬토큰을 활용해 엑세스토큰이 만료되었을 때 재발급 기능 구현
-- HandlerInterceptor를 이용한 토큰체크 기능 구현
-
-<br />
-
-### 소셜로그인(구글) - [Wiki 보러 가기](https://github.com/Mmuseng/hanghae99_finally_project_6/wiki/%EA%B8%B0%EB%8A%A5-:-%EC%86%8C%EC%85%9C%EB%A1%9C%EA%B7%B8%EC%9D%B8)
-- 구글 로그인 구현
-- 구글의 회원정보를 받아 회원가입시키는 로직으로 구현
-- 소셜로그인된 회원의 아이디로 리프레쉬토큰과 엑세스토큰을 발급
-
-<br />
-
-### 이메일 인증을 활용한 회원가입 - [Wiki 보러가기](https://github.com/Mmuseng/hanghae99_finally_project_6/wiki/%EA%B8%B0%EB%8A%A5-:--%EC%9D%B8%EC%A6%9D%EB%B2%88%ED%98%B8%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%EC%9D%B8%EC%A6%9D)
-- 이메일에 인증번호를 전송해 인증하는 방식으로 인증구현
-- 비밀번호를 잊어버렸을 때 임시비밀번호를 이메일로 전송 하도록 구현
-
-<br />
-
-### 조각(게시물), 모음(폴더) CRUD - [Wiki 보러가기](https://github.com/Mmuseng/hanghae99_finally_project_6/wiki/%EA%B8%B0%EB%8A%A5-:-CRUD)
-- 조각, 모음 검색 및 필터(최신순, 사용자 지정순) 적용
-- 조회시 Pageable를 통해 페이징 적용
-- 조각, 모음 정렬 순서를 사용자가 직접 순서를 정렬할 수 있도록 적용
-- 조각에 해당되는 카테고리만 카테고리 목록에 나올 수 있도록 적용
-
-<br />
 
 ## 📂 노션  
 📔  **[노션 링크]**
