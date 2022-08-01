@@ -100,7 +100,7 @@ public class FolderController {
 
     }
 
-    @PostMapping("/report/{folderId}")
+    @PostMapping("/reportfolder/{folderId}")
     public MessageResponseDto reportFolder(@PathVariable Long folderId,
                              HttpServletRequest request) {
         return folderService.reportFolder(folderId, request);

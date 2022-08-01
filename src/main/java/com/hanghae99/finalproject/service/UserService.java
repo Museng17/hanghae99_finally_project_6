@@ -101,8 +101,6 @@ public class UserService {
             throw new CustomException(ErrorCode.NOT_EMAIL_CERTIFICATION_CHECK);
         }
 
-        certificationMap.remove(Dto.getEmail(), true);
-
         //회원가입 정규식 체크
         UserRegisterRespDto valid = joinValid(Dto);
         if (Optional.ofNullable(valid).isPresent()) {
@@ -127,6 +125,7 @@ public class UserService {
                 )
         );
 
+        certificationMap.remove(Dto.getEmail(), true);
         return new UserRegisterRespDto(200, true, "회원가입 성공");
     }
 
