@@ -6,6 +6,7 @@ import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
+import com.hanghae99.finalproject.model.resultType.LoginType;
 import com.hanghae99.finalproject.singleton.CertificationMap;
 import com.hanghae99.finalproject.util.restTemplates.SocialLoginRestTemplate;
 import io.jsonwebtoken.Claims;
@@ -97,9 +98,9 @@ public class UserService {
     @Transactional
     public UserRegisterRespDto registerUser(UserRequestDto Dto) {
 
-        if (!certificationMap.match(Dto.getEmail())) {
-            throw new CustomException(ErrorCode.NOT_EMAIL_CERTIFICATION_CHECK);
-        }
+//        if (!certificationMap.match(Dto.getEmail())) {
+//            throw new CustomException(ErrorCode.NOT_EMAIL_CERTIFICATION_CHECK);
+//        }
 
         //회원가입 정규식 체크
         UserRegisterRespDto valid = joinValid(Dto);
@@ -337,11 +338,13 @@ public class UserService {
 
     @Transactional
     public MessageResponseDto updateUserPw(UserRequestDto userRequestDto, HttpServletRequest request) {
+        Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
+        if(user.getLoginType()== LoginType.GOOGLE){
+            return new MessageResponseDto(501,"구글 계정입니다.");
+        }
         if (!Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$", userRequestDto.getPassword())) {
             throw new CustomException(NOT_USE_PASSWORD);
         }
-
-        Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
 
         if (!bCryptPasswordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {
             return new MessageResponseDto(501, "기존 비밀번호 확인 실패");
