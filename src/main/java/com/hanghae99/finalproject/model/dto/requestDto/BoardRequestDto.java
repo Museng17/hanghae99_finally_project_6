@@ -44,6 +44,6 @@ public class BoardRequestDto {
     }
 
     public void updateLink() {
-        this.link = "http://" + this.link;
+        this.link = "https://" + this.link;
     }
 }
