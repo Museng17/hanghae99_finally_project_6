@@ -46,8 +46,7 @@ public class UserController {
     }
 
     @PostMapping("/user/refresh2")
-    public TokenResponseDto refreshToken2(HttpServletRequest request,
-                                          @RequestHeader(value = REFRESH_TOKEN, defaultValue = "noToken") String refresh) {
+    public TokenResponseDto refreshToken2(@RequestHeader(value = REFRESH_TOKEN, defaultValue = "noToken") String refresh) {
         return userService.refreshToken2(refresh);
     }
 
