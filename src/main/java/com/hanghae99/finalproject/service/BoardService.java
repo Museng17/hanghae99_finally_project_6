@@ -45,7 +45,7 @@ public class BoardService {
         Image saveImage = new Image();
 
         if (boardRequestDto.getBoardType() == BoardType.LINK) {
-            if (!boardRequestDto.getLink().startsWith("https://")) {
+            if (!boardRequestDto.getLink().startsWith("http://") && !boardRequestDto.getLink().startsWith("https://")) {
                 boardRequestDto.updateLink();
             }
             boardRequestDto.ogTagToBoardRequestDto(
