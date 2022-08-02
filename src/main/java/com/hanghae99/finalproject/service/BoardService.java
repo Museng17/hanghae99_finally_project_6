@@ -45,7 +45,7 @@ public class BoardService {
         Image saveImage = new Image();
 
         if (boardRequestDto.getBoardType() == BoardType.LINK) {
-            if (!boardRequestDto.getLink().startsWith("https://")) {
+            if (!boardRequestDto.getLink().startsWith("http://") && !boardRequestDto.getLink().startsWith("https://")) {
                 boardRequestDto.updateLink();
             }
             boardRequestDto.ogTagToBoardRequestDto(
@@ -371,54 +371,6 @@ public class BoardService {
                         folderRepository.findById(folderId).get()
                 ),
                 boards.getTotalPages()
-        );
-    }
-
-    @Transactional(readOnly = true)
-    public MessageResponseDto moum2(List<FolderRequestDto> folderRequestDtos,
-                                    String keyword,
-                                    HttpServletRequest request,
-                                    Long folderId,
-                                    Long userId,
-                                    String sort) {
-        List<DisclosureStatusType> disclosureStatusTypes = new ArrayList<>();
-        disclosureStatusTypes.add(DisclosureStatusType.PUBLIC);
-
-        Users user = userRepository.findById(userId)
-                .orElseGet(() -> {
-                    if (userId == 0L) {
-                        disclosureStatusTypes.add(DisclosureStatusType.PRIVATE);
-                        return userinfoHttpRequest.userFindByToken(request);
-                    }
-                    throw new CustomException(NOT_FIND_USER);
-                });
-        List<Board> boards = new ArrayList<>();
-
-        if (sort.equals("a")) {
-            boards = boardRepository.findByFolderIdAndTitleContainingAndCategoryIn2(
-                    folderId,
-                    "%" + keyword + "%",
-                    findSelectCategory(folderRequestDtos),
-                    user.getId(),
-                    disclosureStatusTypes
-            );
-        } else {
-            boards = boardRepository.findByFolderIdAndTitleContainingAndCategoryIn3(
-                    folderId,
-                    "%" + keyword + "%",
-                    findSelectCategory(folderRequestDtos),
-                    user.getId(),
-                    disclosureStatusTypes
-            );
-        }
-        return new MessageResponseDto(
-                200,
-                "조회완료",
-                new FolderRequestDto(
-                        boards,
-                        folderRepository.findById(folderId).get()
-                ),
-                0
         );
     }
 
