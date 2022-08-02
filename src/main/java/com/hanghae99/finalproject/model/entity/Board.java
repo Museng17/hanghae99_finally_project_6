@@ -46,7 +46,7 @@ public class Board extends TimeStamp {
     @Column(nullable = false)
     private Long boardOrder;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY)
     private List<Image> imageList;
 
     @ManyToOne(fetch = FetchType.LAZY)

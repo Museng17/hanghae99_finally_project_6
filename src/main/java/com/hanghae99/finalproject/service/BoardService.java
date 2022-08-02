@@ -176,22 +176,22 @@ public class BoardService {
             userinfoHttpRequest.userAndWriterMatches(board.getUsers().getId(), users.getId());
         }
 
-//        imageRepository.deleteAllByBoardIdIn(longs);
+        imageRepository.deleteAllByBoardIdIn(longs);
         boardRepository.deleteAllById(longs);
 
         users.setBoardCnt(users.getBoardCnt() - boardList.size());
 
-//        List<Board> removeAfterBoardList = boardFindByUsersIdOrderByBoardOrderAsc(users.getId(), folderId);
-//
-//        Long cnt = 1L;
-//        for (Board board : removeAfterBoardList) {
-//            board.setBoardOrder(cnt);
-//            cnt++;
-//        }
-//        Folder folder = folderRepository.findById(folderId)
-//                .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
-//
-//        folder.setBoardCnt(folder.getBoardCnt() - longs.size());
+        List<Board> removeAfterBoardList = boardFindByUsersIdOrderByBoardOrderAsc(users.getId(), folderId);
+
+        Long cnt = 1L;
+        for (Board board : removeAfterBoardList) {
+            board.setBoardOrder(cnt);
+            cnt++;
+        }
+        Folder folder = folderRepository.findById(folderId)
+                .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
+
+        folder.setBoardCnt(folder.getBoardCnt() - longs.size());
     }
 
     public Board boardFindById(Long id) {
