@@ -87,16 +87,6 @@ public class BoardController {
         return boardService.moum(folderRequestDtos, keyword, request, pageable, folderId, userId);
     }
 
-    @PostMapping("/boards2/{userId}/{folderId}/{keyword}/{sort}")
-    public MessageResponseDto moum2(@RequestBody List<FolderRequestDto> folderRequestDtos,
-                                    @PathVariable String keyword,
-                                    HttpServletRequest request,
-                                    @PathVariable Long folderId,
-                                    @PathVariable Long userId,
-                                    @PathVariable String sort) {
-        return boardService.moum2(folderRequestDtos, keyword, request, folderId, userId, sort);
-    }
-
     @GetMapping("/boards/{userId}/{folderId}")
     public List<Map<String, CategoryType>> findCategoryList(@PathVariable Long folderId,
                                                             @PathVariable Long userId,
