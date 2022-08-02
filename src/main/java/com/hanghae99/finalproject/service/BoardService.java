@@ -374,54 +374,6 @@ public class BoardService {
         );
     }
 
-    @Transactional(readOnly = true)
-    public MessageResponseDto moum2(List<FolderRequestDto> folderRequestDtos,
-                                    String keyword,
-                                    HttpServletRequest request,
-                                    Long folderId,
-                                    Long userId,
-                                    String sort) {
-        List<DisclosureStatusType> disclosureStatusTypes = new ArrayList<>();
-        disclosureStatusTypes.add(DisclosureStatusType.PUBLIC);
-
-        Users user = userRepository.findById(userId)
-                .orElseGet(() -> {
-                    if (userId == 0L) {
-                        disclosureStatusTypes.add(DisclosureStatusType.PRIVATE);
-                        return userinfoHttpRequest.userFindByToken(request);
-                    }
-                    throw new CustomException(NOT_FIND_USER);
-                });
-        List<Board> boards = new ArrayList<>();
-
-        if (sort.equals("a")) {
-            boards = boardRepository.findByFolderIdAndTitleContainingAndCategoryIn2(
-                    folderId,
-                    "%" + keyword + "%",
-                    findSelectCategory(folderRequestDtos),
-                    user.getId(),
-                    disclosureStatusTypes
-            );
-        } else {
-            boards = boardRepository.findByFolderIdAndTitleContainingAndCategoryIn3(
-                    folderId,
-                    "%" + keyword + "%",
-                    findSelectCategory(folderRequestDtos),
-                    user.getId(),
-                    disclosureStatusTypes
-            );
-        }
-        return new MessageResponseDto(
-                200,
-                "조회완료",
-                new FolderRequestDto(
-                        boards,
-                        folderRepository.findById(folderId).get()
-                ),
-                0
-        );
-    }
-
     public MessageResponseDto allBoards(String keyword, int page, List<FolderRequestDto> folderRequestDtos, HttpServletRequest request) {
 
         Users users = userinfoHttpRequest.userFindByToken(request);
