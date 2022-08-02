@@ -16,16 +16,12 @@ public interface UserRepository extends JpaRepository<Users, Long> {
 
     Users findUserByEmail(String email);
 
-    @Query("select count(u.id) from Users u")
-    int findAllCount();
-
     Users findFollowerById(Long id);
 
     Users findFollowingById(Long id);
 
-    @Query("select new Users(u.id, u.imgPath, u.information, u.nickname, u.username, u.email) from Users u where u.username = ?1")
-    Optional<Users> findByUsernameNoJoin(String toString);
-
     @Query("select max(id) from Users ")
     Long findMaxId();
+
+    Optional<Object> findByUsernameOrNicknameOrEmail(String username, String nickname, String email);
 }

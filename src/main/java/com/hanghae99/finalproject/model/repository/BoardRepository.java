@@ -55,7 +55,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     void updateOrderMinus(Long beforeOrder, Long afterOrder, Long folderId);
 
     @Query("select b from Board b where b.users.id = ?1 and b.folder.id = ?2 order by b.boardOrder asc")
-    List<Board> findAllByUsersIdOrderByBoardOrderAsc(Long boardIdList, Long folderId);
+    List<Board> findAllByUsersIdOrderByBoardOrderAsc(Long userId, Long folderId);
 
     @Query("select b.folder.id from Board b where b.id = ?1")
     Optional<Long> findFolderIdById(Long id);

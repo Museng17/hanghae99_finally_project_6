@@ -108,7 +108,18 @@ public class BoardService {
 
     @Transactional
     public void boardUpdate(Long id, BoardRequestDto boardRequestDto, HttpServletRequest request) {
-        Board board = boardFindById(id);
+        if (boardRequestDto.getBoardType() == BoardType.MEMO) {
+            if (boardRequestDto.getContent().length() > 250) {
+                throw new CustomException(CONTENT_OVER_TEXT);
+            }
+            if (boardRequestDto.getTitle().length() > 30) {
+                throw new CustomException(TITLE_OVER_TEXT);
+            }
+        }
+
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 글을 찾지 못했습니다."));
+
         List<Image> images = imageRepository.findByBoard(board);
 
         userinfoHttpRequest.userAndWriterMatches(
@@ -150,14 +161,6 @@ public class BoardService {
                 }
             }
         }
-        if (boardRequestDto.getBoardType() == BoardType.MEMO) {
-            if (boardRequestDto.getContent().length() > 250) {
-                throw new CustomException(CONTENT_OVER_TEXT);
-            }
-            if (boardRequestDto.getTitle().length() > 30) {
-                throw new CustomException(TITLE_OVER_TEXT);
-            }
-        }
         board.update(boardRequestDto);
     }
 
@@ -173,22 +176,22 @@ public class BoardService {
             userinfoHttpRequest.userAndWriterMatches(board.getUsers().getId(), users.getId());
         }
 
-        imageRepository.deleteAllByBoardIdIn(longs);
+//        imageRepository.deleteAllByBoardIdIn(longs);
         boardRepository.deleteAllById(longs);
 
         users.setBoardCnt(users.getBoardCnt() - boardList.size());
 
-        List<Board> removeAfterBoardList = boardFindByUsersIdOrderByBoardOrderAsc(users.getId(), folderId);
-
-        Long cnt = 1L;
-        for (Board board : removeAfterBoardList) {
-            board.setBoardOrder(cnt);
-            cnt++;
-        }
-        Folder folder = folderRepository.findById(folderId)
-                .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
-
-        folder.setBoardCnt(folder.getBoardCnt() - longs.size());
+//        List<Board> removeAfterBoardList = boardFindByUsersIdOrderByBoardOrderAsc(users.getId(), folderId);
+//
+//        Long cnt = 1L;
+//        for (Board board : removeAfterBoardList) {
+//            board.setBoardOrder(cnt);
+//            cnt++;
+//        }
+//        Folder folder = folderRepository.findById(folderId)
+//                .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
+//
+//        folder.setBoardCnt(folder.getBoardCnt() - longs.size());
     }
 
     public Board boardFindById(Long id) {

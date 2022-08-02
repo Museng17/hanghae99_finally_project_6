@@ -22,7 +22,7 @@ public class Image {
     @Column(nullable = false)
     private ImageType imageType;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     private Board board;
 
     public Image(Board board, ImageType imageType) {
