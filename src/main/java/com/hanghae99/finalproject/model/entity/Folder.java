@@ -36,14 +36,11 @@ public class Folder extends TimeStamp {
     @Column(nullable = false)
     private Long reportCnt = 0L;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users users;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private Share share;
-
-    @OneToMany
-    private List<Board> boardList = new ArrayList<>();
 
     public Folder(Long id, String name, DisclosureStatusType status) {
         this.id = id;

@@ -172,12 +172,12 @@ public class BoardService {
                 .collect(Collectors.toList());
 
         List<Board> boardList = boardAllFindById(longs);
+
         for (Board board : boardList) {
             userinfoHttpRequest.userAndWriterMatches(board.getUsers().getId(), users.getId());
         }
 
         imageRepository.deleteAllByBoardIdIn(longs);
-        boardRepository.deleteAllById(longs);
 
         users.setBoardCnt(users.getBoardCnt() - boardList.size());
 
