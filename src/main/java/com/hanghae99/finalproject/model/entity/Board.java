@@ -13,6 +13,7 @@ import java.util.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@NamedEntityGraph(name = "Board.fetchFolder", attributeNodes = @NamedAttributeNode("folder"))
 public class Board extends TimeStamp {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

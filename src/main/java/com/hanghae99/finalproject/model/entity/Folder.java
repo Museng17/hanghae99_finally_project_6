@@ -67,15 +67,15 @@ public class Folder extends TimeStamp {
         this.boardCnt = 0L;
     }
 
-    public Folder(FolderRequestDto folderRequestDto, Users users) {
-        this.name = folderRequestDto.getName();
-        this.status = folderRequestDto.getStatus();
-        this.users = users;
-        this.sharedCount = folderRequestDto.getSharedCount() + 1;
-        this.boardCnt = folderRequestDto.getBoardCnt();
-        this.boardList = folderRequestDto.getBoardList();
-        this.folderOrder = users.getFolderCnt() + 2;
-    }
+//    public Folder(FolderRequestDto folderRequestDto, Users users) {
+//        this.name = folderRequestDto.getName();
+//        this.status = folderRequestDto.getStatus();
+//        this.users = users;
+//        this.sharedCount = folderRequestDto.getSharedCount() + 1;
+//        this.boardCnt = folderRequestDto.getBoardCnt();
+//        this.boardList = folderRequestDto.getBoardList();
+//        this.folderOrder = users.getFolderCnt() + 2;
+//    }
 
     public Folder(Long id, DisclosureStatusType status) {
         this.id = id;
