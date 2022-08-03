@@ -128,7 +128,7 @@ public class BoardService {
         );
 
         if (!board.getFolder().getId().equals(boardRequestDto.getFolderId())) {
-//            boardInFolder(boardRequestDto.getFolderId(), new FolderRequestDto(id), request);
+            boardInFolder(boardRequestDto.getFolderId(), new FolderRequestDto(id), request);
         }
 
         if (boardRequestDto.getBoardType() == BoardType.LINK && boardRequestDto.getImage().getImageType() == ImageType.OG) {

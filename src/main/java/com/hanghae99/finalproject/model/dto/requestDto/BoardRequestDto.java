@@ -35,6 +35,10 @@ public class BoardRequestDto {
         this.boardOrder = board.getBoardOrder();
     }
 
+    public BoardRequestDto(Long boardId) {
+        this.id = boardId;
+    }
+
     public void ogTagToBoardRequestDto(OgResponseDto ogResponseDto, String link) {
         if (ogResponseDto.getTitle().equals("")) {
             this.title = link;
