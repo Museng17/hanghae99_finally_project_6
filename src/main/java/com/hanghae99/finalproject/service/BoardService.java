@@ -532,9 +532,9 @@ public class BoardService {
     public BoardResponseDto updateStatus(BoardRequestDto boardRequestDto, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
 
-        Board board = boardRepository.findBoardByIdAndUsersId(
+        Board board = boardRepository.findByIdAndUsers(
                 boardRequestDto.getId(),
-                users.getId()
+                users
         ).orElseThrow(() -> new CustomException(NOT_FIND_BOARD));
 
         board.updateStatus(new FolderRequestDto(boardRequestDto.getStatus()));
