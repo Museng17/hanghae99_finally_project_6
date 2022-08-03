@@ -91,7 +91,7 @@ public class BoardResponseDto {
     }
 
     private Long findChoiceImage(List<Image> images) {
-        if(images.size() > 0){
+        if (images.size() > 0) {
             for (Image image : images) {
                 if (image.getImgPath().equals(this.imgPath)) {
                     return image.getId();

@@ -88,28 +88,28 @@ public class UserController {
 
     @PutMapping("/user/updateName")
     public MessageResponseDto userUpdate(@RequestBody UserRequestDto userRequestDto,
-                              HttpServletRequest request) {
+                                         HttpServletRequest request) {
 
         return userService.updateUserNickname(userRequestDto, request);
     }
 
     @PutMapping("/user/updateInfo")
     public MessageResponseDto userUpdateInfo(@RequestBody UserRequestDto userRequestDto,
-                                  HttpServletRequest request) {
+                                             HttpServletRequest request) {
 
         return userService.updateUserInfo(userRequestDto, request);
     }
 
     @PutMapping("/user/pw/update")
     public MessageResponseDto userPwUpdate(@RequestBody UserRequestDto userRequestDto,
-                                HttpServletRequest request) {
+                                           HttpServletRequest request) {
 
         return userService.updateUserPw(userRequestDto, request);
     }
 
     @PostMapping("/user/pw/check")
     public MessageResponseDto userPwCheck(@RequestBody UserRequestDto userRequestDto,
-                               HttpServletRequest request) {
+                                          HttpServletRequest request) {
 
         return userService.checkUserPw(userRequestDto, request);
     }

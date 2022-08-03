@@ -98,9 +98,9 @@ public class UserService {
     @Transactional
     public UserRegisterRespDto registerUser(UserRequestDto Dto) {
 
-//        if (!certificationMap.match(Dto.getEmail())) {
-//            throw new CustomException(ErrorCode.NOT_EMAIL_CERTIFICATION_CHECK);
-//        }
+        if (!certificationMap.match(Dto.getEmail())) {
+            throw new CustomException(ErrorCode.NOT_EMAIL_CERTIFICATION_CHECK);
+        }
 
         //회원가입 정규식 체크
         UserRegisterRespDto valid = joinValid(Dto);
@@ -126,7 +126,7 @@ public class UserService {
                 )
         );
 
-//        certificationMap.remove(Dto.getEmail(), true);
+        certificationMap.remove(Dto.getEmail(), true);
         return new UserRegisterRespDto(200, true, "회원가입 성공");
     }
 
@@ -339,8 +339,8 @@ public class UserService {
     @Transactional
     public MessageResponseDto updateUserPw(UserRequestDto userRequestDto, HttpServletRequest request) {
         Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
-        if(user.getLoginType()== LoginType.GOOGLE){
-            return new MessageResponseDto(501,"구글 계정입니다.");
+        if (user.getLoginType() == LoginType.GOOGLE) {
+            return new MessageResponseDto(501, "구글 계정입니다.");
         }
         if (!Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$", userRequestDto.getPassword())) {
             throw new CustomException(NOT_USE_PASSWORD);
@@ -387,7 +387,7 @@ public class UserService {
     }
 
     private UserRegisterRespDto duplicateCheck(UserRequestDto dto) {
-        if (userRepository.findByUsernameOrNicknameOrEmail(dto.getUsername(),dto.getNickname(),dto.getEmail()).isPresent()) {
+        if (userRepository.findByUsernameOrNicknameOrEmail(dto.getUsername(), dto.getNickname(), dto.getEmail()).isPresent()) {
             return new UserRegisterRespDto(501, false, "중복된 값이 존재합니다.");
         }
         return null;

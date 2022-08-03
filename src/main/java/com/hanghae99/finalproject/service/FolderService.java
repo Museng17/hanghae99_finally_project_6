@@ -1,6 +1,6 @@
 package com.hanghae99.finalproject.service;
 
-import com.hanghae99.finalproject.exceptionHandler.CustumException.*;
+import com.hanghae99.finalproject.exceptionHandler.CustumException.CustomException;
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.*;
@@ -41,7 +41,7 @@ public class FolderService {
     @Transactional
     public Folder folderSave(FolderRequestDto folderRequestDto, HttpServletRequest request) {
 
-        if(folderRequestDto.getName().length() > 25){
+        if (folderRequestDto.getName().length() > 25) {
             throw new CustomException(OVER_TEXT);
         }
 
@@ -119,7 +119,7 @@ public class FolderService {
     @Transactional
     public void folderUpdate(Long folderId, HttpServletRequest request, FolderRequestDto folderRequestDto) {
 
-        if(folderRequestDto.getName().length() > 25){
+        if (folderRequestDto.getName().length() > 25) {
             throw new CustomException(OVER_TEXT);
         }
 
@@ -203,7 +203,7 @@ public class FolderService {
         if (!findShare.isPresent()) {
             Share share = new Share(folder, users);
             shareRepository.save(share);
-            folder.setSharedCount(folder.getSharedCount()+1);
+            folder.setSharedCount(folder.getSharedCount() + 1);
             return new MessageResponseDto<>(200, "공유되었습니다.");
         }
         return new MessageResponseDto<>(501, "이미 공유된 모음입니다.");
@@ -234,7 +234,7 @@ public class FolderService {
     @Transactional
     public void folderOrderChange(OrderRequestDto orderRequestDto, HttpServletRequest request) {
         Folder folder = folderRepository.findById(orderRequestDto.getFolderId())
-                .orElseThrow(() ->  new CustomException(NOT_FIND_BOARD));
+                .orElseThrow(() -> new CustomException(NOT_FIND_BOARD));
         Users users = userinfoHttpRequest.userFindByToken(request);
         if (folder.getUsers().getId() != users.getId()) {
             throw new CustomException(MIX_MATCH_USER);
@@ -259,7 +259,7 @@ public class FolderService {
     }
 
     @Transactional
-    public MessageResponseDto findBestFolder(int page, int size,HttpServletRequest request) {
+    public MessageResponseDto findBestFolder(int page, int size, HttpServletRequest request) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("sharedCount").descending());
         Users users = userinfoHttpRequest.userFindByToken(request);
         List<Folder> folders = folderRepository.findAllBystatus(users.getId(), DisclosureStatusType.PUBLIC, pageRequest).getContent();
@@ -267,7 +267,7 @@ public class FolderService {
         for (Folder folder : folders) {
             folderResponseDtos.add(new FolderResponseDto(folder));
         }
-        return new MessageResponseDto(200,"인기 모음 찾기 완료.",folderResponseDtos);
+        return new MessageResponseDto(200, "인기 모음 찾기 완료.", folderResponseDtos);
     }
 
     public Folder findByBasicFolder(Users users) {
@@ -364,7 +364,6 @@ public class FolderService {
         return folderResponseDtos;
     }
 
-
     private MessageResponseDto pageEntityListToDtoListForFolder(Page<Folder> content) {
         List<FolderResponseDto> folderResponseDtos = new ArrayList<>();
         List<Folder> contentList = content.getContent();
@@ -385,7 +384,7 @@ public class FolderService {
                 pageable
         );
 
-        return new MessageResponseDto(200,"전체 모음 찾기 완료.", new FolderListResponseDto(getFolder(folders.getContent()), folders.getTotalElements()));
+        return new MessageResponseDto(200, "전체 모음 찾기 완료.", new FolderListResponseDto(getFolder(folders.getContent()), folders.getTotalElements()));
     }
 
     public List<FolderResponseDto> getFolder(List<Folder> folders) {
@@ -414,17 +413,17 @@ public class FolderService {
                 .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
 
         Users baduser = folder.getUsers();
-        Optional<Report> report = reportRepository.findByBadfolderIdAndReporterId(folder.getId(),users.getId());
-        if(report.isPresent()){
+        Optional<Report> report = reportRepository.findByBadfolderIdAndReporterId(folder.getId(), users.getId());
+        if (report.isPresent()) {
             throw new CustomException(EXIST_REPORT);
         }
-//        if(!new Report(users, folder).equals(reportRepository.findByBadfolderIdAndReporterId(folder.getId(),users.getId()))){
-//            throw new CustomException("이미 신고하셨습니다.",500);
-//        }
+        //        if(!new Report(users, folder).equals(reportRepository.findByBadfolderIdAndReporterId(folder.getId(),users.getId()))){
+        //            throw new CustomException("이미 신고하셨습니다.",500);
+        //        }
         reportRepository.save(new Report(users, folder));
         folder.setReportCnt(folder.getReportCnt() + 1);
         baduser.setReportCnt(baduser.getReportCnt() + 1);
-        return new MessageResponseDto(200,"모음 신고 완료.");
+        return new MessageResponseDto(200, "모음 신고 완료.");
     }
 
     @Transactional(readOnly = true)
@@ -463,15 +462,16 @@ public class FolderService {
 
         return folder;
     }
+
     @Transactional
-    public MessageResponseDto deleteShare(Long folderId,HttpServletRequest request){
+    public MessageResponseDto deleteShare(Long folderId, HttpServletRequest request) {
         Users user = userinfoHttpRequest.userFindByToken(request);
         Folder folder = folderRepository.findById(folderId)
                 .orElseThrow(() -> new CustomException(NOT_FIND_FOLDER));
         Share share = shareRepository.findByFolderIdAndUsersId(folderId, user.getId())
                 .orElseThrow(() -> new CustomException(NOT_FIND_SHARE));
         shareRepository.delete(share);
-        folder.setSharedCount(folder.getSharedCount()-1);
-        return new MessageResponseDto(200,"공유된 모음 삭제 완료.");
+        folder.setSharedCount(folder.getSharedCount() - 1);
+        return new MessageResponseDto(200, "공유된 모음 삭제 완료.");
     }
 }

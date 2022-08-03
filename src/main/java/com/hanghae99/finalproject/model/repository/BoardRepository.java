@@ -12,11 +12,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     Optional<Board> findByFolderId(Long folderId);
 
-//    Page<Board> findAllByStatus(Users users, DisclosureStatusType status, Pageable pageable);
-
     void deleteAllByUsers(Users user);
-
-    //    Optional<Board> findByIdAndUsersIdNot(Long boardId, Long id);
 
     @EntityGraph("Board.fetchFolder")
     @Query("select b from Board b where  b.folder.id = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and b.category in ?3 and b.users.id = ?4 and b.status IN ?5")

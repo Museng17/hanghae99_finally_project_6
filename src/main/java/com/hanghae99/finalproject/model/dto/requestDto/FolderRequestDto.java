@@ -33,14 +33,13 @@ public class FolderRequestDto {
         this.boardList = entityListToRequestDtoList(boards.getContent());
     }
 
-    public List<BoardRequestDto> entityListToRequestDtoList(List<Board> boards){
+    public List<BoardRequestDto> entityListToRequestDtoList(List<Board> boards) {
         List<BoardRequestDto> boardList = new ArrayList<>();
-        for (Board board : boards){
+        for (Board board : boards) {
             boardList.add(new BoardRequestDto(board));
         }
         return boardList;
     }
-
 
     public FolderRequestDto(Long boardId) {
         this.boardList.add(new BoardRequestDto(boardId));

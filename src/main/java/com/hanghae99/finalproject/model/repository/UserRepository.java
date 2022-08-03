@@ -20,8 +20,5 @@ public interface UserRepository extends JpaRepository<Users, Long> {
 
     Users findFollowingById(Long id);
 
-    @Query("select max(id) from Users ")
-    Long findMaxId();
-
     Optional<Object> findByUsernameOrNicknameOrEmail(String username, String nickname, String email);
 }

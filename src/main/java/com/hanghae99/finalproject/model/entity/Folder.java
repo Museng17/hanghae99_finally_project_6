@@ -6,8 +6,6 @@ import lombok.*;
 
 import javax.persistence.*;
 
-import java.util.*;
-
 @Entity
 @Getter
 @Setter
@@ -63,16 +61,6 @@ public class Folder extends TimeStamp {
         this.users = users;
         this.boardCnt = 0L;
     }
-
-//    public Folder(FolderRequestDto folderRequestDto, Users users) {
-//        this.name = folderRequestDto.getName();
-//        this.status = folderRequestDto.getStatus();
-//        this.users = users;
-//        this.sharedCount = folderRequestDto.getSharedCount() + 1;
-//        this.boardCnt = folderRequestDto.getBoardCnt();
-//        this.boardList = folderRequestDto.getBoardList();
-//        this.folderOrder = users.getFolderCnt() + 2;
-//    }
 
     public Folder(Long id, DisclosureStatusType status) {
         this.id = id;
