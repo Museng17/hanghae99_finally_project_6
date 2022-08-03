@@ -9,8 +9,6 @@ import java.util.*;
 
 public interface FolderRepository extends JpaRepository<Folder, Long> {
 
-    Optional<Folder> findByIdAndUsersId(Long folderId, Long userId);
-
     @Query("select new Folder (f.id, f.status) from Folder f where f.id = ?1 and f.users.id = ?2")
     Optional<Folder> findFolderByIdAndUsersId(Long folderId, Long userId);
 
@@ -63,4 +61,6 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
     List<Folder> findFolderList(Long id, String status, List<DisclosureStatusType> disclosureStatusTypes);
 
     List<Folder> findByUsersId(Long id);
+
+    Optional<Folder> findByIdAndUsers(Long folderId, Users userFindByToken);
 }

@@ -21,7 +21,7 @@ public class FolderRequestDto {
     private Long boardCnt;
     private String nickname;
     private Long userId;
-    private List<Board> boardList = new ArrayList<>();
+    private List<BoardRequestDto> boardList = new ArrayList<>();
 
     public FolderRequestDto(Page<Board> boards, Folder folder) {
         this.id = folder.getId();
@@ -30,30 +30,20 @@ public class FolderRequestDto {
         this.boardCnt = folder.getBoardCnt();
         this.sharedCount = folder.getSharedCount();
         this.folderOrder = folder.getFolderOrder();
-        this.boardList = boards.getContent();
+        this.boardList = entityListToRequestDtoList(boards.getContent());
     }
 
-    public FolderRequestDto(List<Board> boards, Folder folder) {
-        this.id = folder.getId();
-        this.name = folder.getName();
-        this.status = folder.getStatus();
-        this.boardCnt = folder.getBoardCnt();
-        this.sharedCount = folder.getSharedCount();
-        this.folderOrder = folder.getFolderOrder();
-        this.boardList = boards;
+    public List<BoardRequestDto> entityListToRequestDtoList(List<Board> boards){
+        List<BoardRequestDto> boardList = new ArrayList<>();
+        for (Board board : boards){
+            boardList.add(new BoardRequestDto(board));
+        }
+        return boardList;
     }
 
-    public FolderRequestDto(Folder folder) {
-        this.id = folder.getId();
-        this.name = folder.getName();
-        this.status = folder.getStatus();
-        this.sharedCount = folder.getSharedCount();
-        this.boardCnt = folder.getBoardCnt();
-        this.nickname = folder.getUsers().getNickname();
-    }
 
     public FolderRequestDto(Long boardId) {
-        this.boardList.add(new Board(boardId));
+        this.boardList.add(new BoardRequestDto(boardId));
     }
 
     public FolderRequestDto(DisclosureStatusType status) {

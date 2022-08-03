@@ -62,9 +62,9 @@ public class FolderService {
 
     @Transactional(readOnly = true)
     public Folder findFolder(Long folderId, HttpServletRequest request) {
-        return folderRepository.findByIdAndUsersId(
+        return folderRepository.findByIdAndUsers(
                         folderId,
-                        userinfoHttpRequest.userFindByToken(request).getId()
+                        userinfoHttpRequest.userFindByToken(request)
                 )
                 .orElseThrow(() -> new RuntimeException("에러, 찾는 폴더가 없습니다."));
     }

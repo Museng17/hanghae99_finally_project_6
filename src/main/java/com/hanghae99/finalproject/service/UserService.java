@@ -126,7 +126,7 @@ public class UserService {
                 )
         );
 
-        certificationMap.remove(Dto.getEmail(), true);
+//        certificationMap.remove(Dto.getEmail(), true);
         return new UserRegisterRespDto(200, true, "회원가입 성공");
     }
 
@@ -369,7 +369,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Users findUserProfile(HttpServletRequest request) {
-        return userRepository.findByUsernameNoJoin(request.getAttribute(JWT_HEADER_KEY).toString())
+        return userRepository.findByUsername(request.getAttribute(JWT_HEADER_KEY).toString())
                 .orElseThrow(() -> new RuntimeException("찾는 회원이 없습니다."));
     }
 
@@ -387,15 +387,8 @@ public class UserService {
     }
 
     private UserRegisterRespDto duplicateCheck(UserRequestDto dto) {
-        if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
-            return new UserRegisterRespDto(501, false, "중복된 사용자 ID가 존재합니다.");
-        }
-        if (userRepository.findByNickname(dto.getNickname()).isPresent()) {
-            return new UserRegisterRespDto(501, false, "중복된 닉네임이 존재합니다.");
-        }
-
-        if (!checkEmailDuplicate(dto.getEmail())) {
-            return new UserRegisterRespDto(501, false, "중복된 이메일이 존재합니다.");
+        if (userRepository.findByUsernameOrNicknameOrEmail(dto.getUsername(),dto.getNickname(),dto.getEmail()).isPresent()) {
+            return new UserRegisterRespDto(501, false, "중복된 값이 존재합니다.");
         }
         return null;
     }

@@ -13,6 +13,7 @@ import java.util.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@NamedEntityGraph(name = "Board.fetchFolder", attributeNodes = @NamedAttributeNode("folder"))
 public class Board extends TimeStamp {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,19 +47,18 @@ public class Board extends TimeStamp {
     @Column(nullable = false)
     private Long boardOrder;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     private List<Image> imageList;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    @JoinColumn(name = "users_id")
     private Users users;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private Folder folder;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private Share share;
 

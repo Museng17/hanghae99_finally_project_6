@@ -36,14 +36,11 @@ public class Folder extends TimeStamp {
     @Column(nullable = false)
     private Long reportCnt = 0L;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users users;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private Share share;
-
-    @OneToMany
-    private List<Board> boardList = new ArrayList<>();
 
     public Folder(Long id, String name, DisclosureStatusType status) {
         this.id = id;
@@ -67,15 +64,15 @@ public class Folder extends TimeStamp {
         this.boardCnt = 0L;
     }
 
-    public Folder(FolderRequestDto folderRequestDto, Users users) {
-        this.name = folderRequestDto.getName();
-        this.status = folderRequestDto.getStatus();
-        this.users = users;
-        this.sharedCount = folderRequestDto.getSharedCount() + 1;
-        this.boardCnt = folderRequestDto.getBoardCnt();
-        this.boardList = folderRequestDto.getBoardList();
-        this.folderOrder = users.getFolderCnt() + 2;
-    }
+//    public Folder(FolderRequestDto folderRequestDto, Users users) {
+//        this.name = folderRequestDto.getName();
+//        this.status = folderRequestDto.getStatus();
+//        this.users = users;
+//        this.sharedCount = folderRequestDto.getSharedCount() + 1;
+//        this.boardCnt = folderRequestDto.getBoardCnt();
+//        this.boardList = folderRequestDto.getBoardList();
+//        this.folderOrder = users.getFolderCnt() + 2;
+//    }
 
     public Folder(Long id, DisclosureStatusType status) {
         this.id = id;

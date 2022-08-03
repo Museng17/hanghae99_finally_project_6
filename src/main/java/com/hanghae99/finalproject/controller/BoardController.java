@@ -110,7 +110,7 @@ public class BoardController {
     }
 
     @PutMapping("/board/status")
-    public Board updateStatus(@RequestBody BoardRequestDto boardRequestDto,
+    public BoardResponseDto updateStatus(@RequestBody BoardRequestDto boardRequestDto,
                               HttpServletRequest request) {
         return boardService.updateStatus(boardRequestDto, request);
     }

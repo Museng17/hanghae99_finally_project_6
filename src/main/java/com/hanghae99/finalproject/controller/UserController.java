@@ -116,7 +116,6 @@ public class UserController {
 
     @GetMapping("/user/profile")
     public Users findUserProfile(HttpServletRequest request) {
-
         return userService.findUserProfile(request);
     }
 

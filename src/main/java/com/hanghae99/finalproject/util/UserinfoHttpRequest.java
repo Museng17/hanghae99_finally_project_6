@@ -14,7 +14,7 @@ public class UserinfoHttpRequest {
     private final UserService userService;
 
     public void userAndWriterMatches(Long boardUserId, Long userId) {
-        if (boardUserId != userId) {
+        if (!boardUserId.equals(userId)) {
             throw new RuntimeException("글쓴이가 아닙니다.");
         }
     }

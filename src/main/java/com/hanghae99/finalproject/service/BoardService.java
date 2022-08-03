@@ -108,7 +108,18 @@ public class BoardService {
 
     @Transactional
     public void boardUpdate(Long id, BoardRequestDto boardRequestDto, HttpServletRequest request) {
-        Board board = boardFindById(id);
+        if (boardRequestDto.getBoardType() == BoardType.MEMO) {
+            if (boardRequestDto.getContent().length() > 250) {
+                throw new CustomException(CONTENT_OVER_TEXT);
+            }
+            if (boardRequestDto.getTitle().length() > 30) {
+                throw new CustomException(TITLE_OVER_TEXT);
+            }
+        }
+
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 글을 찾지 못했습니다."));
+
         List<Image> images = imageRepository.findByBoard(board);
 
         userinfoHttpRequest.userAndWriterMatches(
@@ -150,14 +161,6 @@ public class BoardService {
                 }
             }
         }
-        if (boardRequestDto.getBoardType() == BoardType.MEMO) {
-            if (boardRequestDto.getContent().length() > 250) {
-                throw new CustomException(CONTENT_OVER_TEXT);
-            }
-            if (boardRequestDto.getTitle().length() > 30) {
-                throw new CustomException(TITLE_OVER_TEXT);
-            }
-        }
         board.update(boardRequestDto);
     }
 
@@ -169,12 +172,12 @@ public class BoardService {
                 .collect(Collectors.toList());
 
         List<Board> boardList = boardAllFindById(longs);
+
         for (Board board : boardList) {
             userinfoHttpRequest.userAndWriterMatches(board.getUsers().getId(), users.getId());
         }
 
         imageRepository.deleteAllByBoardIdIn(longs);
-        boardRepository.deleteAllById(longs);
 
         users.setBoardCnt(users.getBoardCnt() - boardList.size());
 
@@ -460,7 +463,7 @@ public class BoardService {
 
         List<Board> afterBoard = findAllById(
                 folderRequestDto.getBoardList().stream()
-                        .map(Board::getId)
+                        .map(BoardRequestDto::getId)
                         .collect(Collectors.toList())
         );
 
@@ -489,9 +492,9 @@ public class BoardService {
     }
 
     private Folder findByIdAndUsersId(Long folderId, HttpServletRequest request) {
-        return folderRepository.findByIdAndUsersId(
+        return folderRepository.findByIdAndUsers(
                         folderId,
-                        userinfoHttpRequest.userFindByToken(request).getId()
+                        userinfoHttpRequest.userFindByToken(request)
                 )
                 .orElseThrow(() -> new RuntimeException("찾는 폴더가 없습니다."));
     }
@@ -526,17 +529,17 @@ public class BoardService {
     }
 
     @Transactional
-    public Board updateStatus(BoardRequestDto boardRequestDto, HttpServletRequest request) {
+    public BoardResponseDto updateStatus(BoardRequestDto boardRequestDto, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
 
-        Board board = boardRepository.findBoardByIdAndUsersId(
+        Board board = boardRepository.findByIdAndUsers(
                 boardRequestDto.getId(),
-                users.getId()
+                users
         ).orElseThrow(() -> new CustomException(NOT_FIND_BOARD));
 
         board.updateStatus(new FolderRequestDto(boardRequestDto.getStatus()));
 
-        return board;
+        return new BoardResponseDto(board);
     }
 
     @Transactional
