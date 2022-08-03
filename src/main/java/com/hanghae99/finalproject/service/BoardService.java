@@ -492,9 +492,9 @@ public class BoardService {
     }
 
     private Folder findByIdAndUsersId(Long folderId, HttpServletRequest request) {
-        return folderRepository.findByIdAndUsersId(
+        return folderRepository.findByIdAndUsers(
                         folderId,
-                        userinfoHttpRequest.userFindByToken(request).getId()
+                        userinfoHttpRequest.userFindByToken(request)
                 )
                 .orElseThrow(() -> new RuntimeException("찾는 폴더가 없습니다."));
     }
@@ -529,7 +529,7 @@ public class BoardService {
     }
 
     @Transactional
-    public Board updateStatus(BoardRequestDto boardRequestDto, HttpServletRequest request) {
+    public BoardResponseDto updateStatus(BoardRequestDto boardRequestDto, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
 
         Board board = boardRepository.findBoardByIdAndUsersId(
@@ -539,7 +539,7 @@ public class BoardService {
 
         board.updateStatus(new FolderRequestDto(boardRequestDto.getStatus()));
 
-        return board;
+        return new BoardResponseDto(board);
     }
 
     @Transactional

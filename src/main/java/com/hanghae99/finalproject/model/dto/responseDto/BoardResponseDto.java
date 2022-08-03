@@ -27,6 +27,19 @@ public class BoardResponseDto {
     private Long imageId;
     private List<ImageRequestDto> imageList = new ArrayList<>();
 
+    public BoardResponseDto(Board board) {
+        this.id = board.getId();
+        this.title = board.getTitle();
+        this.link = board.getLink();
+        this.explanation = board.getExplanation();
+        this.imgPath = board.getImgPath();
+        this.content = board.getContent();
+        this.status = board.getStatus();
+        this.boardType = board.getBoardType();
+        this.category = board.getCategory();
+        this.boardOrder = board.getBoardOrder();
+    }
+
     public BoardResponseDto(Board board, Folder folder, ImageRequestDto saveImage) {
         this.id = board.getId();
         this.title = board.getTitle();
