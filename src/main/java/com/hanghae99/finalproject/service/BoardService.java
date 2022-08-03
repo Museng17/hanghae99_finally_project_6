@@ -178,6 +178,7 @@ public class BoardService {
         }
 
         imageRepository.deleteAllByBoardIdIn(longs);
+        boardRepository.deleteAllById(longs);
 
         users.setBoardCnt(users.getBoardCnt() - boardList.size());
 
