@@ -78,12 +78,15 @@ public class BoardResponseDto {
     }
 
     private Long findChoiceImage(List<Image> images) {
-        for (Image image : images) {
-            if (image.getImgPath().equals(this.imgPath)) {
-                return image.getId();
+        if(images.size() > 0){
+            for (Image image : images) {
+                if (image.getImgPath().equals(this.imgPath)) {
+                    return image.getId();
+                }
             }
+            throw new CustomException(ErrorCode.NOT_FIND_CHOICE_IMAGE);
         }
-        throw new CustomException(ErrorCode.NOT_FIND_CHOICE_IMAGE);
+        return null;
     }
 
     private List<ImageRequestDto> entityToDto(List<Image> images) {
