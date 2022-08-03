@@ -38,8 +38,8 @@ public enum CategoryType {
     @JsonProperty("공연")
     SHOW("공연"),
 
-    @JsonProperty("전시회")
-    EXHIBITION("전시회"),
+    @JsonProperty("전시")
+    EXHIBITION("전시"),
 
     @JsonProperty("공부")
     STUDY("공부"),
