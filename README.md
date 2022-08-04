@@ -10,7 +10,7 @@
 
 🗂 **[moum 서비스 바로가기](https://moum.cloud/)**
 
-🎞 **[서비스 시연 영상]**
+🎞 **[서비스 시연 영상](https://youtu.be/iqAPE-S5U0Y)**
 
 
 <br />
