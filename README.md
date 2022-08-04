@@ -81,7 +81,7 @@
  <br />
 
 ## 🧩 서비스 아키텍쳐
-<img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fbq5WPW%2FbtrIkpqZlLi%2FVYJKV7eO8hslC2dFzdlkSK%2Fimg.png">
+<img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbXnNXe%2FbtrIUmSXjaO%2FBAMHu0qHP6Y6VI0gSwLBBK%2Fimg.png">
 
 <br />
 
@@ -97,7 +97,7 @@
 
 
 ## 📂 노션  
-📔  **[노션 링크]**
+📔  **[노션 링크](https://neat-apartment-b02.notion.site/moum-625b66e189ee4151b21f2f60e8935582)**
 
 <br />
 
