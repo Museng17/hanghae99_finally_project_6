@@ -9,15 +9,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.*;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
-
-    Optional<Board> findByFolderId(Long folderId);
-
-//    Page<Board> findAllByStatus(Users users, DisclosureStatusType status, Pageable pageable);
-
     void deleteAllByUsers(Users user);
 
-    //    Optional<Board> findByIdAndUsersIdNot(Long boardId, Long id);
-
+    @EntityGraph("Board.fetchFolder")
     @Query("select b from Board b where  b.folder.id = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and b.category in ?3 and b.users.id = ?4 and b.status IN ?5")
     Page<Board> findByFolderIdAndTitleContainingAndCategoryIn(Long folderId,
                                                               String keyword,
@@ -25,20 +19,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
                                                               Long userId,
                                                               List<DisclosureStatusType> disclosureStatusTypes,
                                                               Pageable pageable);
-
-    @Query("select b from Board b where  b.folder.id = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and b.category in ?3 and b.users.id = ?4 and b.status IN ?5 order by b.createdDate DESC ")
-    List<Board> findByFolderIdAndTitleContainingAndCategoryIn2(Long folderId,
-                                                               String keyword,
-                                                               List<CategoryType> categoryTypeList,
-                                                               Long userId,
-                                                               List<DisclosureStatusType> disclosureStatusTypes);
-
-    @Query("select b from Board b where  b.folder.id = ?1 and b.title LIKE case when ?2 = '%all%' then '%%' else ?2 end and b.category in ?3 and b.users.id = ?4 and b.status IN ?5 order by b.boardOrder asc ")
-    List<Board> findByFolderIdAndTitleContainingAndCategoryIn3(Long folderId,
-                                                               String keyword,
-                                                               List<CategoryType> categoryTypeList,
-                                                               Long userId,
-                                                               List<DisclosureStatusType> disclosureStatusTypes);
 
     List<Board> findByFolder(Folder folder);
 
@@ -69,7 +49,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     void updateOrderMinus(Long beforeOrder, Long afterOrder, Long folderId);
 
     @Query("select b from Board b where b.users.id = ?1 and b.folder.id = ?2 order by b.boardOrder asc")
-    List<Board> findAllByUsersIdOrderByBoardOrderAsc(Long boardIdList, Long folderId);
+    List<Board> findAllByUsersIdOrderByBoardOrderAsc(Long userId, Long folderId);
 
     @Query("select b.folder.id from Board b where b.id = ?1")
     Optional<Long> findFolderIdById(Long id);
@@ -78,14 +58,13 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     Optional<Board> findByIdAndUsers(Long boardId, Users userFindByToken);
 
-    @Query("select new Board (b.id, b.status) from Board b where b.id = ?1 and b.users.id = ?2")
-    Optional<Board> findBoardByIdAndUsersId(Long folderId, Long id);
-
     List<Board> findAllByFolderIdIn(List<Long> dbLongList);
-
-    void deleteAllByIdIn(List<Long> boardRemoveIdList);
 
     List<Board> findByUsersId(Long id);
 
     Page<Board> findAllByUsersNotAndStatus(Users users, DisclosureStatusType aPublic, PageRequest pageRequest);
+
+    @Modifying
+    @Query("update Board b set b.status = ?1 where b.folder = ?2")
+    void updateBoardStatus(DisclosureStatusType status, Folder folder);
 }

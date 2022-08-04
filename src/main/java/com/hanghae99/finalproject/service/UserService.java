@@ -6,6 +6,7 @@ import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
 import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.repository.*;
+import com.hanghae99.finalproject.model.resultType.LoginType;
 import com.hanghae99.finalproject.singleton.CertificationMap;
 import com.hanghae99.finalproject.util.restTemplates.SocialLoginRestTemplate;
 import io.jsonwebtoken.Claims;
@@ -338,11 +339,13 @@ public class UserService {
 
     @Transactional
     public MessageResponseDto updateUserPw(UserRequestDto userRequestDto, HttpServletRequest request) {
+        Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
+        if (user.getLoginType() == LoginType.GOOGLE) {
+            return new MessageResponseDto(501, "구글 계정입니다.");
+        }
         if (!Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$", userRequestDto.getPassword())) {
             throw new CustomException(NOT_USE_PASSWORD);
         }
-
-        Users user = findUser(request.getAttribute(JWT_HEADER_KEY).toString());
 
         if (!bCryptPasswordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {
             return new MessageResponseDto(501, "기존 비밀번호 확인 실패");
@@ -367,7 +370,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Users findUserProfile(HttpServletRequest request) {
-        return userRepository.findByUsernameNoJoin(request.getAttribute(JWT_HEADER_KEY).toString())
+        return userRepository.findByUsername(request.getAttribute(JWT_HEADER_KEY).toString())
                 .orElseThrow(() -> new RuntimeException("찾는 회원이 없습니다."));
     }
 
@@ -385,15 +388,8 @@ public class UserService {
     }
 
     private UserRegisterRespDto duplicateCheck(UserRequestDto dto) {
-        if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
-            return new UserRegisterRespDto(501, false, "중복된 사용자 ID가 존재합니다.");
-        }
-        if (userRepository.findByNickname(dto.getNickname()).isPresent()) {
-            return new UserRegisterRespDto(501, false, "중복된 닉네임이 존재합니다.");
-        }
-
-        if (!checkEmailDuplicate(dto.getEmail())) {
-            return new UserRegisterRespDto(501, false, "중복된 이메일이 존재합니다.");
+        if (userRepository.findByUsernameOrNicknameOrEmail(dto.getUsername(), dto.getNickname(), dto.getEmail()).isPresent()) {
+            return new UserRegisterRespDto(501, false, "중복된 값이 존재합니다.");
         }
         return null;
     }

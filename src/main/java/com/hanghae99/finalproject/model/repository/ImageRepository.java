@@ -14,4 +14,6 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     void deleteAllByBoardIdIn(List<Long> longs);
 
     void deleteByBoardIdIn(List<Long> removeBoardIdList);
+
+    void deleteAllByBoardIn(List<Board> removeBoardList);
 }

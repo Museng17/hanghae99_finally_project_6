@@ -45,7 +45,7 @@ public class BoardService {
         Image saveImage = new Image();
 
         if (boardRequestDto.getBoardType() == BoardType.LINK) {
-            if (!boardRequestDto.getLink().startsWith("https://")) {
+            if (!boardRequestDto.getLink().startsWith("http://") && !boardRequestDto.getLink().startsWith("https://")) {
                 boardRequestDto.updateLink();
             }
             boardRequestDto.ogTagToBoardRequestDto(
@@ -108,7 +108,18 @@ public class BoardService {
 
     @Transactional
     public void boardUpdate(Long id, BoardRequestDto boardRequestDto, HttpServletRequest request) {
-        Board board = boardFindById(id);
+        if (boardRequestDto.getBoardType() == BoardType.MEMO) {
+            if (boardRequestDto.getContent().length() > 250) {
+                throw new CustomException(CONTENT_OVER_TEXT);
+            }
+            if (boardRequestDto.getTitle().length() > 30) {
+                throw new CustomException(TITLE_OVER_TEXT);
+            }
+        }
+
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 글을 찾지 못했습니다."));
+
         List<Image> images = imageRepository.findByBoard(board);
 
         userinfoHttpRequest.userAndWriterMatches(
@@ -150,14 +161,6 @@ public class BoardService {
                 }
             }
         }
-        if (boardRequestDto.getBoardType() == BoardType.MEMO) {
-            if (boardRequestDto.getContent().length() > 250) {
-                throw new CustomException(CONTENT_OVER_TEXT);
-            }
-            if (boardRequestDto.getTitle().length() > 30) {
-                throw new CustomException(TITLE_OVER_TEXT);
-            }
-        }
         board.update(boardRequestDto);
     }
 
@@ -169,6 +172,7 @@ public class BoardService {
                 .collect(Collectors.toList());
 
         List<Board> boardList = boardAllFindById(longs);
+
         for (Board board : boardList) {
             userinfoHttpRequest.userAndWriterMatches(board.getUsers().getId(), users.getId());
         }
@@ -207,15 +211,6 @@ public class BoardService {
 
     public List<Board> findAllById(List<Long> longs) {
         return boardRepository.findAllById(longs);
-    }
-
-    public void statusUpdateByFolderId(Long id, FolderRequestDto folderRequestDto) {
-        Optional<Board> board = boardRepository.findByFolderId(id);
-
-        if (board.isPresent()) {
-            board.get().updateStatus(new FolderRequestDto(folderRequestDto.getStatus()));
-        }
-
     }
 
     public OgResponseDto thumbnailLoad(String url) {
@@ -374,54 +369,6 @@ public class BoardService {
         );
     }
 
-    @Transactional(readOnly = true)
-    public MessageResponseDto moum2(List<FolderRequestDto> folderRequestDtos,
-                                    String keyword,
-                                    HttpServletRequest request,
-                                    Long folderId,
-                                    Long userId,
-                                    String sort) {
-        List<DisclosureStatusType> disclosureStatusTypes = new ArrayList<>();
-        disclosureStatusTypes.add(DisclosureStatusType.PUBLIC);
-
-        Users user = userRepository.findById(userId)
-                .orElseGet(() -> {
-                    if (userId == 0L) {
-                        disclosureStatusTypes.add(DisclosureStatusType.PRIVATE);
-                        return userinfoHttpRequest.userFindByToken(request);
-                    }
-                    throw new CustomException(NOT_FIND_USER);
-                });
-        List<Board> boards = new ArrayList<>();
-
-        if (sort.equals("a")) {
-            boards = boardRepository.findByFolderIdAndTitleContainingAndCategoryIn2(
-                    folderId,
-                    "%" + keyword + "%",
-                    findSelectCategory(folderRequestDtos),
-                    user.getId(),
-                    disclosureStatusTypes
-            );
-        } else {
-            boards = boardRepository.findByFolderIdAndTitleContainingAndCategoryIn3(
-                    folderId,
-                    "%" + keyword + "%",
-                    findSelectCategory(folderRequestDtos),
-                    user.getId(),
-                    disclosureStatusTypes
-            );
-        }
-        return new MessageResponseDto(
-                200,
-                "조회완료",
-                new FolderRequestDto(
-                        boards,
-                        folderRepository.findById(folderId).get()
-                ),
-                0
-        );
-    }
-
     public MessageResponseDto allBoards(String keyword, int page, List<FolderRequestDto> folderRequestDtos, HttpServletRequest request) {
 
         Users users = userinfoHttpRequest.userFindByToken(request);
@@ -508,7 +455,7 @@ public class BoardService {
 
         List<Board> afterBoard = findAllById(
                 folderRequestDto.getBoardList().stream()
-                        .map(Board::getId)
+                        .map(BoardRequestDto::getId)
                         .collect(Collectors.toList())
         );
 
@@ -537,9 +484,9 @@ public class BoardService {
     }
 
     private Folder findByIdAndUsersId(Long folderId, HttpServletRequest request) {
-        return folderRepository.findByIdAndUsersId(
+        return folderRepository.findByIdAndUsers(
                         folderId,
-                        userinfoHttpRequest.userFindByToken(request).getId()
+                        userinfoHttpRequest.userFindByToken(request)
                 )
                 .orElseThrow(() -> new RuntimeException("찾는 폴더가 없습니다."));
     }
@@ -574,17 +521,17 @@ public class BoardService {
     }
 
     @Transactional
-    public Board updateStatus(BoardRequestDto boardRequestDto, HttpServletRequest request) {
+    public BoardResponseDto updateStatus(BoardRequestDto boardRequestDto, HttpServletRequest request) {
         Users users = userinfoHttpRequest.userFindByToken(request);
 
-        Board board = boardRepository.findBoardByIdAndUsersId(
+        Board board = boardRepository.findByIdAndUsers(
                 boardRequestDto.getId(),
-                users.getId()
+                users
         ).orElseThrow(() -> new CustomException(NOT_FIND_BOARD));
 
         board.updateStatus(new FolderRequestDto(boardRequestDto.getStatus()));
 
-        return board;
+        return new BoardResponseDto(board);
     }
 
     @Transactional

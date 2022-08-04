@@ -2,7 +2,6 @@ package com.hanghae99.finalproject.controller;
 
 import com.hanghae99.finalproject.model.dto.requestDto.*;
 import com.hanghae99.finalproject.model.dto.responseDto.*;
-import com.hanghae99.finalproject.model.entity.Board;
 import com.hanghae99.finalproject.model.resultType.CategoryType;
 import com.hanghae99.finalproject.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -36,16 +35,16 @@ public class BoardController {
 
     @PutMapping("/board/{id}")
     public MessageResponseDto boardUpdate(@PathVariable Long id,
-                            @RequestBody BoardRequestDto boardRequestDto,
-                            HttpServletRequest request) {
+                                          @RequestBody BoardRequestDto boardRequestDto,
+                                          HttpServletRequest request) {
         boardService.boardUpdate(id, boardRequestDto, request);
         return new MessageResponseDto(200, "수정되었습니다.");
     }
 
     @DeleteMapping("/boards/{folderId}")
     public MessageResponseDto boardDelete(@RequestBody List<BoardRequestDto> boardRequestDtos,
-                            HttpServletRequest request,
-                            @PathVariable Long folderId) {
+                                          HttpServletRequest request,
+                                          @PathVariable Long folderId) {
         boardService.boardDelete(boardRequestDtos, request, folderId);
         return new MessageResponseDto(200, "삭제되었습니다.");
     }
@@ -57,7 +56,7 @@ public class BoardController {
 
     @PostMapping("/boards")
     public MessageResponseDto boardOrderChange(@RequestBody OrderRequestDto orderRequestDto,
-                                 HttpServletRequest request) {
+                                               HttpServletRequest request) {
         boardService.boardOrderChange(orderRequestDto, request);
         return new MessageResponseDto(200, "수정되었습니다.");
     }
@@ -87,16 +86,6 @@ public class BoardController {
         return boardService.moum(folderRequestDtos, keyword, request, pageable, folderId, userId);
     }
 
-    @PostMapping("/boards2/{userId}/{folderId}/{keyword}/{sort}")
-    public MessageResponseDto moum2(@RequestBody List<FolderRequestDto> folderRequestDtos,
-                                    @PathVariable String keyword,
-                                    HttpServletRequest request,
-                                    @PathVariable Long folderId,
-                                    @PathVariable Long userId,
-                                    @PathVariable String sort) {
-        return boardService.moum2(folderRequestDtos, keyword, request, folderId, userId, sort);
-    }
-
     @GetMapping("/boards/{userId}/{folderId}")
     public List<Map<String, CategoryType>> findCategoryList(@PathVariable Long folderId,
                                                             @PathVariable Long userId,
@@ -106,9 +95,9 @@ public class BoardController {
 
     @PostMapping("/allboards/{keyword}/{page}")
     public MessageResponseDto allBoards(@PathVariable String keyword,
-                                            @PathVariable int page,
-                                            @RequestBody List<FolderRequestDto> folderRequestDtos,
-                                            HttpServletRequest request) {
+                                        @PathVariable int page,
+                                        @RequestBody List<FolderRequestDto> folderRequestDtos,
+                                        HttpServletRequest request) {
         return boardService.allBoards(keyword, page, folderRequestDtos, request);
     }
 
@@ -120,12 +109,13 @@ public class BoardController {
     }
 
     @PutMapping("/board/status")
-    public Board updateStatus(@RequestBody BoardRequestDto boardRequestDto,
-                              HttpServletRequest request) {
+    public BoardResponseDto updateStatus(@RequestBody BoardRequestDto boardRequestDto,
+                                         HttpServletRequest request) {
         return boardService.updateStatus(boardRequestDto, request);
     }
+
     @PostMapping("/reportboard/{boardId}")
-    public void reportBoard(@PathVariable Long boardId,HttpServletRequest request){
-        boardService.reportBoard(boardId,request);
+    public void reportBoard(@PathVariable Long boardId, HttpServletRequest request) {
+        boardService.reportBoard(boardId, request);
     }
 }

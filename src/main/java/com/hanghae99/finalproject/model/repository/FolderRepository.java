@@ -9,15 +9,14 @@ import java.util.*;
 
 public interface FolderRepository extends JpaRepository<Folder, Long> {
 
-    Optional<Folder> findByIdAndUsersId(Long folderId, Long userId);
-
     @Query("select new Folder (f.id, f.status) from Folder f where f.id = ?1 and f.users.id = ?2")
     Optional<Folder> findFolderByIdAndUsersId(Long folderId, Long userId);
 
     void deleteAllByUsers(Users user);
 
+    @EntityGraph("Folder.fetchUser")
     @Query("select f from Folder f where not f.users.id = ?1 and f.name not like '무제'   and f.status in ?2")
-    Page<Folder> findAllBystatus(Long userId,DisclosureStatusType status, Pageable pageable);
+    Page<Folder> findAllBystatus(Long userId, DisclosureStatusType status, Pageable pageable);
 
     Optional<Folder> findByIdAndUsersIdNot(Long folderId, Long id);
 
@@ -40,14 +39,17 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
                                       Pageable pageable);
 
     Folder findByUsersAndName(Users users, String basicFolder);
+
     @Query("select f from Folder f , Board b where f.id = b.folder.id and  b.id = ?1")
     Optional<Folder> findByBoardId(Long boardId);
 
+    @EntityGraph("Folder.fetchUser")
     @Query("select f from Folder f where not f.users.id = ?1 and f.status in ?2 and f.name LIKE case when ?3 = '%all%' then '%%' else ?3 end and f.name not like '무제'")
     Page<Folder> findAllByNameContaining1(Long usersId, DisclosureStatusType disclosureStatuses, String keyword, Pageable pageable);
 
     Optional<List<Folder>> findAllByIdInAndUsersId(List<Long> folderId, Long id);
 
+    @EntityGraph("Folder.fetchUser")
     @Query("select f FROM Folder f where f.id In ?1 and f.name LIKE CASE WHEN ?2 = '%all%' then '%%' else ?2 end")
     Page<Folder> findAllByIdAndNameLike(List<Long> listToId, String s, Pageable pageable);
 
@@ -63,4 +65,6 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
     List<Folder> findFolderList(Long id, String status, List<DisclosureStatusType> disclosureStatusTypes);
 
     List<Folder> findByUsersId(Long id);
+
+    Optional<Folder> findByIdAndUsers(Long folderId, Users userFindByToken);
 }

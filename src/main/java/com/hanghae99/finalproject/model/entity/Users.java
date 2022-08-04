@@ -7,8 +7,6 @@ import lombok.*;
 
 import javax.persistence.*;
 
-import java.util.*;
-
 import static com.hanghae99.finalproject.model.resultType.ProfileType.profileTypes;
 
 @Entity
@@ -51,17 +49,6 @@ public class Users extends TimeStamp {
     @Column(nullable = false)
     private LoginType loginType;
 
-    @OneToOne
-    private Image image;
-
-    @OneToMany
-    @JoinColumn(name = "folder_id")
-    private List<Folder> folderList;
-
-    @OneToMany
-    @JoinColumn(name = "board_id")
-    private List<Board> boardList;
-
     public Users(UserRequestDto Dto) {
         this.username = Dto.getUsername();
         this.nickname = Dto.getNickname();
@@ -73,9 +60,9 @@ public class Users extends TimeStamp {
         this.imgPath = Dto.getImgPath();
     }
 
-    public Users(SocialLoginRequestDto socialLoginRequestDto,  int randomNum) {
+    public Users(SocialLoginRequestDto socialLoginRequestDto, int randomNum) {
         this.username = socialLoginRequestDto.getEmail();
-        this.nickname = "익명의 사용자" +0;
+        this.nickname = "익명의 사용자" + 0;
         this.folderCnt = 0L;
         this.boardCnt = 0L;
         this.email = socialLoginRequestDto.getEmail();
@@ -119,6 +106,6 @@ public class Users extends TimeStamp {
     }
 
     public void updateNickName() {
-        this.nickname = this.nickname.substring(0,7) + this.id;
+        this.nickname = this.nickname.substring(0, 7) + this.id;
     }
 }

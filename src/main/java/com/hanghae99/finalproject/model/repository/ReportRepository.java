@@ -1,6 +1,6 @@
 package com.hanghae99.finalproject.model.repository;
 
-import com.hanghae99.finalproject.model.entity.Report;
+import com.hanghae99.finalproject.model.entity.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.*;
@@ -12,4 +12,6 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     void deleteByReporterId(Long id);
 
     Optional<Report> findByBadfolderIdAndReporterId(Long badfolderid, Long reporterid);
+
+    void deleteAllByBadfolderIn(List<Folder> folders);
 }

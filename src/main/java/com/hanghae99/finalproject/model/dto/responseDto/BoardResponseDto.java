@@ -27,6 +27,19 @@ public class BoardResponseDto {
     private Long imageId;
     private List<ImageRequestDto> imageList = new ArrayList<>();
 
+    public BoardResponseDto(Board board) {
+        this.id = board.getId();
+        this.title = board.getTitle();
+        this.link = board.getLink();
+        this.explanation = board.getExplanation();
+        this.imgPath = board.getImgPath();
+        this.content = board.getContent();
+        this.status = board.getStatus();
+        this.boardType = board.getBoardType();
+        this.category = board.getCategory();
+        this.boardOrder = board.getBoardOrder();
+    }
+
     public BoardResponseDto(Board board, Folder folder, ImageRequestDto saveImage) {
         this.id = board.getId();
         this.title = board.getTitle();
@@ -78,12 +91,15 @@ public class BoardResponseDto {
     }
 
     private Long findChoiceImage(List<Image> images) {
-        for (Image image : images) {
-            if (image.getImgPath().equals(this.imgPath)) {
-                return image.getId();
+        if (images.size() > 0) {
+            for (Image image : images) {
+                if (image.getImgPath().equals(this.imgPath)) {
+                    return image.getId();
+                }
             }
+            throw new CustomException(ErrorCode.NOT_FIND_CHOICE_IMAGE);
         }
-        throw new CustomException(ErrorCode.NOT_FIND_CHOICE_IMAGE);
+        return null;
     }
 
     private List<ImageRequestDto> entityToDto(List<Image> images) {
