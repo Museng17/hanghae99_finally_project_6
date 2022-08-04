@@ -9,9 +9,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.*;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
-
-    Optional<Board> findByFolderId(Long folderId);
-
     void deleteAllByUsers(Users user);
 
     @EntityGraph("Board.fetchFolder")
@@ -63,9 +60,11 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     List<Board> findAllByFolderIdIn(List<Long> dbLongList);
 
-    void deleteAllByIdIn(List<Long> boardRemoveIdList);
-
     List<Board> findByUsersId(Long id);
 
     Page<Board> findAllByUsersNotAndStatus(Users users, DisclosureStatusType aPublic, PageRequest pageRequest);
+
+    @Modifying
+    @Query("update Board b set b.status = ?1 where b.folder = ?2")
+    void updateBoardStatus(DisclosureStatusType status, Folder folder);
 }

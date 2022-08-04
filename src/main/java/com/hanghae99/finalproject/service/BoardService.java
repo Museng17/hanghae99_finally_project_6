@@ -213,15 +213,6 @@ public class BoardService {
         return boardRepository.findAllById(longs);
     }
 
-    public void statusUpdateByFolderId(Long id, FolderRequestDto folderRequestDto) {
-        Optional<Board> board = boardRepository.findByFolderId(id);
-
-        if (board.isPresent()) {
-            board.get().updateStatus(new FolderRequestDto(folderRequestDto.getStatus()));
-        }
-
-    }
-
     public OgResponseDto thumbnailLoad(String url) {
         OgResponseDto ogResponseDto;
         try {
