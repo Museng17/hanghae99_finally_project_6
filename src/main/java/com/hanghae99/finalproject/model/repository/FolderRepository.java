@@ -14,6 +14,7 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
 
     void deleteAllByUsers(Users user);
 
+    @EntityGraph("Folder.fetchUser")
     @Query("select f from Folder f where not f.users.id = ?1 and f.name not like '무제'   and f.status in ?2")
     Page<Folder> findAllBystatus(Long userId, DisclosureStatusType status, Pageable pageable);
 
