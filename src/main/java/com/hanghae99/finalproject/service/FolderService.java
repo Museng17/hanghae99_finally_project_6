@@ -80,12 +80,13 @@ public class FolderService {
 
     @Transactional
     public void folderDelete(List<FolderRequestDto> folderRequestDto, HttpServletRequest request) {
-        Users users = userinfoHttpRequest.userFindByToken(request);
+        //        Users users = userinfoHttpRequest.userFindByToken(request);
         List<Long> longs = folderRequestDto.stream()
                 .map(FolderRequestDto::getId)
                 .collect(Collectors.toList());
 
         List<Folder> folders = findAllFolder(longs, request);
+        Users users = folders.get(0).getUsers();
 
         List<Long> DbLongList = folders.stream()
                 .map(Folder::getId)
@@ -100,16 +101,17 @@ public class FolderService {
                     users.getId()
             );
         }
+
         List<Board> removeBoardList = boardRepository.findAllByFolderIdIn(DbLongList);
 
         List<Long> boardRemoveIdList = removeBoardList.stream()
                 .map(Board::getId)
                 .collect(Collectors.toList());
 
-        imageRepository.deleteAllByBoardIdIn(boardRemoveIdList);
-        boardRepository.deleteAllByIdIn(boardRemoveIdList);
-        reportRepository.deleteAllByBadfolderIdIn(DbLongList);
-        shareRepository.deleteAllByFolderIdIn(DbLongList);
+        imageRepository.deleteAllByBoardIn(removeBoardList);
+        boardRepository.deleteAllById(boardRemoveIdList);
+        reportRepository.deleteAllByBadfolderIn(folders);
+        shareRepository.deleteAllByFolderIn(folders);
         folderRepository.deleteAllById(DbLongList);
 
         users.setBoardCnt(users.getBoardCnt() - removeBoardList.size());
@@ -132,12 +134,10 @@ public class FolderService {
             throw new CustomException(NOT_USE_SUBJECT);
         }
 
-        userinfoHttpRequest.userAndWriterMatches(
-                folder.getUsers().getId(),
-                userinfoHttpRequest.userFindByToken(request).getId()
-        );
+        if (folderRequestDto.getStatus() == DisclosureStatusType.PRIVATE) {
+            boardRepository.updateBoardStatus(folderRequestDto.getStatus(), folder);
+        }
 
-        boardService.statusUpdateByFolderId(folderId, folderRequestDto);
         folder.update(folderRequestDto);
     }
 
