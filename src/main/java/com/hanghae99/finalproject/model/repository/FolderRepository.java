@@ -14,6 +14,7 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
 
     void deleteAllByUsers(Users user);
 
+    @EntityGraph("Folder.fetchUser")
     @Query("select f from Folder f where not f.users.id = ?1 and f.name not like '무제'   and f.status in ?2")
     Page<Folder> findAllBystatus(Long userId, DisclosureStatusType status, Pageable pageable);
 
@@ -42,11 +43,13 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
     @Query("select f from Folder f , Board b where f.id = b.folder.id and  b.id = ?1")
     Optional<Folder> findByBoardId(Long boardId);
 
+    @EntityGraph("Folder.fetchUser")
     @Query("select f from Folder f where not f.users.id = ?1 and f.status in ?2 and f.name LIKE case when ?3 = '%all%' then '%%' else ?3 end and f.name not like '무제'")
     Page<Folder> findAllByNameContaining1(Long usersId, DisclosureStatusType disclosureStatuses, String keyword, Pageable pageable);
 
     Optional<List<Folder>> findAllByIdInAndUsersId(List<Long> folderId, Long id);
 
+    @EntityGraph("Folder.fetchUser")
     @Query("select f FROM Folder f where f.id In ?1 and f.name LIKE CASE WHEN ?2 = '%all%' then '%%' else ?2 end")
     Page<Folder> findAllByIdAndNameLike(List<Long> listToId, String s, Pageable pageable);
 

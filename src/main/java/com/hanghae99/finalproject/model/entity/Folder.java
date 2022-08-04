@@ -10,6 +10,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@NamedEntityGraph(name = "Folder.fetchUser", attributeNodes = @NamedAttributeNode("users"))
 public class Folder extends TimeStamp {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
