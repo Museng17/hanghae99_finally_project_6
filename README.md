@@ -58,8 +58,9 @@
 - 조각, 모음 정렬 순서를 사용자가 직접 순서를 정렬할 수 있도록 적용
 - 조각에 해당되는 카테고리만 카테고리 목록에 나올 수 있도록 적용
 
+<br />
 
-### 💻 Jmeter부하테스트 진행 후 성능개선  - [Wiki 보러가기]()
+### 💻 Jmeter부하테스트 진행 후 성능개선  - [Wiki 보러가기](https://github.com/Mmuseng/hanghae99_finally_project_6/wiki/%EB%B6%80%ED%95%98-%ED%85%8C%EC%8A%A4%ED%8A%B8--%EB%B0%8F-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0#%EF%B8%8F-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0-%EC%82%AC%ED%95%AD)
 - Jmeter 부하테스트를 통해 평균속도, 에러율, 시간당 처리량, 평균바이트 체크
 - 쿼리 최적화 및 필요없는 이중 반복문 및 Stream으로 단순 반복문사용 제거 
 - API 속도 총 2366ms 개선 및 에러율 2% 까지 낮추는 성과를 냄
