@@ -48,10 +48,10 @@ public class UserService {
     @Transactional(readOnly = true)
     public TokenResponseDto login(UserRequestDto userRequestDto) {
         Users user = userRepository.findByUsername(userRequestDto.getUsername())
-                .orElseThrow(() -> new RuntimeException("UserService 38에러 회원가입되지 않은 아이디입니다."));
+                .orElseThrow(() -> new RuntimeException("회원가입되지 않은 아이디입니다."));
 
         if (!bCryptPasswordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {
-            throw new RuntimeException("UserService 41 에러 비밀번호가 틀렸습니다.");
+            throw new RuntimeException("비밀번호가 틀렸습니다.");
         }
         return createTokens(user.getUsername());
     }
@@ -96,39 +96,31 @@ public class UserService {
     }
 
     @Transactional
-    public UserRegisterRespDto registerUser(UserRequestDto Dto) {
+    public Users registerUser(UserRequestDto Dto) {
 
-        if (!certificationMap.match(Dto.getEmail())) {
-            throw new CustomException(ErrorCode.NOT_EMAIL_CERTIFICATION_CHECK);
-        }
+//        if (!certificationMap.match(Dto.getEmail())) {
+//            throw new CustomException(ErrorCode.NOT_EMAIL_CERTIFICATION_CHECK);
+//        }
 
         //회원가입 정규식 체크
-        UserRegisterRespDto valid = joinValid(Dto);
-        if (Optional.ofNullable(valid).isPresent()) {
-            return valid;
-        }
+        joinValid(Dto);
 
         //회원가입 중복 체크
-        valid = duplicateCheck(Dto);
-        if (Optional.ofNullable(valid).isPresent()) {
-            return valid;
-        }
+        duplicateCheck(Dto);
 
         //암호화
         Dto.setPassword(bCryptPasswordEncoder.encode(Dto.getPassword()));
 
-        //가입
-        folderRepository.save(
-                new Folder(
-                        userRepository.save(
-                                new Users(Dto)
-                        )
-                )
+        Users users = userRepository.save(
+                new Users(Dto)
         );
 
-        certificationMap.remove(Dto.getEmail(), true);
+        //가입
+        folderRepository.save(new Folder(users));
+
+//        certificationMap.remove(Dto.getEmail(), true);
         
-        return new UserRegisterRespDto(200, true, "회원가입 성공");
+        return users;
     }
 
     public String findUsername(UserRequestDto userRequestDto) {
@@ -374,24 +366,22 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("찾는 회원이 없습니다."));
     }
 
-    private UserRegisterRespDto joinValid(UserRequestDto dto) {
+    private void joinValid(UserRequestDto dto) {
         if (!Pattern.matches("^[a-zA-Z0-9]{4,11}$", dto.getUsername())) {
-            return new UserRegisterRespDto(502, false, "아이디를 다시 확인해주세요");
+            throw new CustomException(NOT_USERNAME);
         }
         if (!Pattern.matches("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", dto.getEmail())) {
-            return new UserRegisterRespDto(502, false, "이메일을 다시 확인해주세요");
+            throw new CustomException(NOT_EMAIL);
         }
         if (!Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$", dto.getPassword())) {
-            return new UserRegisterRespDto(502, false, "패스워드를 다시 확인해주세요");
+            throw new CustomException(NOT_USE_PASSWORD);
         }
-        return null;
     }
 
-    private UserRegisterRespDto duplicateCheck(UserRequestDto dto) {
+    private void duplicateCheck(UserRequestDto dto) {
         if (userRepository.findByUsernameOrNicknameOrEmail(dto.getUsername(), dto.getNickname(), dto.getEmail()).isPresent()) {
-            return new UserRegisterRespDto(501, false, "중복된 값이 존재합니다.");
+            throw new CustomException(OVERLAP);
         }
-        return null;
     }
 
     private void isNickNameValid(UserRequestDto userRequestDto) {
