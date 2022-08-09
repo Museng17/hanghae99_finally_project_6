@@ -51,13 +51,12 @@ public class UserController {
     }
 
     @PostMapping("/user/refresh")
-    public TokenResponseDto refreshToken(HttpServletRequest request,
-                                         @RequestHeader(value = REFRESH_TOKEN, defaultValue = "noToken") String refresh) {
+    public TokenResponseDto refreshToken(@RequestHeader(value = REFRESH_TOKEN, defaultValue = "noToken") String refresh) {
         return userService.refreshToken(refresh);
     }
 
     @PostMapping("/user/signup")
-    public UserRegisterRespDto registerUser(@RequestBody UserRequestDto Dto) {
+    public Users registerUser(@RequestBody UserRequestDto Dto) {
         return userService.registerUser(Dto);
     }
 
