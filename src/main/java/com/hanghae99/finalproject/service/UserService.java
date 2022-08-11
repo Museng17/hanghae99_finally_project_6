@@ -96,10 +96,11 @@ public class UserService {
     }
 
     @Transactional
-    public UserRegisterRespDto registerUser(UserRequestDto Dto) {
-
-        if (!certificationMap.match(Dto.getEmail())) {
-            throw new CustomException(ErrorCode.NOT_EMAIL_CERTIFICATION_CHECK);
+    public UserRegisterRespDto registerUser(UserRequestDto Dto, boolean isEmailCheck) {
+        if (isEmailCheck) {
+            if (!certificationMap.match(Dto.getEmail())) {
+                throw new CustomException(ErrorCode.NOT_EMAIL_CERTIFICATION_CHECK);
+            }
         }
 
         //회원가입 정규식 체크
@@ -126,8 +127,10 @@ public class UserService {
                 )
         );
 
-        certificationMap.remove(Dto.getEmail(), true);
-        
+        if (isEmailCheck) {
+            certificationMap.remove(Dto.getEmail(), true);
+        }
+
         return new UserRegisterRespDto(200, true, "회원가입 성공");
     }
 

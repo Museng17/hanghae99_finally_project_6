@@ -56,8 +56,9 @@ public class UserController {
     }
 
     @PostMapping("/user/signup")
-    public UserRegisterRespDto registerUser(@RequestBody UserRequestDto Dto) {
-        return userService.registerUser(Dto);
+    public UserRegisterRespDto registerUser(@RequestBody UserRequestDto Dto,
+                                            @RequestParam(value = "isEmailCheck", defaultValue = "true") boolean isEmailCheck) {
+        return userService.registerUser(Dto, isEmailCheck);
     }
 
     @ResponseBody
