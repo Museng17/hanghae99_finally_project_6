@@ -47,7 +47,7 @@ public class UserControllerTest {
         @DisplayName("회원가입")
         public void 회원가입() throws JsonProcessingException {
             UserDto userDto = UserDto.builder()
-                    .email("whitewise95@gmail.com")
+                    .email("whitew295@gmail.com")
                     .username("test1234")
                     .password("testest1234")
                     .nickname("테스트유저")
