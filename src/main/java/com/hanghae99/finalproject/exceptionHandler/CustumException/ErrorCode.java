@@ -15,6 +15,7 @@ public enum ErrorCode {
 
     //중복
     OVERLAP_EMAIL(501, 200, "중복된 이메일 입니다."),
+    OVERLAP(501, 200, "중복되었습니다."),
     OVERLAP_NICKNAME(501, 200, "중복된 닉네임입니다."),
     EXIST_REPORT(500,200,"이미 신고하셨습니다."),
 
@@ -34,6 +35,7 @@ public enum ErrorCode {
 
     //사용할 수 없습니다.
     CNT_NOT_USE_NICKNAME(505, 200, "이용할 수 없는 닉네임입니다."),
+    NOT_USERNAME(505, 200, "사용할 수 없는 아이디입니다."),
     NOT_USE_PASSWORD(505, 200, "사용할 수 없는 비밀번호입니다."),
     NOT_USE_EXT(505, 200, "사용할 수 없는 확장자 파일입니다."),
     NOT_USE_SUBJECT(505, 200, "사용할 수 없는 제목입니다."),
