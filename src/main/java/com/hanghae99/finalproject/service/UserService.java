@@ -127,6 +127,7 @@ public class UserService {
         );
 
         certificationMap.remove(Dto.getEmail(), true);
+        
         return new UserRegisterRespDto(200, true, "회원가입 성공");
     }
 
