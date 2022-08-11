@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
-import org.springframework.test.context.event.annotation.AfterTestMethod;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -72,12 +71,11 @@ public class UserControllerTest {
             assertEquals("회원가입 성공", responseUserDto.getErrorMsg());
         }
 
-
         @Nested
         class 회원가입_중복체크 {
 
             @Test
-            @Order(3)
+            @Order(2)
             @DisplayName("아이디 중복체크")
             public void 아이디중복체크() {
 
@@ -103,7 +101,7 @@ public class UserControllerTest {
             }
 
             @Test
-            @Order(4)
+            @Order(3)
             @DisplayName("닉네임중복체크")
             public void 닉네임중복체크() {
                 //when
@@ -132,7 +130,7 @@ public class UserControllerTest {
         class 로그인_실패와_성공_테스트_및_리프레쉬토큰_사용 {
 
             @Test
-            @Order(2)
+            @Order(4)
             @DisplayName("로그인 성공")
             public void itSuccessLogin() throws JsonProcessingException {
                 UserDto userDto = UserDto.builder()
