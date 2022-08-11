@@ -59,7 +59,7 @@ public class UserControllerTest {
 
             //when
             ResponseEntity<UserRegisterRespDto> userDtoResponseEntity = restTemplate.postForEntity(
-                    "/user/signup",
+                    "/user/signup?isEmailCheck=false",
                     stringHttpEntity,
                     UserRegisterRespDto.class
             );
