@@ -25,6 +25,12 @@ public class UserControllerTest {
     @Autowired
     private UserInfoInJwt userInfoInJwt;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private FolderRepository folderRepository;
+
     private HttpHeaders headers;
     private ObjectMapper mapper = new ObjectMapper();
 
