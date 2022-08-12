@@ -4,12 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanghae99.finalproject.jwt.UserInfoInJwt;
 import com.hanghae99.finalproject.model.entity.Users;
+import com.hanghae99.finalproject.model.repository.*;
 import lombok.*;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
+import org.springframework.test.context.event.annotation.AfterTestMethod;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -25,6 +27,12 @@ public class UserControllerTest {
     @Autowired
     private UserInfoInJwt userInfoInJwt;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private FolderRepository folderRepository;
+
     private HttpHeaders headers;
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -37,6 +45,14 @@ public class UserControllerTest {
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         users = new Users();
+    }
+
+    @AfterTestMethod
+    public void deleteTestUser(){
+        Users users = userRepository.findByUsername("test4321")
+                .orElseThrow(() -> new RuntimeException("TestCode 회원을 못찾았습니다."));
+        folderRepository.deleteById(users.getId());
+        userRepository.findById(users.getId());
     }
 
     @Nested
@@ -263,10 +279,10 @@ public class UserControllerTest {
     @Nested
     class 토큰사용 {
 
-        @Test
-        @DisplayName("유저찾기")
-        public void findUsername() {
-        }
+//        @Test
+//        @DisplayName("유저찾기")
+//        public void findUsername() {
+//        }
     }
 
 }
