@@ -11,7 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
-import org.springframework.test.context.event.annotation.AfterTestMethod;
+import org.springframework.test.context.event.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -40,53 +41,53 @@ public class UserControllerTest {
 
     private TokenDto token;
 
-    @BeforeEach
-    public void setup() {
+    @Test
+    @BeforeTestMethod
+    @DisplayName("회원가입")
+    public void setup() throws JsonProcessingException {
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         users = new Users();
+
+        UserDto userDto = UserDto.builder()
+                .email("whitew295@gmail.com")
+                .username("test4321")
+                .password("testest1234")
+                .nickname("테스트코드유저")
+                .build();
+
+        String requestBody = mapper.writeValueAsString(userDto);
+        HttpEntity<String> stringHttpEntity = new HttpEntity<>(requestBody, headers);
+
+        //when
+        ResponseEntity<UserRegisterRespDto> userDtoResponseEntity = restTemplate.postForEntity(
+                "/user/signup?isEmailCheck=false",
+                stringHttpEntity,
+                UserRegisterRespDto.class
+        );
+
+        //then
+        assertEquals(HttpStatus.OK, userDtoResponseEntity.getStatusCode());
+
+        UserRegisterRespDto responseUserDto = userDtoResponseEntity.getBody();
+        assertEquals(200, responseUserDto.getStatusCode());
+        assertEquals("회원가입 성공", responseUserDto.getErrorMsg());
+
     }
 
+    @Test
     @AfterTestMethod
+    @DisplayName("유저 삭제")
+    @Transactional
     public void deleteTestUser(){
         Users users = userRepository.findByUsername("test4321")
                 .orElseThrow(() -> new RuntimeException("TestCode 회원을 못찾았습니다."));
-        folderRepository.deleteById(users.getId());
+        folderRepository.deleteByUsersId(users.getId());
         userRepository.findById(users.getId());
     }
 
     @Nested
     class 회원가입_부터_로그인기능 {
-
-        @Test
-        @Order(1)
-        @DisplayName("회원가입")
-        public void 회원가입() throws JsonProcessingException {
-            UserDto userDto = UserDto.builder()
-                    .email("whitew295@gmail.com")
-                    .username("test4321")
-                    .password("testest1234")
-                    .nickname("테스트코드유저")
-                    .build();
-
-            String requestBody = mapper.writeValueAsString(userDto);
-            HttpEntity<String> stringHttpEntity = new HttpEntity<>(requestBody, headers);
-
-            //when
-            ResponseEntity<UserRegisterRespDto> userDtoResponseEntity = restTemplate.postForEntity(
-                    "/user/signup?isEmailCheck=false",
-                    stringHttpEntity,
-                    UserRegisterRespDto.class
-            );
-
-            //then
-            assertEquals(HttpStatus.OK, userDtoResponseEntity.getStatusCode());
-
-            UserRegisterRespDto responseUserDto = userDtoResponseEntity.getBody();
-            assertEquals(200, responseUserDto.getStatusCode());
-            assertEquals("회원가입 성공", responseUserDto.getErrorMsg());
-        }
-
 
         @Nested
         class 회원가입_중복체크 {
