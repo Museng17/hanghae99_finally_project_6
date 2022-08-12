@@ -98,7 +98,7 @@ public class UserControllerTest {
 
                 //when
                 ResponseEntity<Boolean> 실패 = restTemplate.getForEntity(
-                        "/user/emailDupCheck/test1234",
+                        "/user/emailDupCheck/test4321",
                         Boolean.class
                 );
 
@@ -108,7 +108,7 @@ public class UserControllerTest {
 
                 //when
                 ResponseEntity<Boolean> 성공 = restTemplate.getForEntity(
-                        "/user/emailDupCheck/test123",
+                        "/user/emailDupCheck/없을껄?",
                         Boolean.class
                 );
 
@@ -123,7 +123,7 @@ public class UserControllerTest {
             public void 닉네임중복체크() {
                 //when
                 ResponseEntity<Boolean> 실패 = restTemplate.getForEntity(
-                        "/user/nameDupCheck/테스트유저",
+                        "/user/nameDupCheck/테스트코드유저",
                         Boolean.class
                 );
 
