@@ -67,4 +67,6 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
     List<Folder> findByUsersId(Long id);
 
     Optional<Folder> findByIdAndUsers(Long folderId, Users userFindByToken);
+
+    void deleteByUsersId(Long id);
 }
