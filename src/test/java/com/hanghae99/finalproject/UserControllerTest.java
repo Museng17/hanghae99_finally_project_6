@@ -42,7 +42,7 @@ public class UserControllerTest {
     private TokenDto token;
 
     @Test
-    @BeforeTestMethod
+    @BeforeAll
     @DisplayName("회원가입")
     public void setup() throws JsonProcessingException {
         headers = new HttpHeaders();
@@ -75,7 +75,7 @@ public class UserControllerTest {
 
     }
 
-    @AfterTestMethod
+    @AfterAll
     @DisplayName("유저 삭제")
     @Transactional
     public void deleteTestUser(){
