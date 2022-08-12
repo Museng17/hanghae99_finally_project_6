@@ -75,7 +75,6 @@ public class UserControllerTest {
 
     }
 
-    @Test
     @AfterTestMethod
     @DisplayName("유저 삭제")
     @Transactional
