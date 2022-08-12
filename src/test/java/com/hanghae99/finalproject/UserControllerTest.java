@@ -4,12 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanghae99.finalproject.jwt.UserInfoInJwt;
 import com.hanghae99.finalproject.model.entity.Users;
+import com.hanghae99.finalproject.model.repository.*;
 import lombok.*;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
+import org.springframework.test.context.event.annotation.AfterTestMethod;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -61,10 +63,10 @@ public class UserControllerTest {
         @DisplayName("회원가입")
         public void 회원가입() throws JsonProcessingException {
             UserDto userDto = UserDto.builder()
-                    .email("whitewise95@gmail.com")
-                    .username("test1234")
+                    .email("whitew295@gmail.com")
+                    .username("test4321")
                     .password("testest1234")
-                    .nickname("테스트유저")
+                    .nickname("테스트코드유저")
                     .build();
 
             String requestBody = mapper.writeValueAsString(userDto);
@@ -131,7 +133,7 @@ public class UserControllerTest {
 
                 //when
                 ResponseEntity<Boolean> 성공 = restTemplate.getForEntity(
-                        "/user/nameDupCheck/테스트유저1",
+                        "/user/nameDupCheck/테스트코드유저2",
                         Boolean.class
                 );
 
@@ -145,11 +147,11 @@ public class UserControllerTest {
         class 로그인_실패와_성공_테스트_및_리프레쉬토큰_사용 {
 
             @Test
-            @Order(2)
+            @Order(4)
             @DisplayName("로그인 성공")
             public void itSuccessLogin() throws JsonProcessingException {
                 UserDto userDto = UserDto.builder()
-                        .username("test1234")
+                        .username("test4321")
                         .password("testest1234")
                         .build();
 
@@ -179,7 +181,7 @@ public class UserControllerTest {
             @DisplayName("아이디 틀려서 로그인 실패")
             public void itFailNotUsername() throws JsonProcessingException {
                 UserDto failUsername = UserDto.builder()
-                        .username("test12345")
+                        .username("테스트코드유저")
                         .password("testest1234")
                         .build();
 
@@ -202,7 +204,7 @@ public class UserControllerTest {
             @DisplayName("비밀번호 틀려서 로그인 실패")
             public void itFailNotPassword() throws JsonProcessingException {
                 UserDto failUsername = UserDto.builder()
-                        .username("test1234")
+                        .username("test4321")
                         .password("testest12345")
                         .build();
 
@@ -226,7 +228,7 @@ public class UserControllerTest {
             @DisplayName("토큰재발급")
             public void refreshToken() throws JsonProcessingException {
                 UserDto userDto = UserDto.builder()
-                        .username("test1234")
+                        .username("test4321")
                         .password("testest1234")
                         .build();
 
