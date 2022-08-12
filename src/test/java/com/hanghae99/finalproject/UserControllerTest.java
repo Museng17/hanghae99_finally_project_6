@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
-import org.springframework.test.context.event.annotation.AfterTestMethod;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -38,6 +37,14 @@ public class UserControllerTest {
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         users = new Users();
+    }
+
+    @AfterTestMethod
+    public void deleteTestUser(){
+        Users users = userRepository.findByUsername("test4321")
+                .orElseThrow(() -> new RuntimeException("TestCode 회원을 못찾았습니다."));
+        folderRepository.deleteById(users.getId());
+        userRepository.findById(users.getId());
     }
 
     @Nested
@@ -268,6 +275,7 @@ public class UserControllerTest {
         @Test
         @DisplayName("유저찾기")
         public void findUsername() {
+
         }
     }
 
