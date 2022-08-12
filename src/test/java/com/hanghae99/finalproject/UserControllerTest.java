@@ -11,13 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
-import org.springframework.test.context.event.annotation.AfterTestMethod;
+import org.springframework.test.annotation.Rollback;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @DisplayName("UserController 클래스")
 public class UserControllerTest {
 
@@ -36,63 +36,57 @@ public class UserControllerTest {
     private HttpHeaders headers;
     private ObjectMapper mapper = new ObjectMapper();
 
-    private Users users;
-
     private TokenDto token;
 
-    @BeforeEach
-    public void setup() {
+    @BeforeAll
+    public void setup() throws JsonProcessingException {
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        users = new Users();
+
+        UserDto userDto = UserDto.builder()
+                .email("whitew295@gmail.com")
+                .username("test4321")
+                .password("testest1234")
+                .nickname("테스트코드유저")
+                .build();
+
+        String requestBody = mapper.writeValueAsString(userDto);
+        HttpEntity<String> stringHttpEntity = new HttpEntity<>(requestBody, headers);
+
+        //when
+        ResponseEntity<UserRegisterRespDto> userDtoResponseEntity = restTemplate.postForEntity(
+                "/user/signup?isEmailCheck=false",
+                stringHttpEntity,
+                UserRegisterRespDto.class
+        );
+
+        //then
+        assertEquals(HttpStatus.OK, userDtoResponseEntity.getStatusCode());
+
+        UserRegisterRespDto responseUserDto = userDtoResponseEntity.getBody();
+        assertEquals(200, responseUserDto.getStatusCode());
+        assertEquals("회원가입 성공", responseUserDto.getErrorMsg());
+
     }
 
-    @AfterTestMethod
-    public void deleteTestUser(){
+    @AfterAll
+    @Rollback(value = false)
+    public void deleteTestUser() {
         Users users = userRepository.findByUsername("test4321")
                 .orElseThrow(() -> new RuntimeException("TestCode 회원을 못찾았습니다."));
-        folderRepository.deleteById(users.getId());
-        userRepository.findById(users.getId());
+        folderRepository.deleteByUsersId(users.getId());
+        userRepository.deleteById(users.getId());
     }
 
     @Nested
+    @Order(1)
     class 회원가입_부터_로그인기능 {
 
-        @Test
-        @Order(1)
-        @DisplayName("회원가입")
-        public void 회원가입() throws JsonProcessingException {
-            UserDto userDto = UserDto.builder()
-                    .email("whitew295@gmail.com")
-                    .username("test4321")
-                    .password("testest1234")
-                    .nickname("테스트코드유저")
-                    .build();
-
-            String requestBody = mapper.writeValueAsString(userDto);
-            HttpEntity<String> stringHttpEntity = new HttpEntity<>(requestBody, headers);
-
-            //when
-            ResponseEntity<UserRegisterRespDto> userDtoResponseEntity = restTemplate.postForEntity(
-                    "/user/signup?isEmailCheck=false",
-                    stringHttpEntity,
-                    UserRegisterRespDto.class
-            );
-
-            //then
-            assertEquals(HttpStatus.OK, userDtoResponseEntity.getStatusCode());
-
-            UserRegisterRespDto responseUserDto = userDtoResponseEntity.getBody();
-            assertEquals(200, responseUserDto.getStatusCode());
-            assertEquals("회원가입 성공", responseUserDto.getErrorMsg());
-        }
-
-
         @Nested
+        @Order(1)
         class 회원가입_중복체크 {
 
             @Test
-            @Order(3)
             @DisplayName("아이디 중복체크")
             public void 아이디중복체크() {
 
@@ -118,7 +112,6 @@ public class UserControllerTest {
             }
 
             @Test
-            @Order(4)
             @DisplayName("닉네임중복체크")
             public void 닉네임중복체크() {
                 //when
@@ -144,10 +137,10 @@ public class UserControllerTest {
         }
 
         @Nested
+        @Order(2)
         class 로그인_실패와_성공_테스트_및_리프레쉬토큰_사용 {
 
             @Test
-            @Order(4)
             @DisplayName("로그인 성공")
             public void itSuccessLogin() throws JsonProcessingException {
                 UserDto userDto = UserDto.builder()
@@ -177,7 +170,6 @@ public class UserControllerTest {
             }
 
             @Test
-            @Order(5)
             @DisplayName("아이디 틀려서 로그인 실패")
             public void itFailNotUsername() throws JsonProcessingException {
                 UserDto failUsername = UserDto.builder()
@@ -200,7 +192,6 @@ public class UserControllerTest {
             }
 
             @Test
-            @Order(6)
             @DisplayName("비밀번호 틀려서 로그인 실패")
             public void itFailNotPassword() throws JsonProcessingException {
                 UserDto failUsername = UserDto.builder()
@@ -224,7 +215,6 @@ public class UserControllerTest {
             }
 
             @Test
-            @Order(7)
             @DisplayName("토큰재발급")
             public void refreshToken() throws JsonProcessingException {
                 UserDto userDto = UserDto.builder()
@@ -278,6 +268,7 @@ public class UserControllerTest {
     }
 
     @Nested
+    @Order(2)
     class 토큰사용 {
 
         @Test

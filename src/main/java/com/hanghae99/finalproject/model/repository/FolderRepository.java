@@ -4,6 +4,7 @@ import com.hanghae99.finalproject.model.entity.*;
 import com.hanghae99.finalproject.model.resultType.*;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -67,4 +68,7 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
     List<Folder> findByUsersId(Long id);
 
     Optional<Folder> findByIdAndUsers(Long folderId, Users userFindByToken);
+
+    @Transactional
+    void deleteByUsersId(Long id);
 }
