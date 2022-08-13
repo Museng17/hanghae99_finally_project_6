@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanghae99.finalproject.jwt.UserInfoInJwt;
 import com.hanghae99.finalproject.model.entity.Users;
 import com.hanghae99.finalproject.model.repository.*;
+import com.hanghae99.finalproject.model.resultType.LoginType;
 import lombok.*;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,6 +163,14 @@ public class UserControllerTest {
                 assertEquals(HttpStatus.OK, responseEntity2.getStatusCode());
                 TokenDto tokenDto = responseEntity2.getBody();
 
+                token = TokenDto.builder()
+                        .accessToken("Bearer " + tokenDto.getAccessToken())
+                        .refreshToken("Bearer " + tokenDto.getRefreshToken())
+                        .build();
+
+                headers.add("RefreshToken", token.getRefreshToken());
+                headers.add("Authorization", token.getAccessToken());
+
                 //토큰을 파싱했을 때 로그인한 username이 같은지
                 assertEquals(
                         userDto.getUsername(),
@@ -222,29 +231,7 @@ public class UserControllerTest {
                         .password("testest1234")
                         .build();
 
-                String body = mapper.writeValueAsString(userDto);
-                HttpEntity<String> entity = new HttpEntity<>(body, headers);
-
-                //then
-                ResponseEntity<TokenDto> responseEntity2 = restTemplate.postForEntity(
-                        "/user/login",
-                        entity,
-                        TokenDto.class
-                );
-
-                //when
-                assertEquals(HttpStatus.OK, responseEntity2.getStatusCode());
-                TokenDto tokenDto = responseEntity2.getBody();
-
-                token = TokenDto.builder()
-                        .accessToken("Bearer " + tokenDto.getAccessToken())
-                        .refreshToken("Bearer " + tokenDto.getRefreshToken())
-                        .build();
-
-                headers.add("RefreshToken", token.getRefreshToken());
-                headers.add("Authorization", token.getAccessToken());
-
-                entity = new HttpEntity<>(headers);
+                HttpEntity<Object> entity = new HttpEntity<>(headers);
 
                 //then
                 ResponseEntity<TokenDto> responseEntity = restTemplate.postForEntity(
@@ -256,7 +243,7 @@ public class UserControllerTest {
                 //when
                 assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 
-                tokenDto = responseEntity.getBody();
+                TokenDto tokenDto = responseEntity.getBody();
 
                 //토큰을 파싱했을 때 로그인한 username이 같은지
                 assertEquals(
@@ -268,12 +255,170 @@ public class UserControllerTest {
     }
 
     @Nested
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     @Order(2)
     class 토큰사용 {
 
         @Test
-        @DisplayName("유저찾기")
-        public void findUsername() {
+        @Order(1)
+        @DisplayName("닉네임변경")
+        public void updateUserNickname() throws JsonProcessingException {
+            UserDto userDto = UserDto.builder()
+                    .nickname("테스트유저닉네임변경")
+                    .build();
+
+            HttpEntity request = new HttpEntity(mapper.writeValueAsString(userDto), headers);
+
+            ResponseEntity<MessageDto> entity = restTemplate.exchange(
+                    "/user/updateName",
+                    HttpMethod.PUT,
+                    request,
+                    MessageDto.class
+            );
+
+            assertEquals(HttpStatus.OK, entity.getStatusCode());
+
+            MessageDto messageDto = entity.getBody();
+
+            assertEquals("계정 닉네임 변경 성공", messageDto.getMessage());
+            assertEquals(200, messageDto.getStatusCode());
+        }
+
+        @Test
+        @Order(2)
+        @DisplayName("유저 정보 변경")
+        public void userUpdateInfo() throws JsonProcessingException {
+            UserDto userDto = UserDto.builder()
+                    .information("추가된 인포메이션")
+                    .build();
+
+            HttpEntity request = new HttpEntity(mapper.writeValueAsString(userDto), headers);
+
+            ResponseEntity<MessageDto> entity = restTemplate.exchange(
+                    "/user/updateInfo",
+                    HttpMethod.PUT,
+                    request,
+                    MessageDto.class
+            );
+
+            assertEquals(HttpStatus.OK, entity.getStatusCode());
+
+            MessageDto messageDto = entity.getBody();
+
+            assertEquals("계정 정보 수정 완료", messageDto.getMessage());
+            assertEquals(200, messageDto.getStatusCode());
+        }
+
+        @Test
+        @Order(3)
+        @DisplayName("유저 비밀번호 확인")
+        public void userPwCheck() throws JsonProcessingException {
+            UserDto userDto = UserDto.builder()
+                    .password("testest1234")
+                    .build();
+
+            HttpEntity request = new HttpEntity(mapper.writeValueAsString(userDto), headers);
+
+            ResponseEntity<MessageDto> entity = restTemplate.exchange(
+                    "/user/pw/check",
+                    HttpMethod.POST,
+                    request,
+                    MessageDto.class
+            );
+
+            assertEquals(HttpStatus.OK, entity.getStatusCode());
+
+            MessageDto messageDto = entity.getBody();
+
+            assertEquals("비밀번호 확인 성공", messageDto.getMessage());
+            assertEquals(200, messageDto.getStatusCode());
+        }
+
+        @Test
+        @Order(4)
+        @DisplayName("유저 비밀번호 변경")
+        public void userPwUpdate() throws JsonProcessingException {
+            UserDto userDto = UserDto.builder()
+                    .password("testest1234")
+                    .newPassword("testest4321")
+                    .build();
+
+            HttpEntity request = new HttpEntity(mapper.writeValueAsString(userDto), headers);
+
+            ResponseEntity<MessageDto> entity = restTemplate.exchange(
+                    "/user/pw/update",
+                    HttpMethod.PUT,
+                    request,
+                    MessageDto.class
+            );
+
+            assertEquals(HttpStatus.OK, entity.getStatusCode());
+
+            MessageDto messageDto = entity.getBody();
+
+            assertEquals("계정 비밀번호 변경 완료", messageDto.getMessage());
+            assertEquals(200, messageDto.getStatusCode());
+        }
+
+        @Test
+        @Order(5)
+        @DisplayName("유저 비밀번호 확인 틀렸을 경우")
+        public void userPwCheckFail() throws JsonProcessingException {
+            UserDto userDto = UserDto.builder()
+                    .password("testest1234")
+                    .build();
+
+            HttpEntity request = new HttpEntity(mapper.writeValueAsString(userDto), headers);
+
+            ResponseEntity<MessageDto> entity = restTemplate.exchange(
+                    "/user/pw/check",
+                    HttpMethod.POST,
+                    request,
+                    MessageDto.class
+            );
+
+            assertEquals(HttpStatus.OK, entity.getStatusCode());
+
+            MessageDto messageDto = entity.getBody();
+
+            assertEquals("비밀번호가 다릅니다", messageDto.getMessage());
+            assertEquals(501, messageDto.getStatusCode());
+        }
+
+        @Test
+        @Order(6)
+        @DisplayName("유저 프로필 보기")
+        public void findUserProfile() {
+            UserDto userDto = UserDto.builder()
+                    .email("whitew295@gmail.com")
+                    .username("test4321")
+                    .password("testest1234")
+                    .information("추가된 인포메이션")
+                    .nickname("테스트유저닉네임변경")
+                    .build();
+
+            HttpEntity<Object> entity = new HttpEntity<>(headers);
+
+            //then
+            ResponseEntity<UserDto> responseEntity = restTemplate.exchange(
+                    "/user/profile",
+                    HttpMethod.GET,
+                    entity,
+                    UserDto.class
+            );
+
+            //when
+            assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+
+            UserDto entityBody = responseEntity.getBody();
+
+            assertEquals(userDto.getUsername(), entityBody.getUsername());
+            assertEquals(userDto.getEmail(), entityBody.getEmail());
+            assertEquals(userDto.getInformation(), entityBody.getInformation());
+            assertEquals(0L, entityBody.getFolderCnt());
+            assertEquals(0L, entityBody.getBoardCnt());
+            assertEquals(0L, entityBody.getReportCnt());
+            assertEquals(LoginType.USER, entityBody.getLoginType());
 
         }
     }
@@ -285,16 +430,41 @@ public class UserControllerTest {
 class UserDto {
     private Long id;
     private String username;
+    private String nickname;
+    private String imgPath;
+    private String information;
     private String password;
     private String email;
-    private String nickname;
+    private Long folderCnt;
+    private String newPassword;
+    private Long boardCnt;
+    private Long reportCnt = 0L;
+    private LoginType loginType;
 
     @Builder
-    public UserDto(String username, String password, String nickname, String email) {
+    public UserDto(Long id,
+                   String username,
+                   String nickname,
+                   String imgPath,
+                   String information,
+                   String password,
+                   String email,
+                   Long folderCnt,
+                   Long boardCnt, Long reportCnt,
+                   LoginType loginType,
+                   String newPassword) {
+        this.id = id;
         this.username = username;
-        this.password = password;
         this.nickname = nickname;
+        this.imgPath = imgPath;
+        this.information = information;
+        this.password = password;
         this.email = email;
+        this.folderCnt = folderCnt;
+        this.boardCnt = boardCnt;
+        this.reportCnt = reportCnt;
+        this.loginType = loginType;
+        this.newPassword = newPassword;
     }
 }
 
@@ -317,4 +487,13 @@ class UserRegisterRespDto {
     private int statusCode;
     private boolean result;
     private String errorMsg;
+}
+
+@Getter
+@NoArgsConstructor
+class MessageDto<T> {
+    private int statusCode;
+    private String message;
+    private int totalPages;
+    private T content;
 }
