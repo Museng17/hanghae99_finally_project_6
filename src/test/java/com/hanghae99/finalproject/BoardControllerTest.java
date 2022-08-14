@@ -29,41 +29,41 @@ public class BoardControllerTest {
 
     private TokenDto token;
 
-    @BeforeAll
-    public void setup() throws JsonProcessingException {
-        headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        UserDto userDto = UserDto.builder()
-                .email("whitew295@gmail.com")
-                .username("test4321")
-                .password("testest1234")
-                .nickname("테스트코드유저")
-                .build();
-
-        String requestBody = mapper.writeValueAsString(userDto);
-        HttpEntity<String> stringHttpEntity = new HttpEntity<>(requestBody, headers);
-
-        //when
-        ResponseEntity<UserRegisterRespDto> userDtoResponseEntity = restTemplate.postForEntity(
-                "/user/signup?isEmailCheck=false",
-                stringHttpEntity,
-                UserRegisterRespDto.class
-        );
-
-        //then
-        assertEquals(HttpStatus.OK, userDtoResponseEntity.getStatusCode());
-
-        UserRegisterRespDto responseUserDto = userDtoResponseEntity.getBody();
-        assertEquals(200, responseUserDto.getStatusCode());
-        assertEquals("회원가입 성공", responseUserDto.getErrorMsg());
-
-    }
-
-    @AfterAll
-    @Rollback(value = false)
-    public void deleteTestUser() {
-
-    }
+//    @BeforeAll
+//    public void setup() throws JsonProcessingException {
+//        headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//
+//        UserDto userDto = UserDto.builder()
+//                .email("whitew295@gmail.com")
+//                .username("test4321")
+//                .password("testest1234")
+//                .nickname("테스트코드유저")
+//                .build();
+//
+//        String requestBody = mapper.writeValueAsString(userDto);
+//        HttpEntity<String> stringHttpEntity = new HttpEntity<>(requestBody, headers);
+//
+//        //when
+//        ResponseEntity<UserRegisterRespDto> userDtoResponseEntity = restTemplate.postForEntity(
+//                "/user/signup?isEmailCheck=false",
+//                stringHttpEntity,
+//                UserRegisterRespDto.class
+//        );
+//
+//        //then
+//        assertEquals(HttpStatus.OK, userDtoResponseEntity.getStatusCode());
+//
+//        UserRegisterRespDto responseUserDto = userDtoResponseEntity.getBody();
+//        assertEquals(200, responseUserDto.getStatusCode());
+//        assertEquals("회원가입 성공", responseUserDto.getErrorMsg());
+//
+//    }
+//
+//    @AfterAll
+//    @Rollback(value = false)
+//    public void deleteTestUser() {
+//
+//    }
 
 }
