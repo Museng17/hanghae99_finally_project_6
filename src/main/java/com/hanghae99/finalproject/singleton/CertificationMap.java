@@ -13,10 +13,12 @@ public class CertificationMap {
     private CertificationMap() {
     }
 
-    private static CertificationMap certification = new CertificationMap();
+    private static class Lazy {
+        private static final CertificationMap certification = new CertificationMap();
+    }
 
     public static CertificationMap getInstance() {
-        return certification;
+        return Lazy.certification;
     }
 
     /*
