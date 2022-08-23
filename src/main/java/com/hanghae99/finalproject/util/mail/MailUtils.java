@@ -97,9 +97,7 @@ public class MailUtils {
         javaMailSender.setHost("smtp.gmail.com");
         javaMailSender.setPort(587);
 
-//        javaMailSender.setUsername("moumservice@gmail.com");
         javaMailSender.setUsername("moumcloud@gmail.com");
-//        javaMailSender.setUsername("moum@moum.cloud");
         javaMailSender.setPassword(PASSWORD);
         Properties prop = new Properties();
 
